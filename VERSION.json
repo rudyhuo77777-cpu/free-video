@@ -1,0 +1,25 @@
+{
+  "name": "Free Video",
+  "version": "0.3.1-lite",
+  "date": "2026-09-16",
+  "status": "cloudflare-lite",
+  "domain": "https://freevideo.eco-velo.com",
+  "architecture": {
+    "frontend": "Next.js static export",
+    "runtime": "single Cloudflare Worker",
+    "ai": "Cloudflare Workers AI binding",
+    "storage": "Cloudflare D1 binding",
+    "media": "Wikimedia Commons + Openverse; optional Pixabay/Pexels",
+    "render": "browser/device local MP4",
+    "tts": "optional localhost Supertonic F5 bridge"
+  },
+  "removed": [
+    "Railway",
+    "Docker",
+    "Postgres",
+    "Redis",
+    "BullMQ",
+    "separate AI worker",
+    "server-side video rendering"
+  ]
+}

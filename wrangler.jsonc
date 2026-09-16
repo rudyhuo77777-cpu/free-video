@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "free-video",
+  "main": "./worker/index.js",
+  "compatibility_date": "2026-09-16",
+  "assets": {
+    "directory": "./apps/web/out",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB"
+    }
+  ],
+  "vars": {
+    "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast",
+    "FREE_SCRIPT_LIMIT": "3",
+    "FYP_URL": "https://fyp.eco-velo.com"
+  }
+}

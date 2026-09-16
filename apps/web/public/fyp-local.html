@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071019"><title>AURIA-FYP</title>
+<style>:root{--bg:#061019;--panel:#0c1823;--line:#203746;--text:#f2f7fb;--muted:#8096a8;--a:#59e4cf}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 75% -10%,#0e3642 0,transparent 30%),linear-gradient(#061019,#07121b 50%,#061019);color:var(--text)}a{color:inherit;text-decoration:none}.topbar{position:sticky;top:0;z-index:20;min-height:76px;padding:0 30px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;background:#061019db;backdrop-filter:blur(15px);border-bottom:1px solid #142b38}.brand{display:flex;align-items:center;gap:10px;width:max-content}.brandmark{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--a);color:#06231f;font-weight:950}.brand span:last-child{display:flex;flex-direction:column}.brand small{font-size:9px;color:#7b93a4;letter-spacing:.12em;margin-top:3px}.nav,.langs{display:flex;gap:5px;border:1px solid var(--line);border-radius:999px;padding:5px;background:#09151f}.nav a,.langs a{font-size:12px;padding:8px 11px;border-radius:999px;color:#8da1b1}.langs{justify-self:end}.langs a.active{background:var(--a);color:#05231e;font-weight:850}main{max-width:1180px;margin:auto;padding:0 26px 70px}.hero{min-height:610px;padding:80px 18px 65px;display:grid;grid-template-columns:1.6fr .75fr;gap:70px;align-items:center}.eyebrow{display:flex;gap:10px;align-items:center;color:var(--a);font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:800}.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--a);box-shadow:0 0 0 6px #59e4cf18}.hero h1{font-size:clamp(46px,5.1vw,82px);line-height:.97;letter-spacing:-.055em;margin:18px 0 0}.hero h1 span,.hero h1 em{display:block}.hero h1 em{color:var(--a);font-style:normal;margin-top:8px}.hero-copy>p{max-width:780px;font-size:16px;line-height:1.75;color:#93a6b5;margin-top:26px}.hero-btns{display:flex;gap:10px;margin-top:28px}.primary,.secondary{min-height:48px;padding:0 19px;border-radius:12px;display:flex;align-items:center;font-weight:850;font-size:13px}.primary{background:var(--a);color:#06231f}.secondary{background:#091721;border:1px solid var(--line);color:#b9c8d2}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px;max-width:700px}.stats div{border-left:1px solid #294653;padding-left:12px}.stats b{display:block;font-size:22px}.stats span{display:block;color:#688091;font-size:11px;margin-top:3px}.radarbox{border:1px solid #244250;background:linear-gradient(#0d202b,#07141c);border-radius:25px;padding:18px;box-shadow:0 30px 90px #0007}.rhead,.rfoot{display:flex;justify-content:space-between;align-items:center;color:#7890a0;font-size:10px;letter-spacing:.13em}.rhead span:last-child{border:1px solid #2d4b58;color:var(--a);border-radius:999px;padding:4px 7px}.radar{position:relative;aspect-ratio:1;border-radius:50%;max-width:280px;margin:25px auto;background:radial-gradient(circle,#0b3c3b44,transparent 62%);overflow:hidden}.radar:before,.radar:after{content:"";position:absolute;background:#59e4cf22}.radar:before{height:1px;left:6%;right:6%;top:50%}.radar:after{width:1px;top:6%;bottom:6%;left:50%}.radar .r1,.radar .r2,.radar .r3{position:absolute;border:1px solid #59e4cf2d;border-radius:50%;inset:8%}.radar .r2{inset:24%}.radar .r3{inset:40%}.beam{position:absolute;width:50%;height:50%;left:50%;top:0;transform-origin:0 100%;background:conic-gradient(from 90deg,#59e4cf55,transparent 25%);animation:s 5s linear infinite}@keyframes s{to{transform:rotate(360deg)}}.radar b{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--a);box-shadow:0 0 14px var(--a)}.p1{left:29%;top:32%}.p2{right:24%;top:51%}.p3{left:49%;bottom:18%}.p4{right:31%;top:23%}.rfoot{border-top:1px solid #1d3441;padding-top:13px}.rfoot strong{font-size:28px;color:white}.workflow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:16px;align-items:center;border:1px solid var(--line);background:#09151f;border-radius:20px;padding:20px;margin-bottom:36px}.workflow article{display:flex;gap:12px}.workflow article>b{color:var(--a);font-size:12px}.workflow strong{font-size:13px}.workflow p{font-size:11px;color:#718899;line-height:1.55;margin:5px 0 0}.workflow>span{color:#315064}.workspace{display:grid;grid-template-columns:205px 1fr;gap:22px}.rail{position:sticky;top:98px;height:max-content;display:flex;flex-direction:column;gap:7px}.rail a{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid transparent;border-radius:14px;color:#758b9a}.rail a:hover,.rail a.active{background:#0a1822;border-color:#244251;color:white}.rail a>b{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:#10232e;color:var(--a);font-size:10px}.rail a span strong,.rail a span small{display:block}.rail a span strong{font-size:12px}.rail a span small{font-size:10px;color:#667e8e;margin-top:2px}.panels{display:flex;flex-direction:column;gap:18px}.panel{scroll-margin-top:95px;border:1px solid var(--line);background:linear-gradient(#0d1b26,#09151f);border-radius:21px;padding:27px;box-shadow:0 18px 60px #0003}.panelhead{display:flex;justify-content:space-between;gap:20px;margin-bottom:22px}.panelhead small,.dna>small{color:var(--a);font-size:10px;letter-spacing:.14em;font-weight:850}.panelhead h2{font-size:27px;letter-spacing:-.03em;margin:7px 0}.panelhead p{font-size:12px;line-height:1.55;color:#7d92a2;margin:0}.panelhead>i{font-style:normal;font-size:10px;border:1px solid #294454;border-radius:999px;padding:7px 9px;height:max-content;color:#87a0b1}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.wide{grid-column:1/-1}label>span{display:block;font-size:11px;color:#9aafbe;font-weight:700;margin-bottom:7px}input,select,.static{width:100%;height:49px;border-radius:11px;border:1px solid #29414f;background:#06131c;color:white;padding:0 13px;outline:none}input:focus,select:focus{border-color:#3c8f87;box-shadow:0 0 0 3px #59e4cf12}input::placeholder{color:#536b7a}.static{display:flex;align-items:center}.action,.copy{height:49px;border-radius:11px;border:0;font-weight:900;cursor:pointer}.action{width:100%;margin-top:17px;background:var(--a);color:#06231f;display:flex;align-items:center;justify-content:center;gap:9px}.status{font-size:11px;color:#8199aa;margin-top:10px}.results{display:grid;gap:9px;margin-top:13px}.result{border:1px solid #203946;background:#06131c;border-radius:14px;padding:14px}.resulttop{display:flex;gap:6px;margin-bottom:8px}.badge{font-size:9px;border:1px solid #2a4a58;color:#75d9cc;border-radius:999px;padding:3px 6px}.result h3{font-size:14px;margin:0 0 6px}.result p{font-size:11px;color:#758c9d;line-height:1.55;margin:3px 0}.result button{margin-top:8px;border:1px solid #2b4c5b;background:#0d202b;color:#c6e5e0;border-radius:8px;height:34px;padding:0 10px;font-size:10px;font-weight:850;cursor:pointer}.selected{border:1px dashed #2a4755;background:#07151d;border-radius:11px;padding:12px;color:#8197a7;font-size:11px;margin-bottom:15px}#analyze label{display:block;margin-top:12px}.analysis-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.metric,.dna-block{border:1px solid #203946;background:#06131c;border-radius:11px;padding:11px}.metric{font-size:10px;color:#7890a1}.metric b{display:block;color:white;font-size:18px;margin-top:6px}.dna-block{margin-top:8px}.dna-block h3{font-size:11px;margin:0 0 6px}.dna-block p{font-size:11px;color:#758c9d;line-height:1.55;margin:0}.twobtn{display:grid;grid-template-columns:1fr 210px;gap:10px}.twobtn .action{margin-top:0}.copy{background:#112530;color:#8ca4b5;border:1px solid #2b4351}.copy:disabled{opacity:.4;cursor:not-allowed}.script{border:1px solid #203946;background:#050c12;border-radius:13px;overflow:hidden;margin-top:14px}.scriptbar{height:37px;background:#09151d;border-bottom:1px solid #172b36;display:flex;align-items:center;gap:5px;padding:0 11px}.scriptbar i{width:7px;height:7px;border-radius:50%;background:#29424f}.scriptbar b{font-size:9px;color:#5f7888;margin-left:5px}pre{white-space:pre-wrap;min-height:200px;margin:0;padding:15px;color:#9db2c0;font-size:11px;line-height:1.65}.dna{margin-top:50px;border-top:1px solid #172b37;padding-top:40px}.dna h2{font-size:31px;letter-spacing:-.04em;margin:7px 0 21px}.dnagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dnagrid article{min-height:150px;border:1px solid #1e3644;background:#08151f;border-radius:15px;padding:17px}.dnagrid article>b{font-size:10px;color:var(--a)}.dnagrid article>strong{display:block;font-size:13px;margin:22px 0 7px}.dnagrid p{font-size:11px;line-height:1.55;color:#738a9b;margin:0}footer{display:grid;grid-template-columns:auto 1fr auto;gap:12px;margin-top:50px;padding:22px 2px;border-top:1px solid #172b37;color:#627b8b;font-size:11px}footer span{justify-self:start}@media(max-width:950px){.topbar{grid-template-columns:1fr auto}.nav{display:none}.hero{grid-template-columns:1fr;gap:35px}.radarbox{max-width:420px}.workspace{grid-template-columns:1fr}.rail{display:none}}@media(max-width:690px){.topbar{display:flex;flex-wrap:wrap;padding:12px 15px;gap:9px}.brand{flex:1}.langs{order:3;width:100%;justify-content:center}.langs a{flex:1;text-align:center}.hero{padding:50px 2px 40px}.hero h1{font-size:46px}.stats{grid-template-columns:1fr 1fr}.workflow{grid-template-columns:1fr}.workflow>span{display:none}.panel{padding:19px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.panelhead{flex-direction:column}.analysis-grid{grid-template-columns:1fr 1fr}.twobtn{grid-template-columns:1fr}.dnagrid{grid-template-columns:1fr}.dna h2{font-size:26px}footer{grid-template-columns:1fr;gap:5px}}
+
+/* Billing / paywall */
+.billingbar{margin:0 0 22px;border:1px solid #284555;border-radius:18px;background:linear-gradient(135deg,#0b1923,#0b1d26 60%,#0b2428);padding:14px 18px;box-shadow:0 14px 45px #0003}
+.billingcopy{display:grid;grid-template-columns:auto 1px auto 1px 1fr;align-items:center;gap:18px}
+.billingcopy>div{min-width:150px}.billingcopy small{display:block;color:#7890a1;font-size:.66rem;margin-bottom:5px}.billingcopy strong{font-size:.9rem;color:#eaf8f5}.billingcopy strong em{font-style:normal;color:#7d96a7;font-size:.7rem;font-weight:600}
+.billingsep{height:34px;background:#29414f}.billingreset p{margin:3px 0 0;color:#6d8596;font-size:.66rem;line-height:1.4}.quotadots{display:flex;gap:5px;margin-top:7px}.quotadots i{width:23px;height:4px;border-radius:999px;background:#4de1c8;box-shadow:0 0 12px #4de1c844}.quotadots i.used{background:#2c4350;box-shadow:none}.login-needed{color:#e6ff7a!important}
+.paywall{position:fixed;inset:0;background:#02070bb8;backdrop-filter:blur(10px);z-index:200;display:none;place-items:center;padding:18px}.paywall.show{display:grid}.paywallcard{width:min(440px,100%);border:1px solid #2b5060;border-radius:24px;background:linear-gradient(180deg,#10212d,#08141d);padding:28px;box-shadow:0 35px 120px #0009;text-align:center}.paywallicon{width:58px;height:58px;border-radius:18px;margin:0 auto 16px;display:grid;place-items:center;background:#5de9d0;color:#06231f;font-weight:950;letter-spacing:-.05em}.paywallcard>small{color:#5de9d0;letter-spacing:.13em;font-size:.64rem;font-weight:800}.paywallcard h2{font-size:1.55rem;letter-spacing:-.03em;margin:10px 0}.paywallcard p{color:#8aa0b1;line-height:1.6;font-size:.82rem}.payprice{border:1px solid #263f4e;border-radius:14px;background:#07131c;padding:15px;margin:18px 0;text-align:left}.payprice b{display:block;font-size:1.55rem;color:#fff}.payprice span{font-size:.68rem;color:#738b9c}.paycancel{width:100%;margin-top:9px;border:0;background:transparent;color:#6f8798;cursor:pointer;padding:9px}.paywall .action{margin-top:0}
+@media(max-width:720px){.billingcopy{grid-template-columns:1fr 1fr;gap:13px}.billingsep{display:none}.billingreset{grid-column:1/-1}.billingcopy>div{min-width:0}.billingbar{padding:14px}.paywallcard{padding:22px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#home"><span class="brandmark">A</span><span><b>AURIA-FYP</b><small>Viral Intelligence</small></span></a>
+  <nav class="nav"><a href="#discover" data-t="nav1">Discover</a><a href="#analyze" data-t="nav2">Analyze</a><a href="#create" data-t="nav3">Create</a></nav>
+  <div class="langs"><a href="?lang=id" data-lang="id">Bahasa Indonesia</a><a href="?lang=en" data-lang="en">English</a><a href="?lang=zh" data-lang="zh">中文</a></div>
+</header>
+<main id="home">
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow"><i></i><span data-t="eyebrow">Indonesia Viral Video Reverse Engine</span></div>
+    <h1><span data-t="h1a">Temukan video yang sedang meledak.</span><em data-t="h1b">Bongkar kenapa orang berhenti scroll.</em></h1>
+    <p data-t="hero">Cari 5 referensi video viral terbaru, pilih satu sendiri, lalu AURIA membongkar hook, emosi, alur cerita, teknik kamera, dan Viral DNA untuk membuat director script versi produkmu.</p>
+    <div class="hero-btns"><a class="primary" href="#discover" data-t="cta">Cari 5 Video Viral</a><a class="secondary" href="#workflow" data-t="how">Lihat cara kerja</a></div>
+    <div class="stats"><div><b>5</b><span data-t="s1">referensi terbaru</span></div><div><b>31</b><span data-t="s2">teknik konten</span></div><div><b>8</b><span data-t="s3">viral triggers</span></div><div><b>4</b><span data-t="s4">titik emosi</span></div></div>
+  </div>
+  <div class="radarbox"><div class="rhead"><span>LIVE RADAR</span><span>ID</span></div><div class="radar"><i class="r1"></i><i class="r2"></i><i class="r3"></i><i class="beam"></i><b class="p1"></b><b class="p2"></b><b class="p3"></b><b class="p4"></b></div><div class="rfoot"><span data-t="signal">Sinyal kandidat</span><strong>05</strong></div></div>
+</section>
+<section id="workflow" class="workflow">
+  <article><b>01</b><div><strong data-t="w1t">Cari kandidat</strong><p data-t="w1b">AURIA hanya menampilkan 5 referensi viral terbaru agar aplikasi tetap ringan.</p></div></article>
+  <span>→</span>
+  <article><b>02</b><div><strong data-t="w2t">Kamu pilih videonya</strong><p data-t="w2b">Kamu sendiri yang memilih referensi paling cocok lalu menempel link video.</p></div></article>
+  <span>→</span>
+  <article><b>03</b><div><strong data-t="w3t">AURIA membongkar</strong><p data-t="w3b">Sistem membaca Viral DNA dan menulis ulang struktur menjadi director script baru.</p></div></article>
+</section>
+<section class="billingbar" aria-label="Billing">
+  <div class="billingcopy">
+    <div><small id="billingFreeLabel">Gratis minggu ini</small><strong id="quotaText">Memeriksa kuota...</strong><div id="quotaDots" class="quotadots"><i></i><i></i><i></i></div></div>
+    <span class="billingsep"></span>
+    <div><small id="billingPriceLabel">Setelah kuota habis</small><strong><span id="billingPrice">Rp12.000</span> <em id="billingPriceUnit">/ analisis</em></strong></div>
+    <span class="billingsep"></span>
+    <div class="billingreset"><small id="billingReset">Reset Senin 00:00 WIB</small><p id="billingNote">Cari 5 referensi gratis tanpa batas · 3 analisis pertama tiap minggu gratis · berikutnya Rp12.000/analisis</p></div>
+  </div>
+</section>
+<section class="workspace">
+<aside class="rail">
+  <a class="active" href="#discover"><b>01</b><span><strong data-t="r1">Cari Viral</strong><small data-t="r1s">5 referensi</small></span></a>
+  <a href="#analyze"><b>02</b><span><strong data-t="r2">Bongkar Video</strong><small>Viral DNA</small></span></a>
+  <a href="#create"><b>03</b><span><strong data-t="r3">Director Script</strong><small data-t="r3s">Untuk Framing.ai</small></span></a>
+</aside>
+<div class="panels">
+<section id="discover" class="panel">
+  <div class="panelhead"><div><small data-t="dtag">STEP 1 · DISCOVER</small><h2 data-t="dt">Cari 5 referensi video viral</h2><p data-t="db">Masukkan produk, topik, atau niche. Sistem hanya mencari kandidat; kamu yang memilih video final.</p></div><i data-t="light">LIGHT MODE</i></div>
+  <div class="grid"><label class="wide"><span data-t="topic">Produk / topik / niche</span><input id="topic" data-ph="topicph" placeholder="Contoh: AI untuk jualan, neck massager, hijab..."></label><label><span data-t="cat">Kategori</span><select id="category"><option value="sales" data-t="c1">Produk / Jualan</option><option value="ai" data-t="c2">AI / Teknologi</option><option value="business" data-t="c3">Bisnis</option><option value="beauty">Beauty</option><option value="fashion">Fashion</option><option value="lifestyle">Lifestyle</option><option value="humor">Humor</option><option value="story">Story</option><option value="education" data-t="c9">Edukasi</option></select></label><label><span data-t="market">Pasar</span><div class="static">🇮🇩 Indonesia</div></label></div>
+  <button id="searchBtn" class="action"><span data-t="search">CARI 5 REFERENSI</span><b>↗</b></button><div id="searchStatus" class="status"></div><div id="results" class="results"></div>
+</section>
+<section id="analyze" class="panel">
+  <div class="panelhead"><div><small data-t="atag">STEP 2 · REVERSE ENGINEER</small><h2 data-t="at">Bongkar video yang kamu pilih</h2><p data-t="ab">Tempel link video pilihanmu. AURIA akan membaca hook, emosi, cerita, kamera, cahaya, dan struktur viral.</p></div></div>
+  <div id="selectedRef" class="selected">✓ <span data-t="none">Belum ada referensi yang dipilih.</span></div>
+  <label><span data-t="vurl">Link video pilihan</span><input id="videoUrl" data-ph="vurlph" placeholder="Tempel link TikTok / Reels / Shorts"></label>
+  <label><span data-t="product">Produk / proyek milikmu</span><input id="product" data-ph="productph" placeholder="Contoh: AURIA AI"></label>
+  <button id="analyzeBtn" class="action"><span data-t="anbtn">ANALISIS VIRAL DNA</span><b>◎</b></button><div id="analysisStatus" class="status"></div><div id="analysis"></div>
+</section>
+<section id="create" class="panel">
+  <div class="panelhead"><div><small data-t="ctag">STEP 3 · CREATE</small><h2 data-t="ct">Buat director script versi produkmu</h2><p data-t="cb">Pertahankan mekanisme viralnya, bukan menyalin dialog, identitas, atau branding video referensi.</p></div><i>9:16</i></div>
+  <div class="twobtn"><button id="generateBtn" class="action"><span data-t="gen">BUAT DIRECTOR SCRIPT</span><b>✦</b></button><button id="copyBtn" class="copy" disabled data-t="copy">COPY FOR FRAMING.AI</button></div>
+  <div class="script"><div class="scriptbar"><i></i><i></i><i></i><b>director_script.txt</b></div><pre id="scriptOut" data-t="empty">Director script akan muncul di sini setelah Viral DNA selesai dianalisis.</pre></div>
+</section>
+</div>
+</section>
+<section class="dna"><small>AURIA VIRAL DNA 31</small><h2 data-t="dnat">Yang dianalisis setelah kamu memilih video</h2><div class="dnagrid"><article><b>01</b><strong data-t="dna1">3-Second Hook</strong><p data-t="dna1b">Visual, bahasa, konflik, informasi, penasaran, karakter, suara.</p></article><article><b>02</b><strong data-t="dna2">4 Titik Emosi</strong><p data-t="dna2b">Wow, humor, payoff/satisfaction, dan emotional pain.</p></article><article><b>03</b><strong data-t="dna3">Story Curve</strong><p data-t="dna3b">Naik-turun tensi, konflik, jeda, reversal, dan klimaks.</p></article><article><b>04</b><strong data-t="dna4">8 Viral Triggers</strong><p data-t="dna4b">Ketegangan, perbandingan, nostalgia, penasaran, uang, dan lainnya.</p></article><article><b>05</b><strong data-t="dna5">31 Teknik Konten</strong><p data-t="dna5b">Sudut kamera, gerak kamera, pembuka, interaksi, struktur konten.</p></article><article><b>06</b><strong data-t="dna6">Director Layer</strong><p data-t="dna6b">Shot, gerakan, cahaya, ekspresi mikro, suara, timing, detail visual.</p></article></div></section>
+<footer><b>AURIA-FYP</b><span data-t="foot">Discover → Reverse Engineer → Director Script</span><i>V1 Lightweight</i></footer>
+</main>
+<div id="paywall" class="paywall" role="dialog" aria-modal="true" aria-labelledby="paywallTitle">
+  <div class="paywallcard">
+    <div class="paywallicon">QR</div>
+    <small>AURIA-FYP · 1X CREDIT</small>
+    <h2 id="paywallTitle">Kuota gratis minggu ini sudah habis</h2>
+    <p id="paywallBody">Bayar Rp12.000 untuk 1x Viral DNA + Director Script. Pencarian 5 referensi tetap gratis.</p>
+    <div class="payprice"><b>Rp12.000</b><span>QRIS / e-wallet via Midtrans</span></div>
+    <button id="payBtn" class="action">BAYAR Rp12.000</button>
+    <button id="payCancel" class="paycancel">Nanti saja</button>
+    <div id="paywallStatus" class="status"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const j=(data,status=200)=>Promise.resolve(new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json'}}));
+  const realFetch=window.fetch.bind(window);
+  const getFree=()=>Number(localStorage.getItem('auriaFypDemoFree') ?? '3');
+  const setFree=n=>localStorage.setItem('auriaFypDemoFree',String(n));
+  let activeRunType=null;
+  window.snap={pay:(token,opt)=>{setTimeout(()=>{localStorage.setItem('auriaFypDemoPaid','1');opt?.onSuccess?.({transaction_status:'settlement'});},650)}};
+  window.fetch=(input,options={})=>{
+    const u=String(input); let body={}; try{body=JSON.parse(options.body||'{}')}catch{}
+    const lang=(body.language||new URLSearchParams(location.search).get('lang')||'id');
+    if(u==='/api/config') return j({free_uses_per_week:3,price_per_use:12000,currency:'IDR',week_reset:'Monday 00:00 WIB',login_url:null,midtrans:{environment:'sandbox',client_key:'demo',snap_js_url:'demo'}});
+    if(u==='/api/quota') {const f=getFree();return j({week_key:'DEMO',free_limit:3,free_completed:3-f,free_active:0,free_remaining:f,paid_available:Number(localStorage.getItem('auriaFypDemoPaid')||0),paid_reserved:0,price_per_use:12000,currency:'IDR'});}
+    if(u==='/api/run/prepare') {const f=getFree();if(f>0){activeRunType='free';return j({ok:true,run_id:'demo-free-run',usage_type:'free'});}if(localStorage.getItem('auriaFypDemoPaid')==='1'){activeRunType='paid';return j({ok:true,run_id:'demo-paid-run',usage_type:'paid'});}return j({error:'Kuota gratis minggu ini sudah habis.',code:'payment_required',payment_required:true},402);}
+    if(u==='/api/billing/checkout') return j({order_id:'AFYP-DEMO-12000',snap_token:'demo-token',amount:12000});
+    if(u.startsWith('/api/payment/status')) return j({order_id:'AFYP-DEMO-12000',status:localStorage.getItem('auriaFypDemoPaid')==='1'?'settlement':'pending',paid:localStorage.getItem('auriaFypDemoPaid')==='1',amount:12000});
+    if(u==='/api/search') {
+      const topic=body.topic||'AURIA';
+      const x={
+        id:[['Hasil sebelum vs sesudah','Perbandingan','Kontras cepat + payoff visual.'],['Jangan pakai ini sebelum tahu…','Reverse Hook','Larangan memicu rasa penasaran.'],['Cuma 10 detik, hasilnya bikin kaget','Payoff','Janji hasil cepat menahan penonton.'],['Awalnya diketawain, akhirnya semua ikut','Story','Konflik sosial + reversal.'],['Yang mahal belum tentu menang','Contrast','Harga vs hasil memicu debat.']],
+        zh:[['使用前 vs 使用后','强对比','快速反差 + 结果爽点。'],['用它之前先知道这件事','反向钩子','禁止式开头制造好奇。'],['只要10秒，结果让人意外','爽点','短时间承诺提升完播。'],['一开始被嘲笑，最后所有人都跟着做','故事反转','冲突 + 反转。'],['贵的不一定赢','价格反差','价格与效果对比制造争议。']],
+        en:[['Before vs after','Comparison','Fast contrast + visual payoff.'],['Don’t use this before you know…','Reverse Hook','A warning creates curiosity.'],['Only 10 seconds — surprising result','Payoff','A short promise lifts completion.'],['They laughed, then copied it','Story','Conflict + reversal.'],['More expensive doesn’t always win','Contrast','Price vs result invites debate.']]
+      }[lang]||[];
+      return j({items:x.map((a,i)=>({title:`${topic}: ${a[0]}`,angle:a[1],why:a[2],source_hint:'TikTok Indonesia · demo reference'}))});
+    }
+    if(u==='/api/analyze') return j({scores:{wow:92,humor:34,payoff:89,emotion:41},hook:lang==='zh'?'0–3秒：先出现异常结果，再故意不解释原因。':lang==='en'?'0–3s: show the abnormal result first, then withhold the reason.':'0–3 detik: tampilkan hasil aneh dulu, lalu tahan alasannya.',story_curve:'Hook → Konflik → Eskalasi → Reversal → Payoff',viral_triggers:['Ketegangan','Perbandingan','Penasaran','Top 1'],techniques:['Dekat','Push-in','Candid','Kamera menyamping'],why_fyp:lang==='zh'?'先让人停下来，再把答案拖到最后释放爽点。':'Stop-scroll hook, delayed answer, then a clear payoff.'});
+    if(u==='/api/generate') {
+      if(activeRunType==='free'){setFree(Math.max(0,getFree()-1));}
+      if(activeRunType==='paid'){localStorage.removeItem('auriaFypDemoPaid');}
+      activeRunType=null;
+      const script=lang==='zh'?'导演脚本 DEMO\n\n镜头01 00:00–00:02\n极近景。右眼眉毛内侧轻微抬起，眼球先移动，头部随后跟随。快速推近，暖色主光 + 冷色轮廓光。\n\n镜头02 00:02–00:06\n冲突升级，不立即公布答案。\n\n镜头03 00:06–00:12\n对比 + 第二次反转。\n\n镜头04 00:12–00:18\n释放爽点，产品自然进入画面。':lang==='en'?'DIRECTOR SCRIPT DEMO\n\nSCENE 01 00:00–00:02\nExtreme close-up. Inner right eyebrow lifts subtly; eyes move before the head follows. Fast push-in, warm key light, cool rim.\n\nSCENE 02\nEscalate conflict.\n\nSCENE 03\nComparison + reversal.\n\nSCENE 04\nPayoff and natural product reveal.':'DIRECTOR SCRIPT DEMO\n\nSCENE 01 00:00–00:02\nExtreme close-up. Alis kanan bagian dalam naik sangat halus; mata bergerak dulu, kepala mengikuti. Push-in cepat, key light hangat + rim light dingin.\n\nSCENE 02\nKonflik naik, jawaban ditahan.\n\nSCENE 03\nPerbandingan + reversal.\n\nSCENE 04\nPayoff dan product reveal.';
+      const f=getFree();return j({script,quota:{free_limit:3,free_completed:3-f,free_active:0,free_remaining:f,paid_available:0,paid_reserved:0,price_per_use:12000}});
+    }
+    return realFetch(input,options);
+  };
+})();
+</script>
+<script>const $=id=>document.getElementById(id);const L={id:{nav1:"Discover",nav2:"Analyze",nav3:"Create",eyebrow:"Indonesia Viral Video Reverse Engine",h1a:"Temukan video yang sedang meledak.",h1b:"Bongkar kenapa orang berhenti scroll.",hero:"Cari 5 referensi video viral terbaru, pilih satu sendiri, lalu AURIA membongkar hook, emosi, alur cerita, teknik kamera, dan Viral DNA untuk membuat director script versi produkmu.",cta:"Cari 5 Video Viral",how:"Lihat cara kerja",s1:"referensi terbaru",s2:"teknik konten",s3:"viral triggers",s4:"titik emosi",signal:"Sinyal kandidat",w1t:"Cari kandidat",w1b:"AURIA hanya menampilkan 5 referensi viral terbaru agar aplikasi tetap ringan.",w2t:"Kamu pilih videonya",w2b:"Kamu sendiri yang memilih referensi paling cocok lalu menempel link video.",w3t:"AURIA membongkar",w3b:"Sistem membaca Viral DNA dan menulis ulang struktur menjadi director script baru.",r1:"Cari Viral",r1s:"5 referensi",r2:"Bongkar Video",r3:"Director Script",r3s:"Untuk Framing.ai",dtag:"STEP 1 · DISCOVER",dt:"Cari 5 referensi video viral",db:"Masukkan produk, topik, atau niche. Sistem hanya mencari kandidat; kamu yang memilih video final.",light:"LIGHT MODE",topic:"Produk / topik / niche",topicph:"Contoh: AI untuk jualan, neck massager, hijab...",cat:"Kategori",market:"Pasar",c1:"Produk / Jualan",c2:"AI / Teknologi",c3:"Bisnis",c9:"Edukasi",search:"CARI 5 REFERENSI",atag:"STEP 2 · REVERSE ENGINEER",at:"Bongkar video yang kamu pilih",ab:"Tempel link video pilihanmu. AURIA akan membaca hook, emosi, cerita, kamera, cahaya, dan struktur viral.",none:"Belum ada referensi yang dipilih.",vurl:"Link video pilihan",vurlph:"Tempel link TikTok / Reels / Shorts",product:"Produk / proyek milikmu",productph:"Contoh: AURIA AI",anbtn:"ANALISIS VIRAL DNA",ctag:"STEP 3 · CREATE",ct:"Buat director script versi produkmu",cb:"Pertahankan mekanisme viralnya, bukan menyalin dialog, identitas, atau branding video referensi.",gen:"BUAT DIRECTOR SCRIPT",copy:"COPY FOR FRAMING.AI",copied:"TERSALIN ✓",empty:"Director script akan muncul di sini setelah Viral DNA selesai dianalisis.",dnat:"Yang dianalisis setelah kamu memilih video",dna1:"3-Second Hook",dna1b:"Visual, bahasa, konflik, informasi, penasaran, karakter, suara.",dna2:"4 Titik Emosi",dna2b:"Wow, humor, payoff/satisfaction, dan emotional pain.",dna3:"Story Curve",dna3b:"Naik-turun tensi, konflik, jeda, reversal, dan klimaks.",dna4:"8 Viral Triggers",dna4b:"Ketegangan, perbandingan, nostalgia, penasaran, uang, dan lainnya.",dna5:"31 Teknik Konten",dna5b:"Sudut kamera, gerak kamera, pembuka, interaksi, struktur konten.",dna6:"Director Layer",dna6b:"Shot, gerakan, cahaya, ekspresi mikro, suara, timing, detail visual.",foot:"Discover → Reverse Engineer → Director Script",needTopic:"Masukkan produk / topik dulu.",searching:"Mencari 5 referensi terbaru...",choose:"Pilih satu referensi yang paling cocok.",select:"PILIH VIDEO INI",chosen:"Dipilih",needRef:"Pilih salah satu referensi dulu.",needUrl:"Tempel link video.",needProduct:"Masukkan produk / proyek milikmu.",analyzing:"Membongkar hook, emosi, cerita, 31 teknik dan 8 trigger...",done:"Analisis selesai.",needAnalysis:"Analisis video dulu.",generating:"Menyusun director script...",wow:"爆点 / Wow",humor:"笑点 / Humor",payoff:"爽点 / Payoff",emotion:"泪点 / Emotion",hook:"3-Second Hook",story:"Story Curve",triggers:"8 Viral Triggers",tech:"31 Teknik Konten",why:"Kenapa Bisa FYP"},zh:{nav1:"发现",nav2:"分析",nav3:"生成",eyebrow:"印尼爆款视频反推引擎",h1a:"找到最近正在爆的视频。",h1b:"拆出让人停止划走的真正原因。",hero:"搜索 5 个近期印尼爆款视频参考，由你自己选择其中一个，再由 AURIA 拆解钩子、情绪、故事曲线、镜头技巧和 Viral DNA，生成适合你产品的导演级脚本。",cta:"搜索 5 个爆款视频",how:"查看工作流程",s1:"近期参考",s2:"内容技巧",s3:"爆款元素",s4:"情绪爆点",signal:"候选信号",w1t:"搜索候选",w1b:"AURIA 只给出 5 个近期爆款参考，保持整个应用轻量。",w2t:"你自己选视频",w2b:"你选择最适合的参考视频，再把视频链接粘贴进来。",w3t:"AURIA 反推",w3b:"系统拆出 Viral DNA，并把爆款结构重写成新的导演脚本。",r1:"搜索爆款",r1s:"5 个参考",r2:"拆解视频",r3:"导演脚本",r3s:"用于 Framing.ai",dtag:"STEP 1 · 发现",dt:"搜索 5 个爆款视频参考",db:"输入产品、主题或赛道。系统只负责找候选视频，最终由你自己选择。",light:"轻量模式",topic:"产品 / 主题 / 赛道",topicph:"例如：AI卖货、颈椎按摩仪、头巾...",cat:"分类",market:"市场",c1:"产品 / 卖货",c2:"AI / 科技",c3:"商业",c9:"教育",search:"搜索 5 个参考",atag:"STEP 2 · 反推",at:"拆解你选择的视频",ab:"粘贴你选中的视频链接。AURIA 将分析钩子、情绪、故事、运镜、光影和爆款结构。",none:"还没有选择参考视频。",vurl:"所选视频链接",vurlph:"粘贴 TikTok / Reels / Shorts 链接",product:"你的产品 / 项目",productph:"例如：AURIA AI",anbtn:"分析 VIRAL DNA",ctag:"STEP 3 · 生成",ct:"生成你的产品导演脚本",cb:"保留爆款机制，但不直接复制参考视频的原台词、人物身份或品牌。",gen:"生成导演脚本",copy:"复制给 FRAMING.AI",copied:"已复制 ✓",empty:"完成 Viral DNA 分析后，导演脚本会显示在这里。",dnat:"选择视频之后，系统会分析这些内容",dna1:"前三秒钩子",dna1b:"视觉、语言、冲突、信息、好奇、人物、声音。",dna2:"4 个情绪爆点",dna2b:"爆点、笑点、爽点、泪点。",dna3:"故事曲线",dna3b:"紧张度起伏、冲突、停顿、反转和高潮。",dna4:"8 大爆款元素",dna4b:"紧张、对比、怀旧、好奇、金钱等。",dna5:"31 种内容技巧",dna5b:"机位、运镜、开场、互动和内容结构。",dna6:"导演层",dna6b:"分镜、动作、光线、微表情、声音、节奏和视觉细节。",foot:"发现 → 反推 → 导演脚本",needTopic:"请先输入产品或主题。",searching:"正在搜索 5 个近期爆款参考...",choose:"请选择一个最适合的参考视频。",select:"选择这个视频",chosen:"已选择",needRef:"请先选择一个参考视频。",needUrl:"请粘贴视频链接。",needProduct:"请输入你的产品或项目。",analyzing:"正在拆解钩子、情绪、故事、31种技巧和8大爆款元素...",done:"分析完成。",needAnalysis:"请先分析视频。",generating:"正在生成导演脚本...",wow:"爆点 / Wow",humor:"笑点 / Humor",payoff:"爽点 / Payoff",emotion:"泪点 / Emotion",hook:"前三秒钩子",story:"故事曲线",triggers:"8 大爆款元素",tech:"31 种内容技巧",why:"为什么能 FYP"},en:{nav1:"Discover",nav2:"Analyze",nav3:"Create",eyebrow:"Indonesia Viral Video Reverse Engine",h1a:"Find the videos exploding right now.",h1b:"Reverse-engineer why people stop scrolling.",hero:"Find 5 recent Indonesian viral-video references, choose one yourself, then let AURIA break down the hook, emotion, story curve, camera techniques, and Viral DNA to create a director script for your product.",cta:"Find 5 Viral Videos",how:"See how it works",s1:"recent references",s2:"content techniques",s3:"viral triggers",s4:"emotion points",signal:"Candidate signals",w1t:"Find candidates",w1b:"AURIA only shows 5 recent viral references to keep the app lightweight.",w2t:"You choose the video",w2b:"You pick the best reference and paste the actual video link.",w3t:"AURIA reverse-engineers it",w3b:"The system extracts Viral DNA and rewrites the structure into a new director script.",r1:"Find Viral",r1s:"5 references",r2:"Break Down Video",r3:"Director Script",r3s:"For Framing.ai",dtag:"STEP 1 · DISCOVER",dt:"Find 5 viral-video references",db:"Enter a product, topic, or niche. The system finds candidates; you make the final choice.",light:"LIGHT MODE",topic:"Product / topic / niche",topicph:"Example: AI for selling, neck massager, hijab...",cat:"Category",market:"Market",c1:"Product / Selling",c2:"AI / Technology",c3:"Business",c9:"Education",search:"FIND 5 REFERENCES",atag:"STEP 2 · REVERSE ENGINEER",at:"Break down the video you chose",ab:"Paste the selected video link. AURIA will analyze its hook, emotion, story, camera, lighting, and viral structure.",none:"No reference selected yet.",vurl:"Selected video link",vurlph:"Paste TikTok / Reels / Shorts link",product:"Your product / project",productph:"Example: AURIA AI",anbtn:"ANALYZE VIRAL DNA",ctag:"STEP 3 · CREATE",ct:"Create the director script for your product",cb:"Preserve the viral mechanism without copying exact dialogue, identity, or branding from the reference.",gen:"CREATE DIRECTOR SCRIPT",copy:"COPY FOR FRAMING.AI",copied:"COPIED ✓",empty:"Your director script will appear here after Viral DNA analysis is complete.",dnat:"What AURIA analyzes after you choose a video",dna1:"3-Second Hook",dna1b:"Visual, language, conflict, information, curiosity, character, and sound.",dna2:"4 Emotion Points",dna2b:"Wow, humor, payoff/satisfaction, and emotional pain.",dna3:"Story Curve",dna3b:"Tension changes, conflict, pauses, reversals, and climax.",dna4:"8 Viral Triggers",dna4b:"Tension, comparison, nostalgia, curiosity, money, and more.",dna5:"31 Content Techniques",dna5b:"Camera angle, camera movement, opening, interaction, and content structure.",dna6:"Director Layer",dna6b:"Shots, motion, lighting, micro-expressions, sound, timing, and visual details.",foot:"Discover → Reverse Engineer → Director Script",needTopic:"Enter a product or topic first.",searching:"Finding 5 recent viral references...",choose:"Choose the reference that fits best.",select:"SELECT THIS VIDEO",chosen:"Selected",needRef:"Choose a reference first.",needUrl:"Paste a video link.",needProduct:"Enter your product or project.",analyzing:"Breaking down the hook, emotions, story, 31 techniques, and 8 triggers...",done:"Analysis complete.",needAnalysis:"Analyze the video first.",generating:"Building the director script...",wow:"Wow Point",humor:"Humor Point",payoff:"Payoff Point",emotion:"Emotion Point",hook:"3-Second Hook",story:"Story Curve",triggers:"8 Viral Triggers",tech:"31 Content Techniques",why:"Why It Can Reach FYP"}};const allowed=["id","en","zh"];let lang=new URLSearchParams(location.search).get("lang");if(!allowed.includes(lang))lang="id";let selected=null,analysis=null;const t=k=>L[lang][k]||L.id[k]||k;function apply(l,write=true){lang=allowed.includes(l)?l:"id";document.documentElement.lang=lang==="zh"?"zh-CN":lang;document.querySelectorAll("[data-t]").forEach(e=>{const k=e.dataset.t;if(L[lang][k]!=null)e.textContent=L[lang][k]});document.querySelectorAll("[data-ph]").forEach(e=>{const k=e.dataset.ph;if(L[lang][k]!=null)e.placeholder=L[lang][k]});document.querySelectorAll("[data-lang]").forEach(e=>e.classList.toggle("active",e.dataset.lang===lang));if(write){const u=new URL(location.href);u.searchParams.set("lang",lang);history.replaceState({},"",u)}if(!selected)$("selectedRef").innerHTML=`✓ <span>${t("none")}</span>`;else $("selectedRef").innerHTML=`✓ <span>${t("chosen")}: ${esc(selected.title)}</span>`;if(!analysis&&!$("scriptOut").dataset.ready)$("scriptOut").textContent=t("empty")}document.querySelectorAll("[data-lang]").forEach(e=>e.onclick=x=>{x.preventDefault();apply(e.dataset.lang)});async function api(path,body){const r=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Request failed");return d}function esc(v){return String(v??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[s]))}$("searchBtn").onclick=async()=>{const topic=$("topic").value.trim();if(!topic)return alert(t("needTopic"));$("searchStatus").textContent=t("searching");$("results").innerHTML="";try{const d=await api("/api/search",{topic,category:$("category").value,language:lang});$("searchStatus").textContent=t("choose");(d.items||[]).slice(0,5).forEach((it,i)=>{const e=document.createElement("div");e.className="result";e.innerHTML=`<div class="resulttop"><span class="badge">#${i+1}</span><span class="badge">${esc(it.angle||"viral")}</span></div><h3>${esc(it.title)}</h3><p>${esc(it.why)}</p><p><small>${esc(it.source_hint)}</small></p><button>${t("select")}</button>`;e.querySelector("button").onclick=()=>{selected=it;$("selectedRef").innerHTML=`✓ <span>${t("chosen")}: ${esc(it.title)}</span>`;document.querySelector("#analyze").scrollIntoView({behavior:"smooth"})};$("results").appendChild(e)})}catch(e){$("searchStatus").textContent=e.message}};$("analyzeBtn").onclick=async()=>{if(!selected)return alert(t("needRef"));const videoUrl=$("videoUrl").value.trim(),product=$("product").value.trim();if(!videoUrl)return alert(t("needUrl"));if(!product)return alert(t("needProduct"));$("analysisStatus").textContent=t("analyzing");try{const d=await api("/api/analyze",{videoUrl,product,reference:selected,language:lang});analysis=d;render(d);$("analysisStatus").textContent=t("done")}catch(e){$("analysisStatus").textContent=e.message}};function render(d){const s=d.scores||{};$("analysis").innerHTML=`<div class="analysis-grid"><div class="metric">${t("wow")}<b>${s.wow??"-"}</b></div><div class="metric">${t("humor")}<b>${s.humor??"-"}</b></div><div class="metric">${t("payoff")}<b>${s.payoff??"-"}</b></div><div class="metric">${t("emotion")}<b>${s.emotion??"-"}</b></div></div><div class="dna-block"><h3>${t("hook")}</h3><p>${esc(d.hook||"-")}</p></div><div class="dna-block"><h3>${t("story")}</h3><p>${esc(d.story_curve||"-")}</p></div><div class="dna-block"><h3>${t("triggers")}</h3><p>${esc((d.viral_triggers||[]).join(" · ")||"-")}</p></div><div class="dna-block"><h3>${t("tech")}</h3><p>${esc((d.techniques||[]).join(" · ")||"-")}</p></div><div class="dna-block"><h3>${t("why")}</h3><p>${esc(d.why_fyp||"-")}</p></div>`}$("generateBtn").onclick=async()=>{if(!analysis)return alert(t("needAnalysis"));$("scriptOut").textContent=t("generating");try{const d=await api("/api/generate",{product:$("product").value.trim(),analysis,reference:selected,language:lang});$("scriptOut").textContent=d.script||"";$("scriptOut").dataset.ready="1";$("copyBtn").disabled=false}catch(e){$("scriptOut").textContent=e.message}};$("copyBtn").onclick=async()=>{await navigator.clipboard.writeText($("scriptOut").textContent);$("copyBtn").textContent=t("copied");setTimeout(()=>$("copyBtn").textContent=t("copy"),1200)};apply(lang,false);</script><script>(() => {
+  const $b = id => document.getElementById(id);
+  let billingConfig = null;
+  let quota = null;
+  let currentRunId = null;
+  let snapLoading = null;
+
+  const BT = {
+    id: {
+      freeLabel:'Gratis minggu ini', priceLabel:'Setelah kuota habis', priceUnit:'/ analisis', reset:'Reset Senin 00:00 WIB',
+      remaining:n=>`${n}x gratis tersisa`, paid:n=>`${n} kredit berbayar`, checking:'Memeriksa kuota...',
+      login:'Masuk untuk mendapat 3x gratis / minggu', paymentTitle:'Kuota gratis minggu ini sudah habis',
+      paymentBody:'Bayar Rp12.000 untuk 1x Viral DNA + Director Script. Pencarian 5 referensi tetap gratis.',
+      pay:'BAYAR Rp12.000', cancel:'Nanti saja', waiting:'Menunggu konfirmasi pembayaran...', paidOk:'Pembayaran diterima. Analisis dimulai.',
+      loginRequired:'Silakan masuk ke AURIA terlebih dahulu.', paymentError:'Pembayaran belum dapat diproses.',
+      billingNote:'Cari 5 referensi gratis tanpa batas · 3 analisis pertama tiap minggu gratis · berikutnya Rp12.000/analisis'
+    },
+    zh: {
+      freeLabel:'本周免费次数', priceLabel:'免费额度用完后', priceUnit:'/ 次分析', reset:'每周一 00:00 WIB 重置',
+      remaining:n=>`还剩 ${n} 次免费`, paid:n=>`${n} 个已付费额度`, checking:'正在检查额度...',
+      login:'登录后每周获得 3 次免费', paymentTitle:'本周 3 次免费额度已经用完',
+      paymentBody:'支付 Rp12.000，可获得 1 次完整 Viral DNA + Director Script。搜索 5 个爆款参考仍然永久免费。',
+      pay:'支付 Rp12.000', cancel:'稍后再说', waiting:'正在等待支付确认...', paidOk:'付款已确认，开始分析。',
+      loginRequired:'请先登录 AURIA。', paymentError:'暂时无法处理付款。',
+      billingNote:'搜索5个参考永久免费 · 每周前3次完整分析免费 · 之后 Rp12.000/次'
+    },
+    en: {
+      freeLabel:'Free this week', priceLabel:'After free quota', priceUnit:'/ analysis', reset:'Resets Monday 00:00 WIB',
+      remaining:n=>`${n} free left`, paid:n=>`${n} paid credit`, checking:'Checking quota...',
+      login:'Sign in to get 3 free uses / week', paymentTitle:'Your 3 free uses for this week are finished',
+      paymentBody:'Pay Rp12,000 for 1 complete Viral DNA + Director Script. Searching 5 references stays free.',
+      pay:'PAY Rp12,000', cancel:'Maybe later', waiting:'Waiting for payment confirmation...', paidOk:'Payment confirmed. Starting analysis.',
+      loginRequired:'Please sign in to AURIA first.', paymentError:'Payment could not be processed.',
+      billingNote:'Search 5 references free · first 3 complete analyses each week free · then Rp12,000/use'
+    }
+  };
+
+  const bt = key => (BT[lang] || BT.id)[key];
+
+  async function request(path, options = {}) {
+    const response = await fetch(path, {
+      credentials:'include',
+      ...options,
+      headers:{'Content-Type':'application/json', ...(options.headers || {})}
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const err = new Error(data.error || `HTTP ${response.status}`);
+      err.status = response.status;
+      err.code = data.code;
+      err.data = data;
+      throw err;
+    }
+    return data;
+  }
+
+  async function initBilling() {
+    try {
+      billingConfig = await request('/api/config', { method:'GET', headers:{} });
+      renderStaticBilling();
+      await refreshQuota();
+    } catch (e) {
+      if ($b('quotaText')) $b('quotaText').textContent = bt('checking');
+    }
+  }
+
+  function renderStaticBilling() {
+    if (!$b('billingNote')) return;
+    $b('billingNote').textContent = bt('billingNote');
+    $b('billingFreeLabel').textContent = bt('freeLabel');
+    $b('billingPriceLabel').textContent = bt('priceLabel');
+    $b('billingReset').textContent = bt('reset');
+    const p = billingConfig?.price_per_use || 12000;
+    $b('billingPrice').textContent = `Rp${Number(p).toLocaleString('id-ID')}`;
+    $b('billingPriceUnit').textContent = bt('priceUnit');
+    $b('paywallTitle').textContent = bt('paymentTitle');
+    $b('paywallBody').textContent = bt('paymentBody');
+    $b('payBtn').textContent = bt('pay');
+    $b('payCancel').textContent = bt('cancel');
+  }
+
+  async function refreshQuota() {
+    try {
+      quota = await request('/api/quota', { method:'GET', headers:{} });
+      renderQuota();
+      return quota;
+    } catch (e) {
+      quota = null;
+      if (e.status === 401) {
+        $b('quotaText').textContent = bt('login');
+        $b('quotaText').classList.add('login-needed');
+      } else {
+        $b('quotaText').textContent = bt('checking');
+      }
+      return null;
+    }
+  }
+
+  function renderQuota() {
+    if (!quota) return;
+    const extra = quota.paid_available > 0 ? ` · ${bt('paid')(quota.paid_available)}` : '';
+    $b('quotaText').textContent = bt('remaining')(quota.free_remaining) + extra;
+    $b('quotaText').classList.remove('login-needed');
+    const used = Math.min(quota.free_limit, quota.free_completed + quota.free_active);
+    $b('quotaDots').innerHTML = Array.from({length:quota.free_limit}, (_,i)=>`<i class="${i < used ? 'used' : ''}"></i>`).join('');
+  }
+
+  async function prepareUsage() {
+    try {
+      return await request('/api/run/prepare', { method:'POST', body:'{}' });
+    } catch (e) {
+      if (e.status === 401) {
+        showLoginRequired();
+        throw e;
+      }
+      if (e.status === 402 || e.code === 'payment_required') {
+        await openPaywall();
+        const paid = await waitForPaidCredit();
+        if (!paid) throw new Error(bt('paymentError'));
+        return await request('/api/run/prepare', { method:'POST', body:'{}' });
+      }
+      throw e;
+    }
+  }
+
+  function showLoginRequired() {
+    const url = billingConfig?.login_url;
+    if (url && confirm(bt('loginRequired'))) location.href = url;
+    else alert(bt('loginRequired'));
+  }
+
+  async function openPaywall() {
+    $b('paywallStatus').textContent = '';
+    $b('paywall').classList.add('show');
+    return new Promise((resolve, reject) => {
+      const pay = async () => {
+        try {
+          $b('payBtn').disabled = true;
+          const checkout = await request('/api/billing/checkout', { method:'POST', body:'{}' });
+          await loadSnap();
+          window.snap.pay(checkout.snap_token, {
+            onSuccess: async () => { resolve(checkout.order_id); },
+            onPending: async () => { resolve(checkout.order_id); },
+            onError: result => { reject(new Error(result?.status_message || bt('paymentError'))); },
+            onClose: () => { $b('paywall').classList.remove('show'); reject(new Error('payment_cancelled')); }
+          });
+        } catch (e) {
+          $b('paywallStatus').textContent = e.message;
+          $b('payBtn').disabled = false;
+          reject(e);
+        }
+      };
+      const cancel = () => {
+        cleanup();
+        reject(new Error('payment_cancelled'));
+      };
+      function cleanup(){
+        $b('payBtn').removeEventListener('click', pay);
+        $b('payCancel').removeEventListener('click', cancel);
+      }
+      $b('payBtn').addEventListener('click', pay, {once:true});
+      $b('payCancel').addEventListener('click', cancel, {once:true});
+    }).then(orderId => {
+      $b('paywallStatus').textContent = bt('waiting');
+      $b('paywall').dataset.orderId = orderId;
+      return orderId;
+    });
+  }
+
+  async function waitForPaidCredit() {
+    const orderId = $b('paywall').dataset.orderId;
+    if (!orderId) return false;
+    for (let i=0;i<20;i++) {
+      const status = await request(`/api/payment/status?order_id=${encodeURIComponent(orderId)}`, {method:'GET',headers:{}}).catch(()=>null);
+      if (status?.paid) {
+        $b('paywallStatus').textContent = bt('paidOk');
+        await refreshQuota();
+        setTimeout(()=>$b('paywall').classList.remove('show'),350);
+        return true;
+      }
+      await new Promise(r=>setTimeout(r,1500));
+    }
+    return false;
+  }
+
+  function loadSnap() {
+    if (window.snap) return Promise.resolve();
+    if (snapLoading) return snapLoading;
+    if (!billingConfig?.midtrans?.client_key) return Promise.reject(new Error('MIDTRANS_CLIENT_KEY belum dikonfigurasi.'));
+    snapLoading = new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src=billingConfig.midtrans.snap_js_url;
+      s.setAttribute('data-client-key', billingConfig.midtrans.client_key);
+      s.onload=()=>resolve();
+      s.onerror=()=>reject(new Error('Gagal memuat Midtrans Snap.'));
+      document.head.appendChild(s);
+    });
+    return snapLoading;
+  }
+
+  // Override STEP 2 so billing is checked before expensive analysis.
+  $('analyzeBtn').onclick = async () => {
+    if (!selected) return alert(t('needRef'));
+    const videoUrl=$('videoUrl').value.trim(), product=$('product').value.trim();
+    if (!videoUrl) return alert(t('needUrl'));
+    if (!product) return alert(t('needProduct'));
+    $('analysisStatus').textContent = t('analyzing');
+    try {
+      const prepared = currentRunId ? { run_id: currentRunId } : await prepareUsage();
+      currentRunId = prepared.run_id;
+      await refreshQuota();
+      const d = await request('/api/analyze', {
+        method:'POST',
+        body:JSON.stringify({runId:currentRunId,videoUrl,product,reference:selected,language:lang})
+      });
+      analysis=d;
+      render(d);
+      $('analysisStatus').textContent=t('done');
+    } catch(e) {
+      if (e.message !== 'payment_cancelled') $('analysisStatus').textContent=e.message;
+    }
+  };
+
+  // Override STEP 3 so the same reserved run is completed exactly once.
+  $('generateBtn').onclick = async () => {
+    if (!analysis || !currentRunId) return alert(t('needAnalysis'));
+    $('scriptOut').textContent=t('generating');
+    try {
+      const d = await request('/api/generate', {
+        method:'POST',
+        body:JSON.stringify({runId:currentRunId,product:$('product').value.trim(),analysis,reference:selected,language:lang})
+      });
+      $('scriptOut').textContent=d.script||'';
+      $('scriptOut').dataset.ready='1';
+      $('copyBtn').disabled=false;
+      quota=d.quota||quota;
+      renderQuota();
+      currentRunId=null;
+    } catch(e) {
+      $('scriptOut').textContent=e.message;
+    }
+  };
+
+  // Changing the selected reference or analyzed inputs starts a new billable run.
+  $b('results')?.addEventListener('click', e => {
+    if (e.target.closest('button')) { currentRunId = null; analysis = null; }
+  });
+  ['videoUrl','product'].forEach(id => $b(id)?.addEventListener('input', () => {
+    if (analysis) {
+      currentRunId = null;
+      analysis = null;
+      $b('analysis').innerHTML = '';
+      $b('scriptOut').textContent = t('empty');
+      $b('copyBtn').disabled = true;
+    }
+  }));
+
+  document.querySelectorAll('[data-lang]').forEach(el => el.addEventListener('click', () => {
+    setTimeout(() => { renderStaticBilling(); renderQuota(); }, 0);
+  }));
+
+  window.addEventListener('DOMContentLoaded', initBilling);
+})();
+</script>
+<div style="position:fixed;right:14px;bottom:14px;z-index:300;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:320px">
+<button onclick="localStorage.setItem('auriaFypDemoFree','3');localStorage.removeItem('auriaFypDemoPaid');location.reload()" style="border:0;border-radius:999px;padding:8px 10px;background:#172b37;color:#a8bac7;font:700 11px system-ui;cursor:pointer">DEMO: 3x FREE</button>
+<button onclick="localStorage.setItem('auriaFypDemoFree','0');localStorage.removeItem('auriaFypDemoPaid');location.reload()" style="border:0;border-radius:999px;padding:8px 10px;background:#5de9d0;color:#05231f;font:800 11px system-ui;cursor:pointer">DEMO: QUOTA 0</button>
+</div>
+
+
+<script>
+(() => {
+  const prefill = () => {
+    const params = new URLSearchParams(location.search);
+    const product = (params.get('product') || '').trim().slice(0, 120);
+    if (!product) return;
+    const topic = document.getElementById('topic');
+    const owned = document.getElementById('product');
+    if (topic && !topic.value) topic.value = product;
+    if (owned && !owned.value) owned.value = product;
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prefill, { once: true });
+  else prefill();
+})();
+</script>
+</body></html>
