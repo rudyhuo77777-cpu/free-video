@@ -1,4 +1,4 @@
-import { normalizeAssetKeyword, normalizeAssetSearchQuery, sanitizeDirector } from '@auria/core';
+﻿import { normalizeAssetKeyword, normalizeAssetSearchQuery, sanitizeDirector } from '@auria/core';
 
 const VALID_DURATIONS = new Set([15, 30, 60, 90, 120]);
 let schemaPromise;
@@ -81,22 +81,26 @@ async function sha256Hex(value) {
 
 async function ensureSchema(db) {
   if (!schemaPromise) {
-    schemaPromise = db.exec(`
-      CREATE TABLE IF NOT EXISTS guest_quota (
+    schemaPromise = db.batch([
+      db.prepare(`CREATE TABLE IF NOT EXISTS guest_quota (
         guest_id TEXT PRIMARY KEY,
         used INTEGER NOT NULL DEFAULT 0,
         updated_at INTEGER NOT NULL
-      );
-      CREATE TABLE IF NOT EXISTS script_requests (
+      )`),
+
+      db.prepare(`CREATE TABLE IF NOT EXISTS script_requests (
         idempotency_key TEXT PRIMARY KEY,
         guest_id TEXT NOT NULL,
         status TEXT NOT NULL,
         result_json TEXT,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS idx_script_guest ON script_requests(guest_id, created_at DESC);
-      CREATE TABLE IF NOT EXISTS product_projects (
+      )`),
+
+      db.prepare(`CREATE INDEX IF NOT EXISTS idx_script_guest
+        ON script_requests(guest_id, created_at DESC)`),
+
+      db.prepare(`CREATE TABLE IF NOT EXISTS product_projects (
         id TEXT PRIMARY KEY,
         guest_id TEXT NOT NULL,
         name TEXT NOT NULL,
@@ -107,33 +111,38 @@ async function ensureSchema(db) {
         pain_points TEXT NOT NULL DEFAULT '[]',
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS idx_projects_guest ON product_projects(guest_id, updated_at DESC);
-      CREATE TABLE IF NOT EXISTS rate_limits (
+      )`),
+
+      db.prepare(`CREATE INDEX IF NOT EXISTS idx_projects_guest
+        ON product_projects(guest_id, updated_at DESC)`),
+
+      db.prepare(`CREATE TABLE IF NOT EXISTS rate_limits (
         bucket TEXT PRIMARY KEY,
         count INTEGER NOT NULL,
         expires_at INTEGER NOT NULL
-      );
-      CREATE TABLE IF NOT EXISTS fyp_bindings (
+      )`),
+
+      db.prepare(`CREATE TABLE IF NOT EXISTS fyp_bindings (
         token TEXT PRIMARY KEY,
         guest_id TEXT NOT NULL,
         expires_at INTEGER NOT NULL
-      );
-      CREATE TABLE IF NOT EXISTS fyp_handoffs (
+      )`),
+
+      db.prepare(`CREATE TABLE IF NOT EXISTS fyp_handoffs (
         token TEXT PRIMARY KEY,
         guest_id TEXT NOT NULL,
         payload_json TEXT NOT NULL,
         expires_at INTEGER NOT NULL,
         consumed INTEGER NOT NULL DEFAULT 0
-      );
-    `).catch(error => {
+      )`)
+    ]).catch(error => {
       schemaPromise = undefined;
       throw error;
     });
   }
+
   await schemaPromise;
 }
-
 async function allowRate(db, bucket, limit, windowSeconds) {
   const now = Math.floor(Date.now() / 1000);
   const row = await db.prepare('SELECT count, expires_at FROM rate_limits WHERE bucket=?1').bind(bucket).first();
@@ -550,3 +559,4 @@ export default {
     return env.ASSETS.fetch(request);
   }
 };
+
