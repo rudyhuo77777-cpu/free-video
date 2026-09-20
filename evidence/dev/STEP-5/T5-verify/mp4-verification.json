@@ -1,0 +1,90 @@
+{
+  "verifiedAt": "2026-09-19T14:24:45.463Z",
+  "tool": "ffprobe/ffmpeg 6.1.1",
+  "files": [
+    {
+      "file": "fv005-90s-run1.mp4",
+      "targetSec": 90,
+      "durationSec": 90.005333,
+      "withinTolerance": true,
+      "video": "h264 540x960",
+      "frames": 1080,
+      "expectedFrames": 1080,
+      "audio": "aac 48000Hz",
+      "sizeBytes": 2474704,
+      "fullDecodeExit": 0,
+      "meanDb": "-24.6",
+      "maxDb": "-9.9"
+    },
+    {
+      "file": "fv005-90s-run2.mp4",
+      "targetSec": 90,
+      "durationSec": 90.005333,
+      "withinTolerance": true,
+      "video": "h264 540x960",
+      "frames": 1080,
+      "expectedFrames": 1080,
+      "audio": "aac 48000Hz",
+      "sizeBytes": 2474704,
+      "fullDecodeExit": 0,
+      "meanDb": "-24.6",
+      "maxDb": "-9.9"
+    },
+    {
+      "file": "fv005-120s-run1.mp4",
+      "targetSec": 120,
+      "durationSec": 120,
+      "withinTolerance": true,
+      "video": "h264 540x960",
+      "frames": 1440,
+      "expectedFrames": 1440,
+      "audio": "aac 48000Hz",
+      "sizeBytes": 3306722,
+      "fullDecodeExit": 0,
+      "meanDb": "-24.6",
+      "maxDb": "-10.1"
+    },
+    {
+      "file": "fv005-120s-run2.mp4",
+      "targetSec": 120,
+      "durationSec": 120,
+      "withinTolerance": true,
+      "video": "h264 540x960",
+      "frames": 1440,
+      "expectedFrames": 1440,
+      "audio": "aac 48000Hz",
+      "sizeBytes": 3306722,
+      "fullDecodeExit": 0,
+      "meanDb": "-24.6",
+      "maxDb": "-10.1"
+    },
+    {
+      "file": "fv006-real-f5-15s.mp4",
+      "targetSec": 15,
+      "durationSec": 15.018667,
+      "withinTolerance": true,
+      "video": "h264 720x1280",
+      "frames": 225,
+      "expectedFrames": 225,
+      "audio": "aac 48000Hz",
+      "sizeBytes": 470939,
+      "fullDecodeExit": 0,
+      "meanDb": "-25.5",
+      "maxDb": "-11.1"
+    },
+    {
+      "file": "fv010-60s-fitting.mp4",
+      "targetSec": 60,
+      "durationSec": 60.010667,
+      "withinTolerance": true,
+      "video": "h264 720x1280",
+      "frames": 900,
+      "expectedFrames": 900,
+      "audio": "aac 48000Hz",
+      "sizeBytes": 1839258,
+      "fullDecodeExit": 0,
+      "meanDb": "-24.9",
+      "maxDb": "-10.1"
+    }
+  ]
+}

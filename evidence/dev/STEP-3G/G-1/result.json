@@ -1,0 +1,115 @@
+{
+  "task": "G-1",
+  "title": "让 Scope Guard 能检测治理文件自身的未授权变化",
+  "changeRequest": "CR-001",
+  "diff": "evidence/dev/STEP-3G/scope-guard-check.diff",
+  "sourceRun": "evidence/dev/STEP-3G/G-3/（单次反向测试运行，按任务卡切片）",
+  "acceptanceCriteria": [
+    "未授权改 SCOPE-GUARD.md → BLOCK",
+    "未授权改检查器自身 → BLOCK",
+    "改检查器并改写 SELF 常量 → BLOCK",
+    "合法 evidence/log/harness 产出 → 不假 BLOCK"
+  ],
+  "scenarios": [
+    {
+      "id": "R1-governance-file-tampered",
+      "note": "未授权修改治理文件 governance/SCOPE-GUARD.md",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/SCOPE-GUARD.md"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R2-scope-guard-self-tampered",
+      "note": "未授权修改 Scope Guard 自身",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/scope-guard-check.mjs"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "pristine (project copy, --root <tmp>)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R2b-self-tampered-with-recomputed-constant",
+      "note": "改 Scope Guard 并同时改写 SELF 常量（不重算）",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/scope-guard-check.mjs"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "pristine (project copy, --root <tmp>)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R2c-tampered-checker-selfreport",
+      "note": "被篡改的检查器就地运行（记录其自身仍报告违规，但退出码不可信）",
+      "expect": "ALLOW",
+      "got": "ALLOW",
+      "exitCode": 2,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/scope-guard-check.mjs"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R6-legit-evidence-and-logs",
+      "note": "合法 evidence / log / harness 产出不得假 BLOCK",
+      "expect": "ALLOW",
+      "got": "ALLOW",
+      "exitCode": 2,
+      "violationCount": 0,
+      "violations": [],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "pass": 5,
+    "fail": 0
+  },
+  "status": "SELF_TESTED",
+  "acceptance": "REVIEW_PENDING"
+}

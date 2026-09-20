@@ -1,289 +1,117 @@
-﻿import { normalizeAssetKeyword, normalizeAssetSearchQuery, sanitizeDirector } from '@auria/core';
+import { normalizeAssetKeyword, normalizeAssetSearchQuery } from '../packages/core/dist/index.js';
+import { ensureSchema,boundedInt,allowRate,quota,getJob,recoverExpired,reserveJob,completeJob,failJob } from './db.js';
+import { createDirector,DEFAULT_MODEL,resolveModel } from './director.js';
+import { ApiError,json,readJson,validUuid,getIdentity,withIdentity,sha256Hex,logError,fetchBounded } from './http.js';
 
-const VALID_DURATIONS = new Set([15, 30, 60, 90, 120]);
-let schemaPromise;
+const VALID_DURATIONS=new Set([15,30,60,90,120]);
+const limitFor=env=>boundedInt(env.FREE_SCRIPT_LIMIT,3,1,100);
+const log=(identity,stage,reason)=>logError(stage,identity?.requestId||'unknown',reason);
 
-async function verifyTurnstile(request, env, token) {
-  const secret = String(env.TURNSTILE_SECRET_KEY || '').trim();
-  if (!secret) return { ok: true };
-  if (!token) return { ok: false, error: 'turnstile_required' };
-  const form = new FormData();
-  form.set('secret', secret);
-  form.set('response', String(token));
-  const ip = request.headers.get('cf-connecting-ip');
-  if (ip) form.set('remoteip', ip);
+async function verifyTurnstile(request,env,token) {
+  const secret=String(env.TURNSTILE_SECRET_KEY||'').trim();
+  if(!secret)return {ok:true};
+  if(!token)return {ok:false,error:'turnstile_required'};
+  const form=new FormData(); form.set('secret',secret);form.set('response',String(token));
+  const ip=request.headers.get('cf-connecting-ip');if(ip)form.set('remoteip',ip);
   try {
-    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body: form });
-    if (!res.ok) return { ok: false, error: 'turnstile_unavailable' };
-    const data = await res.json();
-    return data?.success ? { ok: true } : { ok: false, error: 'turnstile_failed' };
-  } catch {
-    return { ok: false, error: 'turnstile_unavailable' };
-  }
+    const res=await fetchBounded('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:form});
+    if(!res.ok)return {ok:false,error:'turnstile_unavailable'};
+    const data=await res.json();
+    return data?.success ? {ok:true} : {ok:false,error:'turnstile_failed'};
+  }catch{return {ok:false,error:'turnstile_unavailable'};}
 }
-
-function json(data, status = 200, extraHeaders = {}) {
-  const headers = new Headers({
-    'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'no-store',
-    ...extraHeaders
-  });
-  return new Response(JSON.stringify(data), { status, headers });
-}
-
-async function readJson(request, maxBytes = 24 * 1024) {
-  const length = Number(request.headers.get('content-length') || 0);
-  if (length > maxBytes) throw new Error('request_too_large');
-  const text = await request.text();
-  if (new TextEncoder().encode(text).byteLength > maxBytes) throw new Error('request_too_large');
-  try { return JSON.parse(text || '{}'); }
-  catch { throw new Error('invalid_json'); }
-}
-
-function parseCookies(request) {
-  const map = new Map();
-  for (const part of String(request.headers.get('cookie') || '').split(';')) {
-    const i = part.indexOf('=');
-    if (i < 0) continue;
-    map.set(part.slice(0, i).trim(), decodeURIComponent(part.slice(i + 1).trim()));
-  }
-  return map;
-}
-
-function validUuid(value) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''));
-}
-
-function getIdentity(request) {
-  const cookies = parseCookies(request);
-  let id = cookies.get('free_video_guest');
-  let setCookie;
-  if (!validUuid(id)) {
-    id = crypto.randomUUID();
-    const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : '';
-    setCookie = `free_video_guest=${encodeURIComponent(id)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=7776000${secure}`;
-  }
-  return { id, setCookie };
-}
-
-function withIdentity(response, identity) {
-  if (!identity?.setCookie) return response;
-  const headers = new Headers(response.headers);
-  headers.append('set-cookie', identity.setCookie);
-  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
-}
-
-async function sha256Hex(value) {
-  const bytes = new TextEncoder().encode(value);
-  const digest = await crypto.subtle.digest('SHA-256', bytes);
-  return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-
-async function ensureSchema(db) {
-  if (!schemaPromise) {
-    schemaPromise = db.batch([
-      db.prepare(`CREATE TABLE IF NOT EXISTS guest_quota (
-        guest_id TEXT PRIMARY KEY,
-        used INTEGER NOT NULL DEFAULT 0,
-        updated_at INTEGER NOT NULL
-      )`),
-
-      db.prepare(`CREATE TABLE IF NOT EXISTS script_requests (
-        idempotency_key TEXT PRIMARY KEY,
-        guest_id TEXT NOT NULL,
-        status TEXT NOT NULL,
-        result_json TEXT,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-      )`),
-
-      db.prepare(`CREATE INDEX IF NOT EXISTS idx_script_guest
-        ON script_requests(guest_id, created_at DESC)`),
-
-      db.prepare(`CREATE TABLE IF NOT EXISTS product_projects (
-        id TEXT PRIMARY KEY,
-        guest_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        price TEXT,
-        sku TEXT,
-        target_audience TEXT,
-        selling_points TEXT NOT NULL DEFAULT '[]',
-        pain_points TEXT NOT NULL DEFAULT '[]',
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-      )`),
-
-      db.prepare(`CREATE INDEX IF NOT EXISTS idx_projects_guest
-        ON product_projects(guest_id, updated_at DESC)`),
-
-      db.prepare(`CREATE TABLE IF NOT EXISTS rate_limits (
-        bucket TEXT PRIMARY KEY,
-        count INTEGER NOT NULL,
-        expires_at INTEGER NOT NULL
-      )`),
-
-      db.prepare(`CREATE TABLE IF NOT EXISTS fyp_bindings (
-        token TEXT PRIMARY KEY,
-        guest_id TEXT NOT NULL,
-        expires_at INTEGER NOT NULL
-      )`),
-
-      db.prepare(`CREATE TABLE IF NOT EXISTS fyp_handoffs (
-        token TEXT PRIMARY KEY,
-        guest_id TEXT NOT NULL,
-        payload_json TEXT NOT NULL,
-        expires_at INTEGER NOT NULL,
-        consumed INTEGER NOT NULL DEFAULT 0
-      )`)
-    ]).catch(error => {
-      schemaPromise = undefined;
-      throw error;
-    });
-  }
-
-  await schemaPromise;
-}
-async function allowRate(db, bucket, limit, windowSeconds) {
-  const now = Math.floor(Date.now() / 1000);
-  const row = await db.prepare('SELECT count, expires_at FROM rate_limits WHERE bucket=?1').bind(bucket).first();
-  if (!row || Number(row.expires_at) <= now) {
-    await db.prepare(`INSERT INTO rate_limits(bucket,count,expires_at) VALUES(?1,1,?2)
-      ON CONFLICT(bucket) DO UPDATE SET count=1, expires_at=excluded.expires_at`).bind(bucket, now + windowSeconds).run();
-    return true;
-  }
-  if (Number(row.count) >= limit) return false;
-  await db.prepare('UPDATE rate_limits SET count=count+1 WHERE bucket=?1').bind(bucket).run();
-  return true;
-}
-
-async function quota(db, guestId, limit) {
-  const row = await db.prepare('SELECT used FROM guest_quota WHERE guest_id=?1').bind(guestId).first();
-  const used = Math.max(0, Number(row?.used || 0));
-  return { used, remaining: Math.max(0, limit - used), limit };
-}
-
-async function reserveQuota(db, guestId, limit) {
-  const now = Date.now();
-  await db.prepare('INSERT OR IGNORE INTO guest_quota(guest_id,used,updated_at) VALUES(?1,0,?2)').bind(guestId, now).run();
-  const result = await db.prepare('UPDATE guest_quota SET used=used+1, updated_at=?2 WHERE guest_id=?1 AND used < ?3').bind(guestId, now, limit).run();
-  return Number(result?.meta?.changes || 0) > 0;
-}
-
-async function releaseQuota(db, guestId) {
-  await db.prepare('UPDATE guest_quota SET used=CASE WHEN used>0 THEN used-1 ELSE 0 END, updated_at=?2 WHERE guest_id=?1')
-    .bind(guestId, Date.now()).run();
-}
-
-function extractJson(text) {
-  const raw = String(text || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
-  const first = raw.indexOf('{');
-  const last = raw.lastIndexOf('}');
-  if (first < 0 || last <= first) throw new Error('ai_json_missing');
-  return JSON.parse(raw.slice(first, last + 1));
-}
-
-async function createDirector(env, productName, duration, fypContext = '', productContext = '') {
-  const sceneTarget = duration === 15 ? '4-5' : duration === 30 ? '6-8' : duration === 60 ? '10-14' : duration === 90 ? '14-18' : '18-24';
-  const prompt = `Kamu adalah director video jualan Indonesia. Buat Director JSON valid saja, tanpa markdown. Produk: ${productName}. Durasi: ${duration} detik. Target scene: ${sceneTarget}. Bahasa voice/headline harus Bahasa Indonesia natural. Jangan klaim palsu. Gunakan template hanya dari: problem_hook, product_hero, solution_reveal, feature_3, before_after, zoom_detail, lifestyle, comparison, price_drop, social_proof, countdown_cta, final_cta. camera hanya: push_in, pull_out, pan_left, pan_right, float, orbit, static. transition: cut, fade, slide, zoom. Struktur wajib: {"version":"1.0","language":"id","ratio":"9:16","duration":${duration},"productName":"...","style":"fast-commerce","scenes":[{"id":"scene-1","duration":3,"template":"problem_hook","assetKeyword":"...","headline":"...","subheadline":"...","voice":"...","camera":"push_in","transition":"cut"}],"cta":"..."}. Total duration semua scene harus kira-kira ${duration} detik.${productContext ? `\nData Product Project yang harus dipakai sebagai fakta produk: ${productContext}` : ''}${fypContext ? `\nKonteks analisis FYP yang harus diadaptasi tanpa menyalin mentah: ${fypContext}` : ''}`;
-  const model = env.AI_MODEL || '@cf/meta/llama-3.1-8b-instruct-fast';
-  const result = await env.AI.run(model, {
-    messages: [
-      { role: 'system', content: 'Output JSON only. Create a high-quality Indonesian ecommerce video director plan. Do not invent product facts.' },
-      { role: 'user', content: prompt }
-    ],
-    temperature: 0.7,
-    max_tokens: 4096
-  });
-  const text = result?.response ?? result?.result?.response ?? result?.choices?.[0]?.message?.content ?? '';
-  return sanitizeDirector(extractJson(text), productName, duration);
-}
-
-function splitList(value) {
-  const values = Array.isArray(value) ? value.map(String) : String(value || '').split(/[\n,;]+/);
-  return values.map(x => x.trim().slice(0, 400)).filter(Boolean).slice(0, 20);
-}
-
-async function handleQuota(request, env, identity) {
+async function handleQuota(request,env,identity) {
   await ensureSchema(env.DB);
-  const limit = Math.max(1, Number(env.FREE_SCRIPT_LIMIT || 3));
-  return withIdentity(json(await quota(env.DB, identity.id, limit)), identity);
+  await recoverExpired(env.DB,identity.id);
+  return json(await quota(env.DB,identity.id,limitFor(env)));
 }
-
-async function handleScript(request, env, identity) {
+async function remainingSafely(env,identity) {
+  try{return (await quota(env.DB,identity.id,limitFor(env))).remaining;}
+  catch{log(identity,'d1_quota_read','quota_read_unavailable');return null;}
+}
+async function completedResponse(row,env,identity,duplicate=false) {
+  const result=JSON.parse(row.result_json);
+  // A failed display-only quota read MUST NOT reverse completed work.
+  return json({jobId:row.idempotency_key,status:'completed',result,
+    remaining:await remainingSafely(env,identity),duplicate,durable:true});
+}
+async function existingResponse(row,hash,env,identity) {
+  if(!row)return null;
+  if(row.request_hash && row.request_hash!==hash)throw new ApiError('idempotency_conflict',409,'idempotency');
+  if(row.status==='completed'&&row.result_json)return completedResponse(row,env,identity,true);
+  if(row.status==='reserved')return json({jobId:row.idempotency_key,status:'reserved',pollAfterMs:1500},202,{'retry-after':'2'});
+  return null;
+}
+async function handleScript(request,env,identity) {
+  const body=await readJson(request);
+  const productName=typeof body.productName==='string'?body.productName.trim().slice(0,120):'';
+  const duration=Number(body.duration);
+  const rawKey=body.idempotencyKey??crypto.randomUUID();
+  if(typeof rawKey!=='string'||!/^[a-zA-Z0-9_-]{1,80}$/.test(rawKey))throw new ApiError('invalid_idempotency_key',400);
+  const idempotencyKey=rawKey;
+  const fypContext=String(body.fypContext||'').trim().slice(0,3000);
+  const productContext=String(body.productContext||'').trim().slice(0,4000);
+  if(productName.length<2||!VALID_DURATIONS.has(duration))throw new ApiError('invalid_request',400);
   await ensureSchema(env.DB);
-  let body;
-  try { body = await readJson(request); }
-  catch (error) { return withIdentity(json({ error: error.message }, error.message === 'request_too_large' ? 413 : 400), identity); }
-
-  const productName = String(body.productName || '').trim().slice(0, 120);
-  const duration = Number(body.duration);
-  const idempotencyKey = String(body.idempotencyKey || crypto.randomUUID()).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80) || crypto.randomUUID();
-  const fypContext = String(body.fypContext || '').trim().slice(0, 3000);
-  const productContext = String(body.productContext || '').trim().slice(0, 4000);
-  if (productName.length < 2 || !VALID_DURATIONS.has(duration)) return withIdentity(json({ error: 'invalid_request' }, 400), identity);
-
-  const human = await verifyTurnstile(request, env, String(body.turnstileToken || ''));
-  if (!human.ok) return withIdentity(json({ error: human.error }, human.error === 'turnstile_unavailable' ? 503 : 403), identity);
-
-  const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || 'unknown';
-  const ipHash = await sha256Hex(`free-video-lite|${ip}`);
-  const rateOk = await allowRate(env.DB, `script:${ipHash}:${Math.floor(Date.now() / 60000)}`, Number(env.SCRIPT_RATE_LIMIT_PER_MINUTE || 10), 90);
-  if (!rateOk) return withIdentity(json({ error: 'rate_limited' }, 429, { 'retry-after': '30' }), identity);
-  const dayKey = new Date().toISOString().slice(0, 10);
-  const dailyOk = await allowRate(env.DB, `script-day:${ipHash}:${dayKey}`, Number(env.SCRIPT_DAILY_PER_IP_LIMIT || 30), 172800);
-  if (!dailyOk) return withIdentity(json({ error: 'rate_limited' }, 429, { 'retry-after': '3600' }), identity);
-
-  const existing = await env.DB.prepare('SELECT guest_id,status,result_json FROM script_requests WHERE idempotency_key=?1').bind(idempotencyKey).first();
-  if (existing) {
-    if (existing.guest_id !== identity.id) return withIdentity(json({ error: 'not_found' }, 404), identity);
-    if (existing.status === 'completed' && existing.result_json) {
-      const q = await quota(env.DB, identity.id, Number(env.FREE_SCRIPT_LIMIT || 3));
-      return withIdentity(json({ jobId: idempotencyKey, status: 'completed', result: JSON.parse(existing.result_json), remaining: q.remaining, duplicate: true }), identity);
+  await recoverExpired(env.DB,identity.id);
+  const hash=await sha256Hex(JSON.stringify({productName,duration,fypContext,productContext}));
+  const existing=await getJob(env.DB,identity.id,idempotencyKey);
+  const repeat=await existingResponse(existing,hash,env,identity);if(repeat)return repeat;
+  if(!env.AI||typeof env.AI.run!=='function')throw new ApiError('ai_binding_unavailable',503,'ai_director');
+  try{resolveModel(env);}catch(error){throw new ApiError(error.code||'ai_model_unavailable',503,'ai_director');}
+  const human=await verifyTurnstile(request,env,body.turnstileToken);
+  if(!human.ok)throw new ApiError(human.error,human.error==='turnstile_unavailable'?503:403,'turnstile');
+  // cf-connecting-ip is supplied by Cloudflare. Do not trust caller-controlled X-Forwarded-For.
+  const ip=request.headers.get('cf-connecting-ip')||'local';
+  const ipHash=await sha256Hex(`free-video-lite|${ip}`);
+  const minuteOk=await allowRate(env.DB,`script:${ipHash}:${Math.floor(Date.now()/60000)}`,boundedInt(env.SCRIPT_RATE_LIMIT_PER_MINUTE,10,1,100),90);
+  if(!minuteOk)return json({error:'rate_limited',stage:'rate'},429,{'retry-after':'60'});
+  const day=new Date().toISOString().slice(0,10);
+  const dailyOk=await allowRate(env.DB,`script-day:${ipHash}:${day}`,boundedInt(env.SCRIPT_DAILY_PER_IP_LIMIT,30,1,10000),172800);
+  if(!dailyOk)return json({error:'rate_limited',stage:'daily_rate'},429,{'retry-after':'3600'});
+  const limit=limitFor(env);
+  const reservation=await reserveJob(env.DB,identity.id,idempotencyKey,hash,limit);
+  if(!reservation.acquired) {
+    const row=await getJob(env.DB,identity.id,idempotencyKey);
+    const current=await existingResponse(row,hash,env,identity);if(current)return current;
+    return json({error:'free_script_limit_reached',stage:'quota',...(await quota(env.DB,identity.id,limit))},402);
+  }
+  let director;
+  try {director=await createDirector(env,productName,duration,fypContext,productContext);}
+  catch(error) {
+    const reason=error.code||'ai_upstream_unavailable';log(identity,'ai_director',reason);
+    try {await failJob(env.DB,identity.id,idempotencyKey,reservation.token,reason);}
+    catch {
+      log(identity,'d1_refund','refund_pending_recovery');
+      // Keep a fenced reserved record for recovery; never erase evidence of a charged failure.
+      return json({error:'refund_pending_recovery',stage:'d1_refund',jobId:idempotencyKey,reason,quotaRecoveryPending:true},503,{'retry-after':'180'});
     }
-    return withIdentity(json({ error: 'job_in_progress' }, 409, { 'retry-after': '5' }), identity);
+    return json({error:'ai_generation_failed',stage:'ai_director',reason,jobId:idempotencyKey,quotaRefunded:true},503,{'retry-after':'15'});
   }
-
-  const inserted = await env.DB.prepare('INSERT OR IGNORE INTO script_requests(idempotency_key,guest_id,status,created_at,updated_at) VALUES(?1,?2,\'reserved\',?3,?3)')
-    .bind(idempotencyKey, identity.id, Date.now()).run();
-  if (Number(inserted?.meta?.changes || 0) === 0) return withIdentity(json({ error: 'job_in_progress' }, 409), identity);
-
-  const limit = Math.max(1, Number(env.FREE_SCRIPT_LIMIT || 3));
-  const allowed = await reserveQuota(env.DB, identity.id, limit);
-  if (!allowed) {
-    await env.DB.prepare('DELETE FROM script_requests WHERE idempotency_key=?1 AND status=\'reserved\'').bind(idempotencyKey).run();
-    const q = await quota(env.DB, identity.id, limit);
-    return withIdentity(json({ error: 'free_script_limit_reached', used: q.used, remaining: q.remaining }, 402), identity);
-  }
-
   try {
-    const director = await createDirector(env, productName, duration, fypContext, productContext);
-    await env.DB.prepare('UPDATE script_requests SET status=\'completed\', result_json=?2, updated_at=?3 WHERE idempotency_key=?1')
-      .bind(idempotencyKey, JSON.stringify(director), Date.now()).run();
-    const q = await quota(env.DB, identity.id, limit);
-    return withIdentity(json({ jobId: idempotencyKey, status: 'completed', result: director, remaining: q.remaining }), identity);
-  } catch (error) {
-    console.error('[director]', error);
-    await Promise.allSettled([
-      env.DB.prepare('DELETE FROM script_requests WHERE idempotency_key=?1 AND status=\'reserved\'').bind(idempotencyKey).run(),
-      releaseQuota(env.DB, identity.id)
-    ]);
-    return withIdentity(json({ error: 'ai_generation_failed' }, 503, { 'retry-after': '15' }), identity);
+    const completed=await completeJob(env.DB,identity.id,idempotencyKey,reservation.token,director);
+    if(!completed)return json({error:'attempt_expired',stage:'d1_persist',jobId:idempotencyKey},409);
+  }catch {
+    log(identity,'d1_persist','persistence_unconfirmed');
+    // A write might have committed despite a lost response. Never blindly refund here.
+    // Polling/retry returns the stored result, or the expired lease is later released.
+    return json({error:'persistence_unconfirmed',stage:'d1_persist',jobId:idempotencyKey,quotaRecoveryPending:true},503,{'retry-after':'5'});
   }
+  return json({jobId:idempotencyKey,status:'completed',result:director,remaining:await remainingSafely(env,identity),durable:true});
 }
-
-
-async function handleScriptStatus(request, env, identity, jobId) {
-  await ensureSchema(env.DB);
-  const id = String(jobId || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
-  if (!id) return withIdentity(json({ error: 'not_found' }, 404), identity);
-  const row = await env.DB.prepare('SELECT guest_id,status,result_json,updated_at FROM script_requests WHERE idempotency_key=?1').bind(id).first();
-  if (!row || row.guest_id !== identity.id) return withIdentity(json({ error: 'not_found' }, 404), identity);
-  if (row.status === 'completed' && row.result_json) {
-    return withIdentity(json({ jobId: id, status: 'completed', result: JSON.parse(row.result_json), pollAfterMs: 0, durable: true }), identity);
-  }
-  return withIdentity(json({ jobId: id, status: row.status || 'reserved', pollAfterMs: 1500, durable: true }), identity);
+async function handleScriptStatus(request,env,identity,key) {
+  if(!/^[a-zA-Z0-9_-]{1,80}$/.test(key))throw new ApiError('invalid_job_id',400);
+  await ensureSchema(env.DB);await recoverExpired(env.DB,identity.id);
+  const row=await getJob(env.DB,identity.id,key);
+  if(!row)throw new ApiError('not_found',404);
+  if(row.status==='completed'&&row.result_json)return completedResponse(row,env,identity,true);
+  if(row.status==='failed'||row.status==='expired')return json({jobId:key,status:'failed',failedReason:row.error_code||'generation_failed',durable:true});
+  return json({jobId:key,status:'reserved',pollAfterMs:1500,durable:true});
 }
-
+function splitList(value) {
+  const values=Array.isArray(value)?value.map(String):String(value||'').split(/[\n,;]+/);
+  return values.map(x=>x.trim().slice(0,400)).filter(Boolean).slice(0,20);
+}
 async function handleProjects(request, env, identity) {
   await ensureSchema(env.DB);
   if (request.method === 'GET') {
@@ -302,12 +130,12 @@ async function handleProjects(request, env, identity) {
     return withIdentity(json({ projects }), identity);
   }
 
-  if (request.method !== 'POST') return withIdentity(json({ error: 'method_not_allowed' }, 405), identity);
+  if (request.method !== 'POST') return withIdentity(json({ error: 'method_not_allowed', stage: 'api' }, 405), identity);
   let body;
   try { body = await readJson(request); }
-  catch (error) { return withIdentity(json({ error: error.message }, error.message === 'request_too_large' ? 413 : 400), identity); }
+  catch (error) { return withIdentity(apiFailure(error, 'api'), identity); }
   const name = String(body.name || '').trim().slice(0, 120);
-  if (name.length < 2) return withIdentity(json({ error: 'invalid_product_name' }, 400), identity);
+  if (name.length < 2) return withIdentity(json({ error: 'invalid_product_name', stage: 'api' }, 400), identity);
   const now = Date.now();
   const project = {
     id: crypto.randomUUID(),
@@ -342,55 +170,92 @@ async function handleFypStart(request, env, identity) {
   return withIdentity(new Response(null, { status: 302, headers: { location: target.toString(), 'cache-control': 'no-store' } }), identity);
 }
 
-async function handleFypHandoff(request, env) {
-  await ensureSchema(env.DB);
-  let body;
-  try { body = await readJson(request, 16 * 1024); }
-  catch (error) { return json({ error: error.message }, error.message === 'request_too_large' ? 413 : 400); }
-  const binding = String(body.returnBinding || '');
-  const row = await env.DB.prepare('SELECT guest_id,expires_at FROM fyp_bindings WHERE token=?1').bind(binding).first();
-  const now = Math.floor(Date.now()/1000);
-  if (!row || Number(row.expires_at) < now) return json({ error: 'invalid_return_binding' }, 403);
-  const productName = String(body.productName || '').trim().slice(0, 120);
-  const duration = Math.max(15, Math.min(120, Number(body.duration) || 30));
-  const viralHook = String(body.viralHook || '').trim().slice(0, 800);
-  const directorHints = String(body.directorHints || '').trim().slice(0, 3000);
-  const sourceUrl = String(body.sourceUrl || '').trim().slice(0, 1000);
-  if (productName.length < 2 || (!viralHook && !directorHints)) return json({ error: 'invalid_handoff' }, 400);
-  const token = crypto.randomUUID();
-  const payload = { productName, duration, viralHook, directorHints, sourceUrl };
-  await env.DB.batch([
-    env.DB.prepare('DELETE FROM fyp_bindings WHERE token=?1').bind(binding),
-    env.DB.prepare('INSERT INTO fyp_handoffs(token,guest_id,payload_json,expires_at,consumed) VALUES(?1,?2,?3,?4,0)')
-      .bind(token, row.guest_id, JSON.stringify(payload), now + 900)
-  ]);
-  const origin = new URL(request.url).origin;
-  return json({ token, returnUrl: `${origin}/video#fyp_token=${encodeURIComponent(token)}`, expiresIn: 900 });
-}
 
-async function handleFypConsume(request, env, identity) {
+async function handleFypHandoff(request,env) {
+  const body=await readJson(request,16*1024);
+  const binding=String(body.returnBinding||'');
+  if(!validUuid(binding))throw new ApiError('invalid_return_binding',403,'fyp');
+  const productName=String(body.productName||'').trim().slice(0,120);
+  const duration=Number(body.duration||30);
+  const viralHook=String(body.viralHook||'').trim().slice(0,800);
+  const directorHints=String(body.directorHints||'').trim().slice(0,3000);
+  const sourceUrl=String(body.sourceUrl||'').trim().slice(0,1000);
+  if(productName.length<2||!VALID_DURATIONS.has(duration)||(!viralHook&&!directorHints))throw new ApiError('invalid_handoff',400,'fyp');
   await ensureSchema(env.DB);
-  let body;
-  try { body = await readJson(request, 2048); }
-  catch (error) { return withIdentity(json({ error: error.message }, error.message === 'request_too_large' ? 413 : 400), identity); }
-  const token = String(body.token || '');
-  if (!validUuid(token)) return withIdentity(json({ error: 'invalid_token' }, 400), identity);
-  const row = await env.DB.prepare('SELECT guest_id,payload_json,expires_at,consumed FROM fyp_handoffs WHERE token=?1').bind(token).first();
-  const now = Math.floor(Date.now()/1000);
-  if (!row || row.guest_id !== identity.id || Number(row.expires_at) < now) return withIdentity(json({ error: 'not_found_or_expired' }, 404), identity);
-  if (Number(row.consumed)) return withIdentity(json({ error: 'already_consumed' }, 409), identity);
-  await env.DB.prepare('UPDATE fyp_handoffs SET consumed=1 WHERE token=?1 AND consumed=0').bind(token).run();
-  return withIdentity(json({ handoff: JSON.parse(row.payload_json) }), identity);
+  const now=Math.floor(Date.now()/1000),token=crypto.randomUUID();
+  const payload={productName,duration,viralHook,directorHints,sourceUrl};
+  const rows=await env.DB.batch([
+    env.DB.prepare(`INSERT INTO fyp_handoffs(token,guest_id,payload_json,expires_at,consumed)
+      SELECT ?1,guest_id,?2,?3,0 FROM fyp_bindings WHERE token=?4 AND expires_at>?5`)
+      .bind(token,JSON.stringify(payload),now+900,binding,now),
+    env.DB.prepare(`DELETE FROM fyp_bindings WHERE token=?1 AND EXISTS(SELECT 1 FROM fyp_handoffs WHERE token=?2)`)
+      .bind(binding,token)
+  ]);
+  if(!Number(rows[0]?.meta?.changes))throw new ApiError('invalid_return_binding',403,'fyp');
+  return json({token,returnUrl:`${new URL(request.url).origin}/video#fyp_token=${encodeURIComponent(token)}`,expiresIn:900});
+}
+async function handleFypConsume(request,env,identity) {
+  const body=await readJson(request,2048);
+  const token=String(body.token||'');if(!validUuid(token))throw new ApiError('invalid_token',400,'fyp');
+  await ensureSchema(env.DB);
+  const now=Math.floor(Date.now()/1000);
+  const row=await env.DB.prepare(`UPDATE fyp_handoffs SET consumed=1
+    WHERE token=?1 AND guest_id=?2 AND expires_at>?3 AND consumed=0 RETURNING payload_json`)
+    .bind(token,identity.id,now).first();
+  if(row)return json({handoff:JSON.parse(row.payload_json)});
+  const state=await env.DB.prepare('SELECT consumed FROM fyp_handoffs WHERE token=?1 AND guest_id=?2 AND expires_at>?3').bind(token,identity.id,now).first();
+  return json({error:state?'already_consumed':'not_found_or_expired',stage:'fyp'},state?409:404);
+}
+// FV-007: only an ApiError carries a code we trust. Any other exception becomes a fixed
+// code so an internal message can never reach the response. Every failure carries a stage.
+function apiFailure(error, stage) {
+  if (error instanceof ApiError) return json({ error: error.message, stage: error.stage || stage }, error.status || 400);
+  return json({ error: 'invalid_request', stage }, 400);
 }
 
 function stripHtml(value) {
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 }
 
+// FV-008: everything a browser is told to fetch or open must clear an explicit URL rule.
+// Applied at the ONE place every provider's results converge, so no provider can bypass it.
+const PRIVATE_HOST = /^(localhost|0\.0\.0\.0|\[?::1\]?|.*\.local|.*\.localhost|.*\.internal)$/i;
+function isPrivateHost(hostname) {
+  const host = hostname.replace(/^\[|\]$/g, '').toLowerCase();
+  if (PRIVATE_HOST.test(host)) return true;
+  const v4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])];
+    return a === 127 || a === 10 || a === 0 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254);
+  }
+  return host.startsWith('fc') || host.startsWith('fd') || host.startsWith('fe80:');
+}
+function safeHttpsUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return undefined;
+  let url;
+  try { url = new URL(raw); } catch { return undefined; }
+  if (url.protocol !== 'https:') return undefined;
+  if (url.username || url.password) return undefined;
+  if (!url.hostname || isPrivateHost(url.hostname)) return undefined;
+  return url.toString();
+}
+function sanitizeAssetResult(item) {
+  const downloadUrl = safeHttpsUrl(item.downloadUrl);
+  if (!downloadUrl) return null;
+  return {
+    ...item,
+    downloadUrl,
+    previewUrl: safeHttpsUrl(item.previewUrl) || downloadUrl,
+    sourcePage: safeHttpsUrl(item.sourcePage),
+    licenseUrl: safeHttpsUrl(item.licenseUrl)
+  };
+}
+
 async function searchPixabay(query, env) {
   if (!env.PIXABAY_API_KEY) return [];
   const params = new URLSearchParams({ key: env.PIXABAY_API_KEY, q: query, per_page: '6', safesearch: 'true', video_type: 'all' });
-  const res = await fetch(`https://pixabay.com/api/videos/?${params}`);
+  const res = await fetchBounded(`https://pixabay.com/api/videos/?${params}`);
   if (!res.ok) return [];
   const data = await res.json();
   return (data.hits || []).slice(0, 6).map(x => ({
@@ -402,7 +267,7 @@ async function searchPixabay(query, env) {
 
 async function searchPexels(query, env) {
   if (!env.PEXELS_API_KEY) return [];
-  const res = await fetch(`https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&per_page=6&orientation=portrait`, { headers: { Authorization: env.PEXELS_API_KEY } });
+  const res = await fetchBounded(`https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&per_page=6&orientation=portrait`, { headers: { Authorization: env.PEXELS_API_KEY } });
   if (!res.ok) return [];
   const data = await res.json();
   return (data.videos || []).slice(0, 6).map(x => {
@@ -413,7 +278,7 @@ async function searchPexels(query, env) {
 
 async function searchOpenverse(query) {
   const params = new URLSearchParams({ q: query, page_size: '20', mature: 'false', filter_dead: 'true', license: 'cc0,pdm' });
-  const res = await fetch(`https://api.openverse.org/v1/images/?${params}`, { headers: { 'User-Agent': 'Free-Video/0.3.1' } });
+  const res = await fetchBounded(`https://api.openverse.org/v1/images/?${params}`, { headers: { 'User-Agent': 'Free-Video/0.3.3' } });
   if (!res.ok) return [];
   const data = await res.json();
   return (data.results || []).map(x => {
@@ -421,13 +286,13 @@ async function searchOpenverse(query) {
     if (license !== 'cc0' && license !== 'pdm') return null;
     const url = String(x.thumbnail || x.url || '');
     if (!url) return null;
-    return { source: 'openverse', id: String(x.id || x.identifier || url), type: 'image', previewUrl: url, downloadUrl: url, sourcePage: x.foreign_landing_url || undefined, author: String(x.creator || x.provider || 'Openverse').slice(0,120), width: Number(x.width)||undefined, height: Number(x.height)||undefined };
+    return { source: 'openverse', id: String(x.id || x.identifier || url), type: 'image', previewUrl: url, downloadUrl: url, sourcePage: x.foreign_landing_url || undefined, author: String(x.creator || x.provider || 'Openverse').slice(0,120), license, licenseVersion: x.license_version ? String(x.license_version).slice(0,20) : undefined, licenseUrl: x.license_url || undefined, width: Number(x.width)||undefined, height: Number(x.height)||undefined };
   }).filter(Boolean).slice(0,8);
 }
 
 async function searchCommons(query) {
   const params = new URLSearchParams({ action:'query', format:'json', origin:'*', generator:'search', gsrsearch:query, gsrnamespace:'6', gsrlimit:'8', prop:'imageinfo', iiprop:'url|size|mime|extmetadata', iiurlwidth:'900' });
-  const res = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`, { headers: { 'User-Agent': 'Free-Video/0.3.1' } });
+  const res = await fetchBounded(`https://commons.wikimedia.org/w/api.php?${params}`, { headers: { 'User-Agent': 'Free-Video/0.3.3' } });
   if (!res.ok) return [];
   const data = await res.json();
   return Object.values(data?.query?.pages || {}).map(page => {
@@ -439,7 +304,7 @@ async function searchCommons(query) {
     const license = stripHtml(meta.LicenseShortName?.value || meta.UsageTerms?.value || '').toLowerCase().replace(/\s+/g, ' ').trim();
     const safe = license === 'cc0' || license.startsWith('cc0 ') || license.includes('public domain') || license.includes('public domain mark');
     if (!safe) return null;
-    return { source:'commons', id:String(page.pageid || page.title || info.url), type:'image', previewUrl:info.thumburl || info.url, downloadUrl:info.thumburl || info.url, sourcePage:page.pageid ? `https://commons.wikimedia.org/?curid=${encodeURIComponent(String(page.pageid))}` : undefined, author:author.slice(0,120), width:Number(info.thumbwidth || info.width)||undefined, height:Number(info.thumbheight || info.height)||undefined };
+    return { source:'commons', id:String(page.pageid || page.title || info.url), type:'image', previewUrl:info.thumburl || info.url, downloadUrl:info.thumburl || info.url, sourcePage:page.pageid ? `https://commons.wikimedia.org/?curid=${encodeURIComponent(String(page.pageid))}` : undefined, author:author.slice(0,120), license:license || undefined, licenseUrl:stripHtml(meta.LicenseUrl?.value || '') || undefined, width:Number(info.thumbwidth || info.width)||undefined, height:Number(info.thumbheight || info.height)||undefined };
   }).filter(Boolean).slice(0,6);
 }
 
@@ -447,9 +312,9 @@ async function searchMedia(rawQuery, env) {
   const query = normalizeAssetSearchQuery(rawQuery);
   const normalized = normalizeAssetKeyword(rawQuery);
   if (query.length < 2) return { query, cached: false, results: [] };
-  const cache = caches.default;
+  const cache = globalThis.caches?.default;
   const cacheKey = new Request(`https://free-video-cache.invalid/media/${encodeURIComponent(normalized)}`);
-  const cached = await cache.match(cacheKey);
+  const cached = cache ? await cache.match(cacheKey).catch(() => null) : null;
   if (cached) return { query, cached: true, results: await cached.json() };
   const settled = await Promise.allSettled([
     searchPixabay(query, env),
@@ -461,8 +326,9 @@ async function searchMedia(rawQuery, env) {
   const provider = [...pixabay, ...pexels];
   const keyless = [...commons, ...openverse];
   const merged = provider.length ? [...provider.slice(0,6), ...keyless.slice(0,2)] : keyless.slice(0,8);
-  const results = [...new Map(merged.map(item => [`${item.source}:${item.id}`, item])).values()].slice(0,8);
-  await cache.put(cacheKey, new Response(JSON.stringify(results), { headers: { 'content-type':'application/json', 'cache-control':`public,max-age=${results.length ? 86400 : 120}` } })).catch(() => undefined);
+  const results = [...new Map(merged.map(item => [`${item.source}:${item.id}`, item])).values()]
+    .map(sanitizeAssetResult).filter(Boolean).slice(0,8);
+  if (cache) await cache.put(cacheKey, new Response(JSON.stringify(results), { headers: { 'content-type':'application/json', 'cache-control':`public,max-age=${results.length ? 86400 : 120}` } })).catch(() => undefined);
   return { query, cached: false, results };
 }
 
@@ -511,52 +377,90 @@ async function planSceneAssets(scenes, productName, env) {
 async function handleAssetsPlan(request, env, identity) {
   let body;
   try { body = await readJson(request); }
-  catch (error) { return withIdentity(json({ error: error.message }, error.message === 'request_too_large' ? 413 : 400), identity); }
+  catch (error) { return withIdentity(apiFailure(error, 'assets'), identity); }
   const rawScenes = Array.isArray(body.scenes) ? body.scenes : [];
-  if (rawScenes.length < 1 || rawScenes.length > 24) return withIdentity(json({ error:'invalid_scene_count' }, 400), identity);
+  if (rawScenes.some(s => !s || typeof s !== 'object' || Array.isArray(s)) || rawScenes.length < 1 || rawScenes.length > 24) return withIdentity(json({ error:'invalid_scene_count', stage:'assets' }, 400), identity);
   const scenes = rawScenes.map((scene,index) => ({
     id:String(scene.id || `scene-${index+1}`).slice(0,80), duration:Math.max(1,Math.min(15,Number(scene.duration)||3)),
     template:String(scene.template || 'lifestyle'), assetKeyword:String(scene.assetKeyword || '').trim().slice(0,100)
   }));
   try { return withIdentity(json({ assignments: await planSceneAssets(scenes, String(body.productName || '').trim().slice(0,120), env) }), identity); }
-  catch (error) { console.error('[assets-plan]', error); return withIdentity(json({ error:'media_broker_unavailable' }, 503), identity); }
+  catch (error) { console.error('[assets-plan]', error); return withIdentity(json({ error:'media_broker_unavailable', stage:'assets' }, 503), identity); }
 }
 
 async function handleAssetsSearch(request, env, identity) {
   const url = new URL(request.url);
   const q = String(url.searchParams.get('q') || '').trim().slice(0,100);
-  if (q.length < 2) return withIdentity(json({ error:'query_too_short' }, 400), identity);
+  if (q.length < 2) return withIdentity(json({ error:'query_too_short', stage:'assets' }, 400), identity);
   try { return withIdentity(json(await searchMedia(q, env)), identity); }
-  catch (error) { console.error('[assets-search]', error); return withIdentity(json({ error:'media_broker_unavailable' }, 503), identity); }
+  catch (error) { console.error('[assets-search]', error); return withIdentity(json({ error:'media_broker_unavailable', stage:'assets' }, 503), identity); }
 }
 
-async function handleApi(request, env) {
-  const url = new URL(request.url);
-  const identity = getIdentity(request);
-  try {
-    if (url.pathname === '/api/health' && request.method === 'GET') return withIdentity(json({ ok:true, version:'0.3.1-lite', architecture:'cloudflare-lite', ai:'workers-ai', storage:'d1', render:'local-device' }), identity);
-    if (url.pathname === '/api/scripts/quota' && request.method === 'GET') return handleQuota(request, env, identity);
-    if (url.pathname === '/api/scripts/jobs' && request.method === 'POST') return handleScript(request, env, identity);
-    const jobMatch = url.pathname.match(/^\/api\/scripts\/jobs\/([^/]+)$/);
-    if (jobMatch && request.method === 'GET') return handleScriptStatus(request, env, identity, decodeURIComponent(jobMatch[1]));
-    if (url.pathname === '/api/projects' && (request.method === 'GET' || request.method === 'POST')) return handleProjects(request, env, identity);
-    if (url.pathname === '/api/fyp/start' && request.method === 'GET') return handleFypStart(request, env, identity);
-    if (url.pathname === '/api/fyp/handoff' && request.method === 'POST') return handleFypHandoff(request, env);
-    if (url.pathname === '/api/fyp/handoff/consume' && request.method === 'POST') return handleFypConsume(request, env, identity);
-    if (url.pathname === '/api/assets/plan' && request.method === 'POST') return handleAssetsPlan(request, env, identity);
-    if (url.pathname === '/api/assets/search' && request.method === 'GET') return handleAssetsSearch(request, env, identity);
-    return withIdentity(json({ error:'not_found' }, 404), identity);
-  } catch (error) {
-    console.error('[api]', error);
-    return withIdentity(json({ error:'internal_error' }, 500), identity);
+async function dispatch(request,env,identity) {
+  const url=new URL(request.url),p=url.pathname;
+  if(p==='/api/health'&&request.method==='GET')return json({ok:true,version:'0.3.3-lite',architecture:'cloudflare-lite',ai:'workers-ai',storage:'d1',render:'local-device',check:'liveness-only'});
+  if(p==='/api/ready'&&request.method==='GET') {
+    await ensureSchema(env.DB,true);
+    if(!env.AI||typeof env.AI.run!=='function')throw new ApiError('ai_binding_unavailable',503,'ai_director');
+    let model;try{model=resolveModel(env);}catch(error){throw new ApiError(error.code||'ai_model_unavailable',503,'ai_director');}
+    return json({ok:true,version:'0.3.3-lite',database:'ready',schemaVersion:2,model,inferenceChecked:false});
   }
+  if(p==='/api/scripts/quota'&&request.method==='GET')return await handleQuota(request,env,identity);
+  if(p==='/api/scripts/jobs'&&request.method==='POST')return await handleScript(request,env,identity);
+  const match=p.match(/^\/api\/scripts\/jobs\/([^/]+)$/);
+  if(match&&request.method==='GET'){
+    let key;try{key=decodeURIComponent(match[1]);}catch{throw new ApiError('invalid_job_id',400);}
+    return await handleScriptStatus(request,env,identity,key);
+  }
+  if(p==='/api/projects'&&['GET','POST'].includes(request.method))return await handleProjects(request,env,identity);
+  if(p==='/api/fyp/start'&&request.method==='GET')return await handleFypStart(request,env,identity);
+  if(p==='/api/fyp/handoff'&&request.method==='OPTIONS'){
+    const origin=request.headers.get('origin');
+    const allowed=new URL(env.FYP_URL||'https://fyp.eco-velo.com').origin;
+    if(origin!==allowed)throw new ApiError('origin_not_allowed',403,'fyp');
+    return new Response(null,{status:204,headers:{'access-control-allow-origin':allowed,'access-control-allow-methods':'POST, OPTIONS','access-control-allow-headers':'Content-Type','access-control-max-age':'600','vary':'Origin'}});
+  }
+  if(p==='/api/fyp/handoff'&&request.method==='POST')return await handleFypHandoff(request,env);
+  if(p==='/api/fyp/handoff/consume'&&request.method==='POST')return await handleFypConsume(request,env,identity);
+  if(p==='/api/assets/plan'&&request.method==='POST')return await handleAssetsPlan(request,env,identity);
+  if(p==='/api/assets/search'&&request.method==='GET')return await handleAssetsSearch(request,env,identity);
+  return json({error:'not_found',stage:'api'},404);
 }
-
+async function handleApi(request,env) {
+  const requestId=crypto.randomUUID();let identity;let response;
+  try {
+    identity=getIdentity(request);identity.requestId=requestId;
+    const url=new URL(request.url),origin=request.headers.get('origin');
+    const fypOrigin=new URL(env.FYP_URL||'https://fyp.eco-velo.com').origin;
+    if(request.method==='POST'&&origin&&origin!==url.origin&&!(url.pathname==='/api/fyp/handoff'&&origin===fypOrigin))throw new ApiError('origin_not_allowed',403);
+    // The await is essential: async errors must enter THIS exception boundary.
+    response=await dispatch(request,env,{id:identity.id,requestId});
+  }catch(error) {
+    let status=500,code='internal_error',stage='api';
+    if(error instanceof ApiError){status=error.status;code=error.message;stage=error.stage;}
+    else if(['database_not_initialized','database_binding_unavailable'].includes(error?.message)){
+      status=503;code='quota_database_unavailable';stage='d1_schema';
+    }else if(error?.message==='not_found'&&error.status===404){status=404;code='not_found';}
+    else if(/D1|SQLITE|database/i.test(String(error?.message||''))){status=503;code='quota_database_unavailable';stage='d1_storage';}
+    logError(stage,requestId,code);
+    response=json({error:code,stage,requestId},status);
+  }
+  if(response.status>=400 && response.headers.get('content-type')?.includes('application/json')) {
+    response=json({...await response.json(),requestId},response.status,Object.fromEntries(response.headers));
+  }
+  const headers=new Headers(response.headers);headers.set('x-request-id',requestId);
+  if(new URL(request.url).pathname==='/api/fyp/handoff'){
+    try{const allowed=new URL(env.FYP_URL||'https://fyp.eco-velo.com').origin;
+      if(request.headers.get('origin')===allowed){headers.set('access-control-allow-origin',allowed);headers.set('vary','Origin');}
+    }catch{}
+  }
+  return withIdentity(new Response(response.body,{status:response.status,headers}),identity);
+}
 export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    if (url.pathname.startsWith('/api/')) return handleApi(request, env);
-    return env.ASSETS.fetch(request);
+  async fetch(request,env) {
+    const url=new URL(request.url);
+    if(url.pathname==='/api'||url.pathname.startsWith('/api/'))return await handleApi(request,env);
+    if(!env.ASSETS||typeof env.ASSETS.fetch!=='function')return json({error:'assets_unavailable',stage:'assets'},503);
+    return await env.ASSETS.fetch(request);
   }
 };
-

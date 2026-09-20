@@ -1,0 +1,153 @@
+{
+  "task": "T5-7 FV-007 + FV-008 fix verification",
+  "recordedAt": "2026-09-20T10:09:29.873Z",
+  "cases": [
+    {
+      "id": "F7-1",
+      "finding": "FV-007",
+      "note": "请求 body reader 异步拒绝时不得回显底层 message",
+      "status": 400,
+      "payload": {
+        "error": "invalid_request",
+        "stage": "api",
+        "requestId": "346e5c13-2cd6-4a97-b858-54d4b8580d61"
+      },
+      "sentinelLeaked": false,
+      "hasStage": true,
+      "hasRequestId": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "F7-2",
+      "finding": "FV-007",
+      "note": "已知 ApiError 仍保留自己的稳定错误码",
+      "status": 400,
+      "payload": {
+        "error": "invalid_json",
+        "stage": "api",
+        "requestId": "b24d57ef-5315-4d32-b95f-4892cc7d944e"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "F7-3",
+      "finding": "FV-007",
+      "note": "所有直接错误出口都带 stage 与 requestId",
+      "checks": [
+        {
+          "path": "/api/assets/plan",
+          "status": 400,
+          "error": "invalid_scene_count",
+          "stage": "assets",
+          "requestId": true
+        },
+        {
+          "path": "/api/projects",
+          "status": 400,
+          "error": "invalid_product_name",
+          "stage": "api",
+          "requestId": true
+        },
+        {
+          "path": "/api/assets/search?q=a",
+          "status": 400,
+          "error": "query_too_short",
+          "stage": "assets",
+          "requestId": true
+        },
+        {
+          "path": "/api/nope",
+          "status": 404,
+          "error": "not_found",
+          "stage": "api",
+          "requestId": true
+        },
+        {
+          "path": "/api/projects",
+          "status": 404,
+          "error": "not_found",
+          "stage": "api",
+          "requestId": true
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "F8-1",
+      "finding": "FV-008",
+      "note": "loopback 下载地址与 javascript: 来源页必须被拒",
+      "resultCount": 0,
+      "entries": [],
+      "verdict": "PASS"
+    },
+    {
+      "id": "F8-2",
+      "finding": "FV-008",
+      "note": "逐条边界：http / 含凭据 / 私有地址 的下载地址整条被拒；data: 来源页被剥离但可用图片保留",
+      "resultCount": 2,
+      "ids": [
+        "bad-data-source",
+        "good-1"
+      ],
+      "good": {
+        "source": "openverse",
+        "id": "good-1",
+        "type": "image",
+        "previewUrl": "https://upload.wikimedia.org/good.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/good.jpg",
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Good.jpg",
+        "author": "Amraepowell",
+        "license": "cc0",
+        "licenseVersion": "1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "width": 900,
+        "height": 1600
+      },
+      "dataSourceEntry": {
+        "source": "openverse",
+        "id": "bad-data-source",
+        "type": "image",
+        "previewUrl": "https://upload.wikimedia.org/d.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/d.jpg",
+        "author": "D",
+        "license": "cc0"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "F8-3",
+      "finding": "FV-008",
+      "note": "真实形态的 Wikimedia CC0 条目必须通过并保留许可依据",
+      "resultCount": 1,
+      "entry": {
+        "source": "commons",
+        "id": "1",
+        "type": "image",
+        "previewUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/x/900px.jpeg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/x/900px.jpeg",
+        "sourcePage": "https://commons.wikimedia.org/?curid=1",
+        "author": "Amraepowell",
+        "license": "cc0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "width": 900,
+        "height": 1600
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "F8-4",
+      "finding": "FV-008",
+      "note": "既有 cc0/pdm 许可过滤未被削弱",
+      "ids": [
+        "pdm-ok"
+      ],
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "pass": 7,
+    "fail": 0,
+    "failedIds": []
+  }
+}

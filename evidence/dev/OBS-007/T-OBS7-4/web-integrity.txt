@@ -1,0 +1,2 @@
+WEB INTEGRITY PASS: 21/21 original files byte-identical; 2/2 Next-managed files content-validated.
+No files were rewritten. This is not a build, remote AI, or MP4 acceptance test.

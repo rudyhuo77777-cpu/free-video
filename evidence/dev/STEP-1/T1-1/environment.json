@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-09-19T00:38:02.384Z",
+  "os": "Linux LAPTOP-A8POO43B 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux",
+  "platform": "linux",
+  "node": "v22.22.3",
+  "npm": "10.9.8",
+  "python": "Python 3.12.3",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers",
+  "chromeLinux": null,
+  "chromeWindows": "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe",
+  "cwd": "/mnt/c/Users/Hongyan/Downloads/free-video-v0.3.3.2-integrated-flat",
+  "executor": "Implementer(Claude)",
+  "note": "WSL2 on /mnt/c. No Linux Chrome; Windows Chrome present. ffmpeg 6.1.1 (audit used 8.1.2)."
+}

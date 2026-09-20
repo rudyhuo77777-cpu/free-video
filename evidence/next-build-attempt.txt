@@ -1,0 +1,24 @@
+Actual command: npm run build
+Directory: isolated copy of integrated v0.3.3.2
+Started: 2026-09-17T15:31:05.047818+00:00
+
+
+> free-video-cloudflare-lite@0.3.3-verification.2 build
+> npm run build -w @auria/core && npm run build -w @auria/web
+
+
+> @auria/core@0.3.0 build
+> tsc -p tsconfig.json
+
+
+> @auria/web@0.3.0 build
+> next build
+
+sh: 1: next: not found
+npm error Lifecycle script `build` failed with error:
+npm error code 127
+npm error path /mnt/data/fv0332-integration/real-build-attempt/apps/web
+npm error workspace @auria/web@0.3.0
+npm error location /mnt/data/fv0332-integration/real-build-attempt/apps/web
+npm error command failed
+npm error command sh -c next build

@@ -1,0 +1,36 @@
+{
+  "release": "0.3.3.2",
+  "date": "2026-09-17",
+  "ui": {
+    "pass": 18,
+    "total": 18
+  },
+  "structural": {
+    "pass": 23,
+    "total": 23
+  },
+  "backend": {
+    "pass": 69,
+    "total": 69,
+    "mode": "Node SQLite+D1 shape adapter+AI fixtures"
+  },
+  "release_guards": {
+    "pass": 25,
+    "total": 25
+  },
+  "verification_fix": {
+    "pass": 56,
+    "total": 56,
+    "mode": "fixtures+policy mutations"
+  },
+  "generated_file_cases": {
+    "pass": 3,
+    "total": 3,
+    "mode": "fixtures; 25/25 guards each"
+  },
+  "full_next_build": "BLOCKED: npm registry DNS EAI_AGAIN / next not found",
+  "remote_ai": "NOT_RUN",
+  "mp4_and_audio": "NOT_RUN",
+  "production_changes": false,
+  "new_package_required_external_baseline": false
+}

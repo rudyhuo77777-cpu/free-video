@@ -1,0 +1,16 @@
+{
+  "command": "npm",
+  "args": [
+    "run",
+    "build"
+  ],
+  "cwd": "/mnt/c/Users/Hongyan/Downloads/free-video-v0.3.3.2-integrated-flat",
+  "startedAt": "2026-09-19T14:22:53.442Z",
+  "finishedAt": "2026-09-19T14:23:38.649Z",
+  "durationMs": 45214,
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "node": "v22.22.3",
+  "platform": "linux"
+}

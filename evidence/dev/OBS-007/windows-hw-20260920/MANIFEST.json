@@ -1,0 +1,56 @@
+{
+  "frozenAt": "2026-09-20",
+  "why": "Windows 硬件 H.264 路径回归产物，新一轮运行，未覆盖任何旧 evidence",
+  "mp4": [
+    {
+      "file": "win-120s-run1.mp4",
+      "sizeBytes": 3306722,
+      "sha256": "effe6a97199b3200bd8f9a0c8a6c11403aa98e1af5bcd66f793a74dc24bdcac5"
+    },
+    {
+      "file": "win-120s-run2.mp4",
+      "sizeBytes": 3306722,
+      "sha256": "8db5905c312bd009130fe3d4a42b2110e318bdd86f7f9478e519d47f1e9f0de4"
+    },
+    {
+      "file": "win-15s-run1.mp4",
+      "sizeBytes": 470939,
+      "sha256": "23c3cee8c8da7bbffee9bf9bb0d141fc60597aeb52f28b115b536ec4507100bd"
+    },
+    {
+      "file": "win-15s-run2.mp4",
+      "sizeBytes": 470939,
+      "sha256": "e3084e1aa60669bce97befedd6a26a51729307f7c96b838fcec2bee40a6059a4"
+    },
+    {
+      "file": "win-30s-run1.mp4",
+      "sizeBytes": 942720,
+      "sha256": "62048ce935e84bc4e77a784b75555f522622c2e315fe1ee6c014782962e2a43f"
+    },
+    {
+      "file": "win-30s-run2.mp4",
+      "sizeBytes": 942720,
+      "sha256": "1ec4bd40b8754ee912b974376e27bb60a514bd807de6bb9d65dd555b4c047b89"
+    },
+    {
+      "file": "win-60s-run1.mp4",
+      "sizeBytes": 1839258,
+      "sha256": "9341c604f0c3627b4f77d7888951093295b686398368e622aec1a208a659ca52"
+    },
+    {
+      "file": "win-60s-run2.mp4",
+      "sizeBytes": 1839258,
+      "sha256": "8a80284f22821e414a26465d24eaa1fce7d01201d9eedbc41271bf269a723f7b"
+    },
+    {
+      "file": "win-90s-run1.mp4",
+      "sizeBytes": 2474704,
+      "sha256": "cfafeb27ab2a8a97d58acf6884b9dfd0bd8a4faac01ccaaebd35f5b5d1ce7343"
+    },
+    {
+      "file": "win-90s-run2.mp4",
+      "sizeBytes": 2474704,
+      "sha256": "43608c67a7309a57b699ef25854112a17b1a09c613eae30850cf31a7b7cf77cc"
+    }
+  ]
+}

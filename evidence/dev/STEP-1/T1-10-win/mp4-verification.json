@@ -1,0 +1,48 @@
+{
+  "verifiedAt": "2026-09-19T01:42:40.962Z",
+  "tool": "ffprobe/ffmpeg 6.1.1",
+  "files": [
+    {
+      "file": "S4-silent-negative-15s.mp4",
+      "sizeBytes": 472088,
+      "durationSec": 15.018667,
+      "video": {
+        "codec": "h264",
+        "width": 720,
+        "height": 1280,
+        "frames": 225
+      },
+      "audio": {
+        "codec": "aac",
+        "sampleRate": 48000,
+        "frames": 704
+      },
+      "volumeDb": {
+        "mean": "-91.0",
+        "max": "-91.0"
+      },
+      "fullDecodeExitCode": 0
+    },
+    {
+      "file": "S6-60s-with-65.68s-narration.mp4",
+      "sizeBytes": 1764344,
+      "durationSec": 60.010667,
+      "video": {
+        "codec": "h264",
+        "width": 720,
+        "height": 1280,
+        "frames": 900
+      },
+      "audio": {
+        "codec": "aac",
+        "sampleRate": 48000,
+        "frames": 2813
+      },
+      "volumeDb": {
+        "mean": "-19.1",
+        "max": "-9.3"
+      },
+      "fullDecodeExitCode": 0
+    }
+  ]
+}

@@ -11,7 +11,7 @@ const PORT = Number(process.env.AURIA_VOICE_BRIDGE_PORT || 8787);
 const MAX_TEXT_CHARS = Number(process.env.AURIA_TTS_MAX_TEXT_CHARS || 6000);
 const TOKEN = crypto.randomBytes(32).toString('base64url');
 const ALLOWED_ORIGINS = new Set(
-  String(process.env.AURIA_VOICE_ALLOWED_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000,https://freevideo.eco-velo.com')
+  String(process.env.AURIA_VOICE_ALLOWED_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:8790,http://127.0.0.1:8790,https://freevideo.eco-velo.com')
     .split(',').map(x => x.trim()).filter(Boolean)
 );
 let active = 0;

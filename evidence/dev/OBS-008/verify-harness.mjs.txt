@@ -1,0 +1,73 @@
+// OBS-008 验收：三层严格分离 —— HTTP cache / SW Cache Storage / 真正断网。
+import fs from 'node:fs'; import http from 'node:http';
+const ROOT='/mnt/c/Users/Hongyan/Downloads/free-video-v0.3.3.2-integrated-flat';
+const { launch, Session } = await import(ROOT+'/governance/repro/cdp.mjs');
+const { startStack } = await import(ROOT+'/governance/repro/local-stack.mjs');
+const CACHE='free-video-shell-v0.3.3.2-lite', OLD='free-video-shell-v0.3.1-lite';
+const stack=await startStack({});
+const proxy=http.createServer((req,res)=>{const up=http.request({host:'127.0.0.1',port:stack.port,path:req.url,method:req.method,headers:{...req.headers,host:`127.0.0.1:${stack.port}`}},r=>{res.writeHead(r.statusCode,r.headers);r.pipe(res);});up.on('error',e=>{res.writeHead(502);res.end(String(e.message));});req.pipe(up);});
+await new Promise(r=>proxy.listen(0,'127.0.0.2',r));
+const BASE=`http://127.0.0.2:${proxy.address().port}`;
+const b=await launch({headless:true}); const s=await Session.connect(b.wsUrl); await s.attachToPage();
+await s.send('Network.enable');
+let errs=[]; s.on('Runtime.consoleAPICalled',p=>{if(p.type==='error')errs.push((p.args||[]).map(a=>a.value??a.description).join(' '));});
+s.on('Runtime.exceptionThrown',p=>errs.push('EXCEPTION: '+(p.exceptionDetails?.exception?.description||p.exceptionDetails?.text)));
+const goto=async u=>{errs=[];await s.navigate(u);await s.eval('new Promise(r=>setTimeout(r,900))');};
+const out={task:'OBS-008 验收（三层分离）',recordedAt:new Date().toISOString(),cacheName:CACHE,cases:[]};
+const add=(id,note,value,verdict)=>{out.cases.push({id,note,value,verdict});console.error(`[${id}] ${verdict}`);};
+const page=()=>s.eval(`(()=>{const t=document.body?document.body.innerText:'';return{len:t.length,title:document.title,htmlLang:document.documentElement.lang,hasNav:t.includes('Bahasa Indonesia')&&t.includes('English')&&t.includes('中文'),hasIdCopy:t.includes('120 Detik. Gratis. Tanpa Kredit Video.'),head:t.slice(0,120)};})()`);
+
+// 预置一条旧版缓存，验证 activate 清理
+await goto(BASE+'/');
+await s.eval(`(async()=>{const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()));for(const k of await caches.keys())await caches.delete(k);const c=await caches.open('${OLD}');await c.put('/stale',new Response('stale'));return 1;})()`);
+
+// 在线预热：注册新 SW
+await goto(BASE+'/');
+await s.eval(`navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}).then(()=>navigator.serviceWorker.ready)`);
+await goto(BASE+'/'); await goto(BASE+'/video'); await goto(BASE+'/');
+
+// 层1：SW 注册与激活
+const reg=await s.eval(`(async()=>{const regs=await navigator.serviceWorker.getRegistrations();return{count:regs.length,states:regs.map(r=>r.active?r.active.state:null),controller:!!navigator.serviceWorker.controller};})()`);
+add('O8-1-sw-activated','SW 已注册并 activated 且控制页面',{...reg,consoleErrors:errs},
+  (reg.count>=1&&reg.states.includes('activated')&&reg.controller)?'PASS':'FAIL');
+
+// 层2：SW Cache Storage 内容
+const cache=await s.eval(`(async()=>{const keys=await caches.keys();const c=await caches.open('${CACHE}');const paths=(await c.keys()).map(r=>new URL(r.url).pathname);
+  return{allCacheKeys:keys,count:paths.length,paths:paths.slice(0,60),hasRoot:paths.includes('/'),hasVideo:paths.includes('/video'),
+         hasNextAssets:paths.some(p=>p.startsWith('/_next/')),oldCachePresent:keys.includes('${OLD}')};})()`);
+add('O8-2-sw-cache-content','SW Cache Storage 含 document 与关键静态资源',cache,
+  (cache.hasRoot&&cache.hasVideo&&cache.hasNextAssets)?'PASS':'FAIL');
+add('O8-3-old-cache-purged','新版本激活后旧 cache 已被清理，不污染当前版本',{oldCachePresent:cache.oldCachePresent,allCacheKeys:cache.allCacheKeys},
+  cache.oldCachePresent===false?'PASS':'FAIL');
+
+// 层3：关闭 HTTP 缓存 + 完全断网
+await s.send('Network.setCacheDisabled',{cacheDisabled:true});
+await s.send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+await goto(BASE+'/');
+const offRoot=await page();
+add('O8-4-offline-root','HTTP 缓存禁用 + 完全断网下 / 可打开且非错误页/空白页',{...offRoot,consoleErrors:errs},
+  (offRoot.len>300&&offRoot.hasNav&&offRoot.hasIdCopy)?'PASS':'FAIL');
+await goto(BASE+'/video');
+const offVideo=await page();
+add('O8-5-offline-video','HTTP 缓存禁用 + 完全断网下 /video 可打开且非错误页/空白页',{...offVideo,consoleErrors:errs},
+  (offVideo.len>300&&offVideo.hasNav)?'PASS':'FAIL');
+add('O8-6-offline-locale-nav','断网页面仍为默认印尼语且导航完整',{root:{htmlLang:offRoot.htmlLang,hasNav:offRoot.hasNav,hasIdCopy:offRoot.hasIdCopy},video:{htmlLang:offVideo.htmlLang,hasNav:offVideo.hasNav}},
+  (offRoot.htmlLang==='id'&&offRoot.hasNav&&offRoot.hasIdCopy&&offVideo.hasNav)?'PASS':'FAIL');
+
+// 恢复网络
+await s.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+await s.send('Network.setCacheDisabled',{cacheDisabled:false});
+await goto(BASE+'/');
+const back=await page();
+add('O8-7-online-recovers','恢复网络后正常更新',{...back,consoleErrors:errs}, (back.len>300&&back.hasIdCopy)?'PASS':'FAIL');
+
+const allErrs=out.cases.flatMap(c=>c.value.consoleErrors||[]);
+add('O8-8-no-console-errors','全过程 Console 无新增错误',{collected:allErrs}, allErrs.length===0?'PASS':'FAIL');
+
+s.close(); b.kill(); proxy.close(); await stack.close?.();
+const fails=out.cases.filter(c=>c.verdict!=='PASS');
+out.summary={total:out.cases.length,pass:out.cases.length-fails.length,fail:fails.length,failedIds:fails.map(c=>c.id)};
+out.layerSeparation={httpCache:'层3 起用 Network.setCacheDisabled(true) 关闭，排除 HTTP 缓存贡献',swCacheStorage:'层2 直接列举 '+CACHE+' 条目',trueOffline:'层3 用 Network.emulateNetworkConditions{offline:true}'};
+fs.writeFileSync(ROOT+'/evidence/dev/OBS-008/verify.json',JSON.stringify(out,null,2)+'\n');
+console.error('SUMMARY',JSON.stringify(out.summary));
+process.exit(0);

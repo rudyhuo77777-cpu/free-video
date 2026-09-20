@@ -1,0 +1,37 @@
+{
+  "task": "T3-5 RB-1 受控再基线",
+  "approval": "A2（用户 2026-09-19 明确批准修改 apps/web/app/video/page.tsx）",
+  "finding": "FV-004",
+  "appliedAt": "2026-09-19T04:07:22.298Z",
+  "entries": [
+    {
+      "location": "tests/web-baseline-sha256.json",
+      "path": "apps/web/app/video/page.tsx",
+      "from": "eb84e158927e4ab89442911ad1e459e0b1762918d0686f718707a604c7e215e3",
+      "to": "f813fa4471102125cc165291a7f411512905d2981114b88bcf153944ea6cfd1e",
+      "occurrencesReplaced": 1
+    },
+    {
+      "location": "scripts/ui-integrity.mjs",
+      "path": "apps/web/app/video/page.tsx",
+      "from": "eb84e158927e4ab89442911ad1e459e0b1762918d0686f718707a604c7e215e3",
+      "to": "f813fa4471102125cc165291a7f411512905d2981114b88bcf153944ea6cfd1e",
+      "occurrencesReplaced": 1
+    },
+    {
+      "location": "scripts/web-integrity.mjs:manifestHash",
+      "path": "tests/web-baseline-sha256.json",
+      "from": "7d22fba2c03c505a5c7e4bda6cc312d152ce9d3dc795da66b9f0815c79c2f753",
+      "to": "8d3dfc16b38c85e6287e2dac242dcbacdd55c2f23279deb08db3f72405f8bf22",
+      "occurrencesReplaced": 1
+    },
+    {
+      "location": "governance/scope-guard-check.mjs:MANIFEST_HASH_BASELINE",
+      "path": "tests/web-baseline-sha256.json",
+      "from": "7d22fba2c03c505a5c7e4bda6cc312d152ce9d3dc795da66b9f0815c79c2f753",
+      "to": "8d3dfc16b38c85e6287e2dac242dcbacdd55c2f23279deb08db3f72405f8bf22",
+      "occurrencesReplaced": 1
+    }
+  ],
+  "rule": "只更新 1 个冻结文件的哈希；其余 20 个逐条未变；未由任何脚本自动重算"
+}

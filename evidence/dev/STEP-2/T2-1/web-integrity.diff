@@ -1,0 +1,43 @@
+--- governance/evidence-snapshot-pre-step2/web-integrity.mjs.before	2026-09-19 08:57:27.754092200 +0700
++++ scripts/web-integrity.mjs	2026-09-19 08:57:27.812837100 +0700
+@@ -27,7 +27,11 @@
+   const s = text(bytes, 'next-env.d.ts', 16384);
+   const seen = new Set();
+   let route = null;
+-  for (const [index, raw] of s.split('\n').entries()) {
++  let rootParams = null;
++  // TypeScript line terminators are LF, CR, LS (U+2028) and PS (U+2029). text() already
++  // folded CR/CRLF into LF; LS/PS must end a line too, or content after a // comment on
++  // such a line would be read as part of that comment.
++  for (const [index, raw] of s.split(/[\n\u2028\u2029]/).entries()) {
+     const line = raw.trim();
+     if (!line) continue;
+     const types = line.match(/^\/\/\/\s*<reference\s+types=["'](next|next\/image-types\/global)["']\s*\/?>$/);
+@@ -43,17 +47,23 @@
+       }
+       continue;
+     }
+-    const imp = line.match(/^import\s+["'](\.\/\.next\/(?:dev\/)?types\/routes\.d\.ts)["'];?$/);
++    const imp = line.match(/^import\s+["'](\.\/\.next\/(?:dev\/)?types\/(routes|root-params)\.d\.ts)["'];?$/);
+     if (imp) {
+-      if (route) throw new Error('next-env.d.ts: duplicate generated route import');
+-      route = imp[1]; continue;
++      if (imp[2] === 'routes') {
++        if (route) throw new Error('next-env.d.ts: duplicate generated route import');
++        route = imp[1];
++      } else {
++        if (rootParams) throw new Error('next-env.d.ts: duplicate generated root-params import');
++        rootParams = imp[1];
++      }
++      continue;
+     }
+     throw new Error(`next-env.d.ts: unexpected content at line ${index + 1}`);
+   }
+   if (!seen.has('next') || !seen.has('next/image-types/global')) {
+     throw new Error('next-env.d.ts: both required Next.js references must be present');
+   }
+-  return {requiredReferences: 2, generatedRouteImport: route};
++  return {requiredReferences: 2, generatedRouteImport: route, generatedRootParamsImport: rootParams};
+ }
+ 
+ export function validateTsconfig(bytes, baseline) {

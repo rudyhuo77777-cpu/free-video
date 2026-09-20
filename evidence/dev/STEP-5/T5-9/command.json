@@ -1,0 +1,16 @@
+{
+  "command": "node",
+  "args": [
+    "--no-warnings",
+    "governance/repro/fv005-010-fix-verify.mjs"
+  ],
+  "cwd": "C:\\Users\\Hongyan\\Downloads\\free-video-v0.3.3.2-integrated-flat",
+  "startedAt": "2026-09-19T14:29:24.199Z",
+  "finishedAt": "2026-09-19T14:30:23.565Z",
+  "durationMs": 59367,
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "node": "v24.15.0",
+  "platform": "win32"
+}

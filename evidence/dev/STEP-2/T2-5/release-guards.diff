@@ -1,0 +1,97 @@
+--- governance/evidence-snapshot-pre-step2/release-guards.mjs.before	2026-09-19 09:02:14.573889800 +0700
++++ tests/release-guards.mjs	2026-09-19 09:02:14.605043200 +0700
+@@ -1,10 +1,11 @@
+ import fs from 'node:fs';
++import os from 'node:os';
+ import path from 'node:path';
+ import assert from 'node:assert/strict';
+ import crypto from 'node:crypto';
+ import {spawnSync} from 'node:child_process';
+ import {verifyWebIntegrity} from '../scripts/web-integrity.mjs';
+-import {productionPlan} from '../scripts/deploy-production.mjs';
++import {productionPlan,assertReleaseGate} from '../scripts/deploy-production.mjs';
+ import {DEFAULT_MODEL,resolveModel,createDirector} from '../worker/director.js';
+ import worker from '../worker/index.js';
+ import {D1Adapter,env,req,director,root,guest} from './helpers.mjs';
+@@ -37,6 +38,81 @@
+ await test('custom model fallback request still contains full contract',async()=>{let request;await createDirector({AI_MODEL:'@cf/meta/llama-3.1-8b-instruct-fast',AI:{run:async(_,r)=>{request=r;return {response:director()};}}},'Botol minum',15);assert(request.messages[0].content.includes('assetKeyword'));assert(request.messages[0].content.includes('required'));});
+ await test('production plan refuses test-only entry',()=>assert.throws(()=>productionPlan({...config,main:'./tests/runtime-probe-worker.js'},vars),/blocked/));
+ await test('production plan refuses missing AI binding',()=>assert.throws(()=>productionPlan({...config,ai:undefined},vars),/blocked/));
++// --- STEP 2 additions for FV-003. The release gate is asserted directly with an injected
++// --- runCommand so the offline suite does not re-enter itself. Existing guards unchanged.
++import {currentFingerprints} from '../scripts/verify.mjs';
++const webManifest=JSON.parse(read('tests/web-baseline-sha256.json'));
++function gateTree(){
++  const r=fs.mkdtempSync(path.join(os.tmpdir(),'fv-gate-'));
++  for(const p of [...Object.keys(webManifest),'tests/web-baseline-sha256.json','tests/web-tsconfig-reference.json']){
++    const dst=path.join(r,p);fs.mkdirSync(path.dirname(dst),{recursive:true});fs.copyFileSync(path.join(root,p),dst);
++  }
++  fs.mkdirSync(path.join(r,'apps/web/out'),{recursive:true});
++  fs.writeFileSync(path.join(r,'apps/web/out/index.html'),'<!doctype html><title>gate</title>');
++  fs.writeFileSync(path.join(r,'package-lock.json'),'{"name":"gate","lockfileVersion":3,"packages":{}}');
++  fs.mkdirSync(path.join(r,'evidence'),{recursive:true});
++  return r;
++}
++function writeRecord(r,over={}){
++  const rec={release:'0.3.3.2',status:'PASS',phases:['offline-before','build','typecheck','offline-after'],
++    remoteAIExecuted:false,productionDeploymentExecuted:false,...currentFingerprints(r),...over};
++  fs.writeFileSync(path.join(r,'evidence/build-verification.json'),JSON.stringify(rec,null,2)+'\n');
++  return rec;
++}
++const noRun=()=>{};
++function withGateTree(fn){const r=gateTree();try{return fn(r);}finally{fs.rmSync(r,{recursive:true,force:true});}}
++
++await test('release gate accepts a tree whose verification matches it',()=>withGateTree(r=>{
++  writeRecord(r);
++  const steps=assertReleaseGate(r,{runCommand:noRun});
++  assert.equal(steps.length,5);
++}));
++await test('release gate refuses a missing verification record',()=>withGateTree(r=>{
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/No evidence\/build-verification\.json/);
++}));
++await test('release gate refuses a non-PASS verification record',()=>withGateTree(r=>{
++  writeRecord(r,{status:'FAIL'});
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/not PASS/);
++}));
++await test('release gate refuses an unreadable verification record',()=>withGateTree(r=>{
++  fs.writeFileSync(path.join(r,'evidence/build-verification.json'),'{not json');
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/not readable JSON/);
++}));
++await test('release gate refuses a changed dependency lock',()=>withGateTree(r=>{
++  writeRecord(r);
++  fs.writeFileSync(path.join(r,'package-lock.json'),'{"name":"tampered","lockfileVersion":3,"packages":{}}');
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/package-lock\.json changed/);
++}));
++await test('release gate refuses a stale or swapped build output',()=>withGateTree(r=>{
++  writeRecord(r);
++  fs.writeFileSync(path.join(r,'apps/web/out/index.html'),'<!doctype html><title>ARBITRARY</title>');
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/apps\/web\/out changed/);
++}));
++await test('release gate refuses a frozen UI file changed after verification',()=>withGateTree(r=>{
++  writeRecord(r);
++  fs.appendFileSync(path.join(r,'apps/web/app/globals.css'),' ');
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/globals\.css/);
++}));
++await test('release gate refuses tampered Next-managed declarations',()=>withGateTree(r=>{
++  writeRecord(r);
++  fs.appendFileSync(path.join(r,'apps/web/next-env.d.ts'),'import "untrusted-package";\n');
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/next-env\.d\.ts/);
++}));
++await test('release gate refuses a missing static artifact',()=>withGateTree(r=>{
++  writeRecord(r);
++  fs.rmSync(path.join(r,'apps/web/out/index.html'));
++  assert.throws(()=>assertReleaseGate(r,{runCommand:noRun}),/Static build missing|apps\/web\/out changed/);
++}));
++await test('release gate propagates an offline-check failure',()=>withGateTree(r=>{
++  writeRecord(r);
++  assert.throws(()=>assertReleaseGate(r,{runCommand:()=>{throw new Error('INJECTED offline failure');}}),/INJECTED/);
++}));
++await test('release gate runs the offline check before reading any verification record',()=>withGateTree(r=>{
++  const order=[];
++  assert.throws(()=>assertReleaseGate(r,{runCommand:()=>{order.push('offline');throw new Error('stop');}}),/stop/);
++  assert.deepEqual(order,['offline']);
++}));
++
+ const fail=results.filter(x=>x.status==='FAIL').length;
+ fs.mkdirSync(path.join(root,'evidence'),{recursive:true});fs.writeFileSync(path.join(root,'evidence/release-guards.json'),JSON.stringify({pass:results.length-fail,fail,total:results.length,results},null,2));
+ console.log(`\nRELEASE GUARDS: ${results.length-fail}/${results.length} PASS; ${fail} FAIL`);if(fail)process.exitCode=1;

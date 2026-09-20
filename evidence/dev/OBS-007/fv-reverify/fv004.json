@@ -1,0 +1,193 @@
+{
+  "task": "T3-4 FV-004 fix verification",
+  "recordedAt": "2026-09-20T10:09:35.016Z",
+  "cases": [
+    {
+      "id": "C1-lost-ack-then-same-input",
+      "note": "丢完成回执且重放也失败 → 用户看到错误后以相同输入重试",
+      "droppedAcks": 1,
+      "blockedGets": 1,
+      "first": {
+        "clicked": true,
+        "hasDirector": false,
+        "errorVisible": true,
+        "nodeCount": 80,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "afterFirst": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "5d3be733-b902-4dcf-a1e2-d982d8d966e7"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "second": {
+        "clicked": true,
+        "hasDirector": true,
+        "errorVisible": false,
+        "nodeCount": 136,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "afterSecond": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "5d3be733-b902-4dcf-a1e2-d982d8d966e7"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "verdict": "PASS",
+      "consoleErrors": []
+    },
+    {
+      "id": "C1b-lost-ack-recovers-in-flight",
+      "note": "丢完成回执但重放可用 → 首次点击即恢复",
+      "droppedAcks": 1,
+      "first": {
+        "clicked": true,
+        "hasDirector": true,
+        "errorVisible": false,
+        "nodeCount": 136,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "afterFirst": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "eced5fca-4b28-4c72-b613-a3ffef7114e1"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "verdict": "PASS",
+      "consoleErrors": []
+    },
+    {
+      "id": "C2-changed-input-is-new-operation",
+      "note": "变更输入后应产生新 key 并正常计费",
+      "afterFirst": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "6bdee608-71ec-4df1-bb34-dfcdaac38092"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "afterSecond": {
+        "completed": 2,
+        "rows": 2,
+        "keys": [
+          "6bdee608-71ec-4df1-bb34-dfcdaac38092",
+          "8914492b-9d92-4f0f-a203-2a60a88d1359"
+        ],
+        "used": 2,
+        "aiCalls": 2
+      },
+      "verdict": "PASS",
+      "consoleErrors": []
+    },
+    {
+      "id": "C3-reload-same-input-recovers",
+      "note": "首次失败后刷新页面，相同输入再次点击",
+      "droppedAcks": 1,
+      "blockedGets": 1,
+      "first": {
+        "clicked": true,
+        "hasDirector": false,
+        "errorVisible": true,
+        "nodeCount": 80,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "afterFirst": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "2f055cd4-054c-47aa-a3a7-bd4020f58386"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "afterReload": {
+        "clicked": true,
+        "hasDirector": true,
+        "errorVisible": false,
+        "nodeCount": 136,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "afterSecond": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "2f055cd4-054c-47aa-a3a7-bd4020f58386"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "verdict": "PASS",
+      "consoleErrors": []
+    },
+    {
+      "id": "C4-no-sessionstorage",
+      "note": "sessionStorage 不可用（隐私模式）",
+      "storageThrows": true,
+      "clicked": {
+        "clicked": true,
+        "hasDirector": true,
+        "errorVisible": false,
+        "nodeCount": 136,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "after": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "d016ca4e-dc06-4ab8-8a4e-c289f08cbc18"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "verdict": "PASS",
+      "consoleErrors": []
+    },
+    {
+      "id": "C5-terminal-error-still-shown",
+      "note": "真实终态错误（免费额度用尽）仍显示错误 UI",
+      "r1": {
+        "clicked": true,
+        "hasDirector": true,
+        "errorVisible": false,
+        "nodeCount": 136,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "r2": {
+        "clicked": true,
+        "hasDirector": false,
+        "errorVisible": true,
+        "nodeCount": 80,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.\n\nBahasa Indonesia\nEnglish\n中文\nNama produk\nFoto produk ("
+      },
+      "after": {
+        "completed": 1,
+        "rows": 1,
+        "keys": [
+          "7b1c7159-7ee9-4c5b-8603-f06c0ea17a75"
+        ],
+        "used": 1,
+        "aiCalls": 1
+      },
+      "errorClassRendered": true,
+      "verdict": "PASS",
+      "consoleErrors": []
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "pass": 6,
+    "fail": 0,
+    "failedIds": []
+  }
+}

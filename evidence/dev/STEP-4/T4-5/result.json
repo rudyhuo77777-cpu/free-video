@@ -1,0 +1,13 @@
+{
+  "task": "T4-5",
+  "title": "真实云端 Workers AI",
+  "status": "BLOCKED",
+  "reason": "用户 A5 = DENIED（不调用收费真实 AI）",
+  "executed": false,
+  "proof": [
+    "evidence/real-ai-results.json 不存在",
+    "tests/regression.mjs 中无 ai.remote / test:ai:real 引用",
+    "regression-results.json 自述 ai=\"fixtures/fault injection; NOT remote inference\""
+  ],
+  "unlockRequires": "用户书面给出账号、固定模型、最大调用次数、最大 token、费用上限"
+}

@@ -1,0 +1,27 @@
+{
+  "release": "0.3.3.2",
+  "startedAt": "2026-09-19T14:25:46.437Z",
+  "phases": [
+    "offline-before",
+    "build",
+    "typecheck",
+    "offline-after"
+  ],
+  "status": "PASS",
+  "remoteAIExecuted": false,
+  "productionDeploymentExecuted": false,
+  "note": "Build/typecheck are local. Offline AI outputs are fixtures. No D1 migration is performed by this command.",
+  "finishedAt": "2026-09-19T14:26:51.617Z",
+  "sourceFingerprint": {
+    "count": 101,
+    "digest": "68436f65d449061e3c25889b09b153210aeae0f19cb2557e7581d9c95df12abc"
+  },
+  "lockFingerprint": "93dd788d3559d48e85333856888e15f4ef503c2635ee037f22717b894a9b6c3c",
+  "outFingerprint": {
+    "count": 52,
+    "digest": "91125cf6435efc450eddc4668ca3566ada7f096840f2f322d8545d22faabae28",
+    "missing": false
+  },
+  "nextEnvSha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+  "tsconfigSha256": "fe301561c5f9f7556924d85c875b73846f4fc6891001acb4ce3ca299984d06c0"
+}

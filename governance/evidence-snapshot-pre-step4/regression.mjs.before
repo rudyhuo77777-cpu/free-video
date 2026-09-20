@@ -1,0 +1,258 @@
+// Runs actual packaged Worker functions + genuine local SQLite.
+// The D1 adapter emulates interface/transaction shape; AI is explicitly mocked here.
+// No production resources, remote inference, TTS engine, or MP4 device claims.
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {once} from 'node:events';
+import net from 'node:net';
+import worker from '../worker/index.js';
+import {ensureSchema,allowRate,quota,reserveJob,failJob,completeJob,recoverExpired,getJob,LEASE_MS} from '../worker/db.js';
+import {createDirector,validateDirector,aiPayload,extractJson} from '../worker/director.js';
+import {readJson} from '../worker/http.js';
+import {D1Adapter,req,env,director,body,guest,other,root} from './helpers.mjs';
+const results=[];
+async function check(id,title,fn){try{const note=await fn();results.push({id,title,status:'PASS',note});console.log(`PASS ${id} ${title}`);}catch(error){results.push({id,title,status:'FAIL',message:error.message,stack:error.stack});console.log(`FAIL ${id} ${title}: ${error.message}`);}}
+async function withDB(fn){const db=new D1Adapter();try{return await fn(db);}finally{db.close();}}
+const fetchApi=(request,e)=>worker.fetch(request,e);
+async function responseJson(r,status){assert.equal(r.status,status);assert(r.headers.get('content-type').includes('application/json'));return r.json();}
+const used=db=>Number(db.value('SELECT used FROM guest_quota WHERE guest_id=?',guest)?.used||0);
+
+await check('B01','migration apply ledger is repeatable, six application tables',()=>withDB(db=>{
+  assert.equal(db.migrate(),0);assert.equal(db.value("SELECT COUNT(*) n FROM sqlite_master WHERE type='table'").n,6);
+}));
+await check('B02','migrated quota returns JSON',()=>withDB(async db=>assert.equal((await responseJson(await fetchApi(req('/api/scripts/quota',null),env(db)),200)).remaining,3)));
+await check('D01','unmigrated DB returns 503 JSON rather than rejected Promise',async()=>{const db=new D1Adapter(false);try{
+  const r=await fetchApi(req('/api/scripts/quota',null),env(db));const data=await responseJson(r,503);assert.equal(data.stage,'d1_schema');assert.equal(data.requestId,r.headers.get('x-request-id'));
+}finally{db.close();}});
+await check('D02','readiness rejects incomplete tables',async()=>{const db=new D1Adapter(false);try{
+  db.sqlite.exec('CREATE TABLE guest_quota(guest_id TEXT PRIMARY KEY,used INTEGER NOT NULL DEFAULT 0,updated_at INTEGER NOT NULL)');await assert.rejects(()=>ensureSchema(db),/database_not_initialized/);
+}finally{db.close();}});
+for(const duration of [15,30,60,90,120])await check('A'+duration,`valid structured AI fixture, ${duration}s`,()=>withDB(async db=>{
+  let calls=0;const r=await fetchApi(req(undefined,{...body(),duration}),env(db,{run:async()=>{calls++;return{response:director(duration)};}}));
+  const data=await responseJson(r,200);assert.equal(data.result.duration,duration);assert.equal(data.result.scenes.reduce((n,s)=>n+s.duration,0),duration);assert.equal(data.remaining,2);assert.equal(calls,1);
+}));
+await check('A01','schema fallback retains complete schema and repair context',async()=>{
+  const calls=[];await createDirector({AI:{run:async(m,r)=>{calls.push(r);if(calls.length===1)throw new Error("JSON Mode couldn't be met");return{response:director()};}}},'Botol minum',15);
+  assert.equal(calls.length,2);assert(!calls[1].response_format);const prompt=JSON.stringify(calls[1].messages);assert(prompt.includes('scenes')&&prompt.includes('productName')&&prompt.includes('required'));
+});
+await check('A02','structurally invalid JSON receives bounded repair',async()=>{let calls=0;const seen=[];
+  await createDirector({AI:{run:async(m,r)=>{seen.push(r);return{response:++calls===1?{script:'not a Director'}:director()};}}},'Botol minum',15);
+  assert.equal(calls,2);assert(JSON.stringify(seen[1].messages).includes('not a Director'));assert(JSON.stringify(seen[1].messages).includes('director_scene_count'));
+});
+await check('A03','empty scenes rejected, never fabricated into a successful script',async()=>{
+  let calls=0;await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;return{response:{scenes:[{}]}};}}},'Botol minum',120));assert.equal(calls,2);
+});
+await check('A04','duplicate IDs normalized without changing scene content',async()=>{
+  const input=director();input.scenes.forEach(s=>s.id='duplicate');const out=await createDirector({AI:{run:async()=>({response:input})}},'Botol minum',15);
+  assert.equal(new Set(out.scenes.map(s=>s.id)).size,4);assert.deepEqual(out.scenes.map(s=>s.voice),input.scenes.map(s=>s.voice));
+});
+await check('Q01','simple AI failure refunds once and RETAINS a failed audit record',()=>withDB(async db=>{
+  const r=await fetchApi(req(),env(db,{run:async()=>{throw new Error('FIXTURE unavailable');}}));const data=await responseJson(r,503);
+  assert.equal(data.stage,'ai_director');assert.equal(used(db),0);const row=db.value('SELECT status,quota_charged FROM script_requests');assert.equal(row.status,'failed');assert.equal(row.quota_charged,0);
+}));
+await check('Q02','post-completion quota-read error NEVER refunds finished work',()=>withDB(async db=>{
+  let hit=false;db.fault=(sql)=>{if(!hit&&sql.startsWith('SELECT used FROM guest_quota')){hit=true;throw new Error('FIXTURE quota read');}};
+  const data=await responseJson(await fetchApi(req(),env(db)),200);assert(hit);assert.equal(data.remaining,null);assert.equal(used(db),1);assert.equal(db.value('SELECT status FROM script_requests').status,'completed');
+}));
+await check('Q03','refund storage failure rolls back both operations, remains recoverable',()=>withDB(async db=>{
+  db.fault=sql=>{if(sql.startsWith('UPDATE guest_quota SET used=CASE'))throw new Error('FIXTURE refund');};
+  const data=await responseJson(await fetchApi(req(),env(db,{run:async()=>{throw new Error('FIXTURE AI');}})),503);
+  assert.equal(data.stage,'d1_refund');assert.equal(used(db),1);assert.equal(db.value('SELECT status FROM script_requests').status,'reserved');
+  db.fault=null;await recoverExpired(db,guest,Date.now()+LEASE_MS+1);assert.equal(used(db),0);assert.equal(db.value('SELECT status FROM script_requests').status,'expired');
+}));
+await check('Q04','expired reserved job can be retried and charged once',()=>withDB(async db=>{
+  const old=Date.now()-86400000;await reserveJob(db,guest,'job-1','test-hash',3,old);
+  db.sqlite.exec('UPDATE script_requests SET request_hash=NULL'); // legacy/pre-upgrade reservation fixture
+  const data=await responseJson(await fetchApi(req(),env(db)),200);assert.equal(data.status,'completed');assert.equal(used(db),1);
+}));
+await check('Q05','atomic rate gate admits exactly one of 12 concurrent requests',()=>withDB(async db=>{
+  const decisions=await Promise.all(Array.from({length:12},()=>allowRate(db,'same',1,90)));assert.equal(decisions.filter(Boolean).length,1);
+}));
+await check('Q06','duplicate completed job reuses durable result without AI/debit',()=>withDB(async db=>{
+  let calls=0;const e=env(db,{run:async()=>{calls++;return{response:director()};}});await fetchApi(req(),e);
+  const data=await responseJson(await fetchApi(req(),e),200);assert(data.duplicate);assert.equal(calls,1);assert.equal(used(db),1);
+}));
+await check('F01','FYP token is consumed exactly once under concurrency',()=>withDB(async db=>{
+  const token=crypto.randomUUID();db.sqlite.prepare('INSERT INTO fyp_handoffs VALUES(?,?,?,?,0)').run(token,guest,JSON.stringify({productName:'fixture'}),Math.floor(Date.now()/1000)+600);
+  const r=await Promise.all([fetchApi(req('/api/fyp/handoff/consume',{token}),env(db)),fetchApi(req('/api/fyp/handoff/consume',{token}),env(db))]);
+  assert.equal(r.filter(x=>x.status===200).length,1);assert.equal(r.filter(x=>x.status===409).length,1);
+}));
+await check('H01','malformed percent-encoded Cookie does not reject fetch',()=>withDB(async db=>{
+  const r=await fetchApi(req('/api/health',null,{cookie:'free_video_guest=%ZZ'}),env(db));await responseJson(r,200);assert(r.headers.get('set-cookie'));
+}));
+await check('H02','malformed JSON returns controlled 400',()=>withDB(async db=>{
+  const r=await fetchApi(new Request('http://localhost:8790/api/scripts/jobs',{method:'POST',body:'{broken'}),env(db));assert.equal((await responseJson(r,400)).error,'invalid_json');
+}));
+await check('H03','null request body returns controlled 400',()=>withDB(async db=>{
+  const r=await fetchApi(new Request('http://localhost:8790/api/scripts/jobs',{method:'POST',body:'null'}),env(db));assert.equal((await responseJson(r,400)).error,'invalid_json_object');
+}));
+
+// Additional tests beyond the 24 original release checks.
+await check('D03','readiness cache cannot leak across different D1 bindings',async()=>{
+  const a=new D1Adapter(),b=new D1Adapter(false);try{await ensureSchema(a);await assert.rejects(()=>ensureSchema(b));}finally{a.close();b.close();}
+});
+await check('D04','readiness rejects six old tables without the new migration',async()=>{
+  const db=new D1Adapter(false);try{db.sqlite.exec(fs.readFileSync(path.join(root,'migrations/0001_core.sql'),'utf8'));await assert.rejects(()=>ensureSchema(db));}finally{db.close();}
+});
+await check('D05','readiness rejects missing required index',()=>withDB(async db=>{db.sqlite.exec('DROP INDEX idx_script_leases');await assert.rejects(()=>ensureSchema(db,true));}));
+await check('D06','upgrade preserves project/results and does not over-refund old uncharged rows',async()=>{
+  const db=new D1Adapter(false);try{
+    db.sqlite.exec(fs.readFileSync(path.join(root,'migrations/0001_core.sql'),'utf8'));db.applied.add('0001_core.sql');
+    db.sqlite.prepare('INSERT INTO guest_quota VALUES(?,?,?)').run(guest,2,0);
+    const insert=db.sqlite.prepare('INSERT INTO script_requests VALUES(?,?,?,?,?,?)');
+    insert.run('completed',guest,'completed',JSON.stringify(director()),0,0);insert.run('a-reserved',guest,'reserved',null,0,0);insert.run('b-uncharged',guest,'reserved',null,0,0);
+    db.sqlite.prepare("INSERT INTO product_projects VALUES(?,?,?,'','','','[]','[]',0,0)").run('product-1',guest,'Keep this project');
+    assert.equal(db.migrate(),1);assert.equal(db.migrate(),0);await ensureSchema(db,true);
+    assert.equal(db.value('SELECT SUM(quota_charged) n FROM script_requests').n,2);
+    await recoverExpired(db,guest);assert.equal(used(db),1);assert.equal(db.value('SELECT name FROM product_projects').name,'Keep this project');assert.equal(JSON.parse(db.value("SELECT result_json FROM script_requests WHERE status='completed'").result_json).productName,'Botol minum');
+  }finally{db.close();}
+});
+await check('Q07','12 concurrent reservations cannot exceed three free credits',()=>withDB(async db=>{
+  const all=await Promise.all(Array.from({length:12},(_,i)=>reserveJob(db,guest,'parallel-'+i,'hash'+i,3)));
+  assert.equal(all.filter(x=>x.acquired).length,3);assert.equal(used(db),3);
+}));
+await check('Q08','12 same-key reservations produce one lease and one debit',()=>withDB(async db=>{
+  const all=await Promise.all(Array.from({length:12},()=>reserveJob(db,guest,'same','hash',3)));
+  assert.equal(all.filter(x=>x.acquired).length,1);assert.equal(used(db),1);
+}));
+await check('Q09','double failure/refund releases exactly one credit',()=>withDB(async db=>{
+  const r=await reserveJob(db,guest,'a','h',3);await Promise.all([failJob(db,guest,'a',r.token,'fixture'),failJob(db,guest,'a',r.token,'fixture')]);assert.equal(used(db),0);
+}));
+await check('Q10','completed job cannot be refunded by a late failure',()=>withDB(async db=>{
+  const r=await reserveJob(db,guest,'a','h',3);assert(await completeJob(db,guest,'a',r.token,director()));await failJob(db,guest,'a',r.token,'late');assert.equal(used(db),1);
+}));
+await check('Q11','late attempt cannot complete or refund a newer lease',()=>withDB(async db=>{
+  const old=await reserveJob(db,guest,'a','h',3,Date.now()-LEASE_MS-1);await recoverExpired(db,guest);
+  const newer=await reserveJob(db,guest,'a','h',3);assert(newer.acquired);assert.equal(await completeJob(db,guest,'a',old.token,director()),false);
+  await failJob(db,guest,'a',old.token,'late');assert.equal(used(db),1);assert.equal((await getJob(db,guest,'a')).lease_token,newer.token);
+}));
+await check('Q12','failure in final reservation statement rolls the debit back',()=>withDB(async db=>{
+  db.fault=sql=>{if(sql.startsWith('UPDATE script_requests SET quota_charged=1'))throw new Error('FIXTURE last step');};
+  await assert.rejects(()=>reserveJob(db,guest,'a','h',3));assert.equal(used(db),0);assert.equal(db.value('SELECT COUNT(*) n FROM script_requests').n,0);
+}));
+await check('Q13','failure in refund status change preserves both reservation and debit',()=>withDB(async db=>{
+  const r=await reserveJob(db,guest,'a','h',3);db.fault=sql=>{if(sql.startsWith("UPDATE script_requests SET status='failed'"))throw new Error('FIXTURE status update');};
+  await assert.rejects(()=>failJob(db,guest,'a',r.token,'fixture'));assert.equal(used(db),1);assert.equal(db.value('SELECT status FROM script_requests').status,'reserved');
+}));
+await check('Q14','different payload under same idempotency key is rejected',()=>withDB(async db=>{
+  const e=env(db);await fetchApi(req(),e);const data=await responseJson(await fetchApi(req(undefined,{...body(),productName:'Other product'}),e),409);assert.equal(data.error,'idempotency_conflict');assert.equal(used(db),1);
+}));
+await check('Q15','other guest cannot read or reuse job key',()=>withDB(async db=>{
+  const e=env(db);await fetchApi(req(),e);const header={cookie:`free_video_guest=${other}`};
+  await responseJson(await fetchApi(req('/api/scripts/jobs/job-1',null,header),e),404);await responseJson(await fetchApi(req(undefined,body(),header),e),404);
+}));
+await check('Q16','temporary persistence failure is not classified as AI failure',()=>withDB(async db=>{
+  db.fault=sql=>{if(sql.startsWith("UPDATE script_requests SET status='completed'"))throw new Error('FIXTURE lost storage');};
+  const data=await responseJson(await fetchApi(req(),env(db)),503);assert.equal(data.stage,'d1_persist');assert.equal(used(db),1);assert.equal(db.value('SELECT status FROM script_requests').status,'reserved');
+  db.fault=null;await recoverExpired(db,guest,Date.now()+LEASE_MS+1);assert.equal(used(db),0);
+}));
+await check('Q17','lost response AFTER durable completion cannot refund or invoke AI again',()=>withDB(async db=>{
+  const execute=db.execute.bind(db);let injected=false;
+  db.execute=(sql,v,k)=>{const r=execute(sql,v,k);if(!injected&&sql.startsWith("UPDATE script_requests SET status='completed'")){injected=true;throw new Error('FIXTURE lost committed response');}return r;};
+  let calls=0;const e=env(db,{run:async()=>{calls++;return{response:director()};}});
+  assert.equal((await responseJson(await fetchApi(req(),e),503)).stage,'d1_persist');assert.equal(used(db),1);
+  assert((await responseJson(await fetchApi(req(),e),200)).duplicate);assert.equal(calls,1);assert.equal(used(db),1);
+}));
+await check('Q18','expired status becomes failed for unchanged frontend polling contract',()=>withDB(async db=>{
+  await reserveJob(db,guest,'job-1','h',3,Date.now()-LEASE_MS-1);const data=await responseJson(await fetchApi(req('/api/scripts/jobs/job-1',null),env(db)),200);assert.equal(data.status,'failed');assert.equal(used(db),0);
+}));
+await check('Q19','completed replay does not consume rate allowance',()=>withDB(async db=>{
+  const e=env(db);await fetchApi(req(),e);const before=db.value('SELECT SUM(count) n FROM rate_limits').n;await fetchApi(req(),e);assert.equal(db.value('SELECT SUM(count) n FROM rate_limits').n,before);
+}));
+await check('Q20','free cap returns 402 without extra pending rows/debits',()=>withDB(async db=>{
+  const e=env(db);for(let i=0;i<3;i++)await responseJson(await fetchApi(req(undefined,{...body(),idempotencyKey:'job'+i}),e),200);
+  const data=await responseJson(await fetchApi(req(undefined,{...body(),idempotencyKey:'fourth'}),e),402);assert.equal(data.error,'free_script_limit_reached');assert.equal(used(db),3);assert.equal(db.value('SELECT COUNT(*) n FROM script_requests').n,3);
+}));
+await check('Q21','valid retry after failed AI works without duplicated debit',()=>withDB(async db=>{
+  await fetchApi(req(),env(db,{run:async()=>{throw new Error('FIXTURE');}}));assert.equal(used(db),0);
+  await responseJson(await fetchApi(req(),env(db)),200);assert.equal(used(db),1);assert.equal(db.value('SELECT attempts FROM script_requests').attempts,2);
+}));
+await check('Q22','repeated expiry recovery cannot refund completed credits',()=>withDB(async db=>{
+  const a=await reserveJob(db,guest,'a','a',3);await completeJob(db,guest,'a',a.token,director());await reserveJob(db,guest,'b','b',3,Date.now()-LEASE_MS-1);
+  await Promise.all([recoverExpired(db,guest),recoverExpired(db,guest)]);assert.equal(used(db),1);
+}));
+await check('R01','expired rate bucket resets atomically',()=>withDB(async db=>{
+  db.sqlite.prepare('INSERT INTO rate_limits VALUES(?,?,?)').run('expired',10,0);
+  const all=await Promise.all(Array.from({length:10},()=>allowRate(db,'expired',2,90)));assert.equal(all.filter(Boolean).length,2);
+}));
+await check('F02','concurrent FYP handoff creation consumes its binding once',()=>withDB(async db=>{
+  const token=crypto.randomUUID();db.sqlite.prepare('INSERT INTO fyp_bindings VALUES(?,?,?)').run(token,guest,Math.floor(Date.now()/1000)+300);
+  const payload={returnBinding:token,productName:'Botol minum',duration:15,viralHook:'Lihat detail produk'};
+  const rs=await Promise.all([fetchApi(req('/api/fyp/handoff',payload),env(db)),fetchApi(req('/api/fyp/handoff',payload),env(db))]);
+  assert.equal(rs.filter(r=>r.status===200).length,1);assert.equal(db.value('SELECT COUNT(*) n FROM fyp_handoffs').n,1);
+}));
+await check('F03','foreign or expired FYP token does not reveal payload',()=>withDB(async db=>{
+  const token=crypto.randomUUID();db.sqlite.prepare('INSERT INTO fyp_handoffs VALUES(?,?,?,?,0)').run(token,guest,JSON.stringify({secret:'fixture'}),Math.floor(Date.now()/1000)+300);
+  const data=await responseJson(await fetchApi(req('/api/fyp/handoff/consume',{token},{cookie:`free_video_guest=${other}`}),env(db)),404);assert(!JSON.stringify(data).includes('secret'));
+}));
+await check('H04','unknown API never falls through to HTML',()=>withDB(async db=>{await responseJson(await fetchApi(req('/api/unknown',null),env(db)),404);}));
+await check('H05','encoded invalid path returns JSON 400',()=>withDB(async db=>{await responseJson(await fetchApi(req('/api/scripts/jobs/%ZZ',null),env(db)),400);}));
+await check('H06','array JSON body rejected',()=>withDB(async db=>{await responseJson(await fetchApi(req(undefined,[]),env(db)),400);}));
+await check('H07','oversized body without Content-Length rejected during streaming',async()=>{
+  let cancelled=false;const stream=new ReadableStream({pull(c){c.enqueue(new Uint8Array(10000));},cancel(){cancelled=true;}});
+  const r=new Request('http://localhost/api',{method:'POST',body:stream,duplex:'half'});await assert.rejects(()=>readJson(r,20000),/request_too_large/);assert(cancelled);
+});
+await check('H08','missing AI binding fails before quota reservation',()=>withDB(async db=>{await responseJson(await fetchApi(req(),env(db,null)),503);assert.equal(used(db),0);}));
+await check('H09','liveness is separate from database readiness',async()=>{const db=new D1Adapter(false);try{
+  assert.equal((await responseJson(await fetchApi(req('/api/health',null),env(db)),200)).check,'liveness-only');await responseJson(await fetchApi(req('/api/ready',null),env(db)),503);
+}finally{db.close();}});
+await check('H10','ready reports inference not checked and does not call AI',()=>withDB(async db=>{let calls=0;const e=env(db,{run:async()=>{calls++;}});const data=await responseJson(await fetchApi(req('/api/ready',null),e),200);assert.equal(data.inferenceChecked,false);assert.equal(calls,0);}));
+await check('H11','unexpected project storage failure remains controlled JSON',()=>withDB(async db=>{
+  db.fault=sql=>{if(sql.startsWith('SELECT id,name'))throw new Error('FIXTURE storage');};await responseJson(await fetchApi(req('/api/projects',null),env(db)),500);
+}));
+await check('H12','cross-origin write is rejected',()=>withDB(async db=>{await responseJson(await fetchApi(req(undefined,body(),{origin:'https://evil.invalid'}),env(db)),403);}));
+await check('A05','AI response wrapper variants are decoded',()=>{
+  const d=director();for(const x of [{response:d},{result:{response:d}},{choices:[{message:{content:JSON.stringify(d)}}]},{choices:[{message:{parsed:d}}]},d])assert.deepEqual(aiPayload(x),d);
+});
+await check('A06','balanced parser supports quoted braces and JSON fences',()=>{
+  const d=director();d.scenes[0].voice='Cek bentuk {produk} sebelum memilih.';assert.deepEqual(extractJson('```json\n'+JSON.stringify(d)+'\n```'),d);assert.deepEqual(extractJson('Here is JSON: '+JSON.stringify(d)),d);
+});
+await check('A07','ambiguous multiple JSON objects are rejected',()=>assert.throws(()=>extractJson('Prefix {} {}')));
+await check('A08','NaN/infinity durations and empty voice cannot pass validator',()=>{
+  for(const n of [NaN,Infinity,0,-1,999,'3']){const d=director();d.scenes[0].duration=n;assert.throws(()=>validateDirector(d,'Botol minum',15));}
+  const d=director();d.scenes[0].voice=' ';assert.throws(()=>validateDirector(d,'Botol minum',15));
+});
+await check('A09','malformed AI output never exceeds two calls',async()=>{let calls=0;await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;return{response:'not json'};}}},'Botol minum',15));assert.equal(calls,2);} );
+await check('A10','auth/quota/upstream errors are not blindly retried',async()=>{
+  for(const message of ['Unauthorized 401','daily quota limit','Model not found','Upstream unavailable']){let calls=0;await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;throw new Error(message);}}},'Botol minum',15));assert.equal(calls,1);}
+});
+await check('A11','AI timeout is bounded and never starts an overlapping retry',async()=>{
+  let calls=0;const start=Date.now();await assert.rejects(()=>createDirector({AI:{run:()=>{calls++;return new Promise(()=>{});}}},'Botol minum',15,'','',{timeoutMs:25}),/ai_timeout/);assert.equal(calls,1);assert(Date.now()-start<1000);
+});
+await check('A12','long video request has bounded larger output budget',async()=>{
+  let seen;await createDirector({AI:{run:async(m,r)=>{seen=r;return{response:director(120)};}}},'Botol minum',120);assert.equal(seen.max_tokens,6144);assert(JSON.stringify(seen.messages).includes('120'));assert.equal(seen.response_format.json_schema.properties.scenes.minItems,18);
+});
+await check('A13','invalid enum or unreasonable total duration triggers rejection',()=>{
+  const d=director();d.scenes[0].camera='fly-away';assert.throws(()=>validateDirector(d,'Botol minum',15));d.scenes[0].camera='push_in';d.scenes.forEach(s=>s.duration=1);assert.throws(()=>validateDirector(d,'Botol minum',15));
+});
+await check('P01','product project create/list contract preserved',()=>withDB(async db=>{
+  const e=env(db);await responseJson(await fetchApi(req('/api/projects',{name:'Portable Blender',price:'Rp100.000',sellingPoints:['USB charging']}),e),201);
+  const data=await responseJson(await fetchApi(req('/api/projects',null),e),200);assert.equal(data.projects.length,1);assert.equal(data.projects[0].price,'Rp100.000');
+}));
+await check('P02','null asset scene receives JSON 400',()=>withDB(async db=>{await responseJson(await fetchApi(req('/api/assets/plan',{scenes:[null]}),env(db)),400);}));
+await check('S01','non-API path goes to original static asset binding',()=>withDB(async db=>{const r=await fetchApi(req('/video',null),env(db));assert.equal(await r.text(),'ASSET_FIXTURE');}));
+
+async function availablePort(){const server=net.createServer();server.listen(0,'127.0.0.1');await once(server,'listening');const port=server.address().port;await new Promise(r=>server.close(r));return port;}
+await check('T01','real Voice Bridge HTTP CORS includes both :8790 origins and denies unrelated site',async()=>{
+  const port=await availablePort();const child=spawn(process.execPath,[path.join(root,'apps/voice-bridge/server.mjs')],{env:{...process.env,AURIA_VOICE_BRIDGE_PORT:String(port),AURIA_VOICE_ALLOWED_ORIGINS:''},stdio:['ignore','pipe','pipe']});
+  try {
+    await Promise.race([once(child.stdout,'data'),new Promise((_,reject)=>{const t=setTimeout(()=>reject(new Error('bridge start timeout')),4000);t.unref();})]);
+    for(const origin of ['http://localhost:3000','https://freevideo.eco-velo.com','http://localhost:8790','http://127.0.0.1:8790']) {
+      const r=await fetch(`http://127.0.0.1:${port}/pair`,{method:'OPTIONS',headers:{origin,'access-control-request-method':'POST'}});assert.equal(r.status,204);assert.equal(r.headers.get('access-control-allow-origin'),origin);
+    }
+    assert.equal((await fetch(`http://127.0.0.1:${port}/pair`,{method:'OPTIONS',headers:{origin:'https://evil.invalid'}})).status,403);
+    assert.equal((await fetch(`http://127.0.0.1:${port}/tts`,{method:'POST',headers:{origin:'http://localhost:8790'},body:'{}'})).status,401);
+  }finally{child.kill();if(child.exitCode===null)await once(child,'exit');}
+});
+await check('F04','only configured FYP origin receives CORS preflight',()=>withDB(async db=>{
+  for(const [origin,status]of [['https://fyp.eco-velo.com',204],['https://evil.invalid',403]]){
+    const r=await fetchApi(new Request('http://localhost:8790/api/fyp/handoff',{method:'OPTIONS',headers:{origin,'access-control-request-method':'POST','access-control-request-headers':'content-type'}}),env(db));
+    assert.equal(r.status,status);assert.equal(r.headers.get('access-control-allow-origin'),status===204?origin:null);
+  }
+}));
+const pass=results.filter(r=>r.status==='PASS').length;
+const summary={version:'0.3.3',node:process.version,sqlite:'real local Node SQLite; D1-shaped transaction adapter',ai:'fixtures/fault injection; NOT remote inference',timestamp:new Date().toISOString(),pass,fail:results.length-pass,total:results.length,results};
+fs.mkdirSync(path.join(root,'evidence'),{recursive:true});fs.writeFileSync(path.join(root,'evidence/regression-results.json'),JSON.stringify(summary,null,2));
+console.log(`\nREGRESSION: ${pass}/${results.length} PASS; ${results.length-pass} FAIL`);process.exitCode=pass===results.length?0:1;

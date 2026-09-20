@@ -1,0 +1,20 @@
+PASS apps/web/app/globals.css
+PASS apps/web/app/layout.tsx
+PASS apps/web/app/page.tsx
+PASS apps/web/app/projects/page.tsx
+PASS apps/web/app/tools/page.tsx
+PASS apps/web/app/video/page.tsx
+PASS apps/web/components/LanguageProvider.tsx
+PASS apps/web/components/Nav.tsx
+PASS apps/web/components/PwaRegistrar.tsx
+PASS apps/web/components/TurnstileBox.tsx
+PASS apps/web/lib/client/tts.ts
+PASS apps/web/lib/client/video-renderer.ts
+PASS apps/web/public/fyp-local.html
+PASS apps/web/public/icon-192.png
+PASS apps/web/public/icon-512.png
+PASS apps/web/public/icon.svg
+PASS apps/web/public/manifest.webmanifest
+PASS apps/web/public/reset-local-cache.html
+
+UI integrity: 18/18 PASS

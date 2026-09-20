@@ -1,0 +1,40 @@
+{
+  "release": "0.3.3.2",
+  "startedAt": "2026-09-17T15:30:39.603240+00:00",
+  "environment": "Linux container; not user Windows",
+  "remoteAIExecuted": false,
+  "productionModified": false,
+  "commands": [
+    {
+      "name": "npm-install",
+      "command": [
+        "npm",
+        "install",
+        "--no-audit",
+        "--no-fund",
+        "--fetch-retries=0",
+        "--fetch-timeout=5000"
+      ],
+      "startedAt": "2026-09-17T15:30:39.603285+00:00",
+      "finishedAt": "2026-09-17T15:31:05.047477+00:00",
+      "exitCode": 1,
+      "timedOut": false,
+      "log": "npm-install-attempt.txt"
+    },
+    {
+      "name": "next-build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "startedAt": "2026-09-17T15:31:05.047818+00:00",
+      "finishedAt": "2026-09-17T15:31:06.022857+00:00",
+      "exitCode": 127,
+      "timedOut": false,
+      "log": "next-build-attempt.txt"
+    }
+  ],
+  "finishedAt": "2026-09-17T15:31:06.023010+00:00",
+  "status": "BLOCKED_OR_FAILED_SEE_LOG"
+}

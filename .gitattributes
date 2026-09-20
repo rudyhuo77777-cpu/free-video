@@ -1,0 +1,16 @@
+# Preserve byte-checked source files on Windows checkouts.
+*.js text eol=lf
+*.mjs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+*.html text eol=lf
+*.svg text eol=lf
+*.webmanifest text eol=lf
+*.sql text eol=lf
+*.md text eol=lf
+*.ps1 text eol=lf
+*.cmd text eol=crlf
+*.png binary

@@ -1,0 +1,320 @@
+{
+  "task": "G-3 Scope Guard 反向测试",
+  "recordedAt": "2026-09-20T10:05:58.335Z",
+  "safety": "每个场景都在隔离临时副本中执行；项目目录只读，未做任何修改。",
+  "scenarios": [
+    {
+      "id": "R1-governance-file-tampered",
+      "note": "未授权修改治理文件 governance/SCOPE-GUARD.md",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/SCOPE-GUARD.md"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R2-scope-guard-self-tampered",
+      "note": "未授权修改 Scope Guard 自身",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/scope-guard-check.mjs"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "pristine (project copy, --root <tmp>)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R2b-self-tampered-with-recomputed-constant",
+      "note": "改 Scope Guard 并同时改写 SELF 常量（不重算）",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/scope-guard-check.mjs"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "pristine (project copy, --root <tmp>)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R2c-tampered-checker-selfreport",
+      "note": "被篡改的检查器就地运行（记录其自身仍报告违规，但退出码不可信）",
+      "expect": "ALLOW",
+      "got": "ALLOW",
+      "exitCode": 2,
+      "violationCount": 1,
+      "violations": [
+        "[B-GOV] governance/scope-guard-check.mjs"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R3-approved-page-rebaseline",
+      "note": "A2 已批准的 page.tsx rebaseline",
+      "expect": "ALLOW",
+      "got": "ALLOW",
+      "exitCode": 2,
+      "violationCount": 0,
+      "violations": [],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R4-a2-used-on-other-frozen-file",
+      "note": "拿 A2 的批准去改其他冻结文件 globals.css",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B3] apps/web/app/globals.css"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R4b-approved-file-changed-beyond-to",
+      "note": "page.tsx 被改成批准记录 to 以外的值",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B3] apps/web/app/video/page.tsx"
+      ],
+      "suppressions": [
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R5-manifest-hash-tampered",
+      "note": "篡改 scripts/web-integrity.mjs 的 manifestHash",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R6-legit-evidence-and-logs",
+      "note": "合法 evidence / log / harness 产出不得假 BLOCK",
+      "expect": "ALLOW",
+      "got": "ALLOW",
+      "exitCode": 2,
+      "violationCount": 0,
+      "violations": [],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-003"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R7-reverted-approval-does-not-suppress",
+      "note": "已 REVERTED 的批准记录不得再抑制告警",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 5,
+      "violations": [
+        "[B3] apps/web/app/video/page.tsx",
+        "[B3] apps/web/lib/client/video-renderer.ts",
+        "[B4] scripts/ui-integrity.mjs",
+        "[B4] tests/web-baseline-sha256.json",
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R8-chain-broken-middle",
+      "note": "链条中间一跳被删除（RB-1-001 的 manifestHash 条目）",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R9-chain-hop-reverted",
+      "note": "链条最后一跳被标记 REVERTED（RB-1-002 的 manifestHash 条目）",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R10-chain-ambiguous-fork",
+      "note": "同一 from 有两条候选条目（分叉），不得唯一推导",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R11-chain-cycle",
+      "note": "链条构成环（A→B→A），必须拒绝且不得挂起",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B3] apps/web/lib/client/video-renderer.ts <- RB-1-003",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R12-frozen-chain-broken-middle",
+      "note": "冻结文件链条中间记录被删除（RB-1-002）",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 2,
+      "violations": [
+        "[B3] apps/web/lib/client/video-renderer.ts",
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R13-frozen-chain-middle-reverted",
+      "note": "冻结文件链条中间记录被标记 REVERTED",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 2,
+      "violations": [
+        "[B3] apps/web/lib/client/video-renderer.ts",
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    }
+  ],
+  "chainCycleTerminationMs": 287,
+  "summary": {
+    "total": 16,
+    "pass": 16,
+    "fail": 0,
+    "failedIds": []
+  }
+}

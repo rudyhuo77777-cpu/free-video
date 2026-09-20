@@ -1,0 +1,26 @@
+{
+  "baseline": "governance/baseline-v0.3.3.2.sha256",
+  "changed": [],
+  "added": [
+    "CLAUDE.md",
+    "CURRENT-STATE.md",
+    "DEVELOPMENT-PLAN.md",
+    "GOVERNANCE.md",
+    "PRD.md",
+    "STEPS-AND-ACCEPTANCE.md",
+    "TRACEABILITY.json",
+    "evidence/dev/STEP-1/T1-1/environment.json",
+    "evidence/dev/STEP-1/T1-1/next-env.d.ts.original",
+    "evidence/dev/STEP-1/T1-1/scope-guard-before.json"
+  ],
+  "removed": [],
+  "productAdditions": [],
+  "violations": [],
+  "exitCode": 0,
+  "counts": {
+    "changed": 0,
+    "added": 10,
+    "removed": 0,
+    "violations": 0
+  }
+}

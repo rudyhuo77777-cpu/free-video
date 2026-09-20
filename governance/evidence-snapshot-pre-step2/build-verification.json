@@ -1,0 +1,13 @@
+{
+  "release": "0.3.3.2",
+  "startedAt": "2026-09-19T00:45:30.507Z",
+  "phases": [
+    "offline-before"
+  ],
+  "status": "FAIL",
+  "remoteAIExecuted": false,
+  "productionDeploymentExecuted": false,
+  "note": "Build/typecheck are local. Offline AI outputs are fixtures. No D1 migration is performed by this command.",
+  "error": "node scripts/check-offline.mjs failed (exit 1). Stopped; no further steps executed.",
+  "finishedAt": "2026-09-19T00:45:31.973Z"
+}

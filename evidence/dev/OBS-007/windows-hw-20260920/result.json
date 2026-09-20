@@ -1,0 +1,162 @@
+{
+  "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+  "capability": {
+    "720x1280_prefer_hardware": true,
+    "720x1280_no_pref": true,
+    "540x960_prefer_hardware": true,
+    "540x960_no_pref": true,
+    "aac_native": true
+  },
+  "results": [
+    {
+      "duration": 15,
+      "attempt": 1,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "memory",
+        "size": 470939,
+        "file": "win-15s-run1.mp4"
+      },
+      "ms": 1210,
+      "opfsLeftovers": []
+    },
+    {
+      "duration": 15,
+      "attempt": 2,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "memory",
+        "size": 470939,
+        "file": "win-15s-run2.mp4"
+      },
+      "ms": 1258,
+      "opfsLeftovers": []
+    },
+    {
+      "duration": 30,
+      "attempt": 1,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "memory",
+        "size": 942720,
+        "file": "win-30s-run1.mp4"
+      },
+      "ms": 2344,
+      "opfsLeftovers": []
+    },
+    {
+      "duration": 30,
+      "attempt": 2,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "memory",
+        "size": 942720,
+        "file": "win-30s-run2.mp4"
+      },
+      "ms": 2392,
+      "opfsLeftovers": []
+    },
+    {
+      "duration": 60,
+      "attempt": 1,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "memory",
+        "size": 1839258,
+        "file": "win-60s-run1.mp4"
+      },
+      "ms": 4569,
+      "opfsLeftovers": []
+    },
+    {
+      "duration": 60,
+      "attempt": 2,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "memory",
+        "size": 1839258,
+        "file": "win-60s-run2.mp4"
+      },
+      "ms": 4490,
+      "opfsLeftovers": []
+    },
+    {
+      "duration": 90,
+      "attempt": 1,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "opfs",
+        "size": 2474704,
+        "file": "win-90s-run1.mp4"
+      },
+      "ms": 3853,
+      "opfsLeftovers": [
+        {
+          "name": "free-video-botol-minum-stainless-90s-4fb40fd0.mp4",
+          "size": 2474704
+        }
+      ]
+    },
+    {
+      "duration": 90,
+      "attempt": 2,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "opfs",
+        "size": 2474704,
+        "file": "win-90s-run2.mp4"
+      },
+      "ms": 3840,
+      "opfsLeftovers": [
+        {
+          "name": "free-video-botol-minum-stainless-90s-7e1bdaee.mp4",
+          "size": 2474704
+        }
+      ]
+    },
+    {
+      "duration": 120,
+      "attempt": 1,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "opfs",
+        "size": 3306722,
+        "file": "win-120s-run1.mp4"
+      },
+      "ms": 5229,
+      "opfsLeftovers": [
+        {
+          "name": "free-video-botol-minum-stainless-120s-6aea22f8.mp4",
+          "size": 3306722
+        }
+      ]
+    },
+    {
+      "duration": 120,
+      "attempt": 2,
+      "ok": true,
+      "error": null,
+      "out": {
+        "mode": "opfs",
+        "size": 3306722,
+        "file": "win-120s-run2.mp4"
+      },
+      "ms": 5273,
+      "opfsLeftovers": [
+        {
+          "name": "free-video-botol-minum-stainless-120s-26363a58.mp4",
+          "size": 3306722
+        }
+      ]
+    }
+  ]
+}

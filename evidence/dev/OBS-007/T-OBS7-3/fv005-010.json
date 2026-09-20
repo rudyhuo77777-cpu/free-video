@@ -1,0 +1,225 @@
+{
+  "task": "T5-3/4/5/6 renderer fix verification",
+  "recordedAt": "2026-09-20T09:57:59.811Z",
+  "narration": "REAL local Supertonic F5 / id WAVs from CR-002 C2-1 and C2-1b",
+  "cases": [
+    {
+      "id": "T5-9-15s",
+      "note": "15 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 694915,
+            "file": "t59-15s-run1.mp4"
+          },
+          "opfsLeftovers": []
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 690781,
+            "file": "t59-15s-run2.mp4"
+          },
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-30s",
+      "note": "30 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 1350546,
+            "file": "t59-30s-run1.mp4"
+          },
+          "opfsLeftovers": []
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 1345543,
+            "file": "t59-30s-run2.mp4"
+          },
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-60s",
+      "note": "60 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 2569358,
+            "file": "t59-60s-run1.mp4"
+          },
+          "opfsLeftovers": []
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 2571477,
+            "file": "t59-60s-run2.mp4"
+          },
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-90s",
+      "note": "90 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 3485053,
+            "file": "t59-90s-run1.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-90s-926d44dd.mp4",
+              "size": 3485053
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 3485553,
+            "file": "t59-90s-run2.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-90s-3345141d.mp4",
+              "size": 3485553
+            }
+          ]
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-120s",
+      "note": "120 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 4631871,
+            "file": "t59-120s-run1.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-120s-e9785add.mp4",
+              "size": 4631871
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 4635336,
+            "file": "t59-120s-run2.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-120s-e7aab4e0.mp4",
+              "size": 4635336
+            }
+          ]
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "FV-005-cleanup",
+      "note": "失败后 OPFS 不得残留临时文件",
+      "value": {
+        "error": "narration_silent",
+        "opfsLeftovers": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FV-006",
+      "note": "全零 PCM 被拒；真实 F5 通过",
+      "value": {
+        "silentResult": {
+          "rejected": true,
+          "error": "narration_silent"
+        },
+        "realResult": {
+          "ok": true,
+          "size": 697033,
+          "file": "fv006-real-f5-15s.mp4"
+        }
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FV-009",
+      "note": "挂起素材连接必须在有限时间内失败并走回退",
+      "value": {
+        "settled": null,
+        "error": "external_visual_unavailable",
+        "elapsedMs": 10844
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FV-010",
+      "note": "超出有效语音必须明确失败；仅尾部静音可裁",
+      "value": {
+        "overflowResult": {
+          "rejected": true,
+          "error": "narration_exceeds_duration"
+        },
+        "normalResult": {
+          "ok": true,
+          "size": 2577938,
+          "file": "fv010-60s-fitting.mp4"
+        },
+        "fittingSourceTail": {
+          "durationSec": 55.28299319727891,
+          "tailSeconds": -0.000006802721088661201,
+          "rmsDb": null,
+          "peak": 0
+        }
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "pass": 9,
+    "fail": 0,
+    "failedIds": []
+  }
+}

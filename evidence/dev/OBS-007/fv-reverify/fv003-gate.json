@@ -1,0 +1,175 @@
+{
+  "task": "T2-4 release gate verification",
+  "finding": "FV-003",
+  "recordedAt": "2026-09-20T10:11:05.047Z",
+  "safety": "node_modules inside every isolated copy contained ONLY a recorder stub (4.131.1-RECORDER-STUB). The real wrangler binary was absent. No Cloudflare API request was possible.",
+  "stubSelfTest": {
+    "wranglerPackageInCopy": "4.131.1-RECORDER-STUB",
+    "stubRecordedCalls": [
+      "d1 migrations apply DB --remote --config wrangler.resolved.jsonc",
+      "deploy --config wrangler.resolved.jsonc"
+    ],
+    "allCallsCameFromStub": true,
+    "stdoutShowsStubMarker": true,
+    "stdoutHasNoRealWranglerBanner": true,
+    "noCloudflareApiMention": true
+  },
+  "scenarios": [
+    {
+      "id": "A-config-modified",
+      "description": "next.config.ts 在验证之后被修改",
+      "exitCode": 1,
+      "gateSteps": [],
+      "blockedBy": "Web byte integrity failed: apps/web/next.config.ts",
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "B-stale-artifact",
+      "description": "out/ 在验证之后被替换为任意陈旧 HTML",
+      "exitCode": 1,
+      "gateSteps": [],
+      "blockedBy": "Verification does not match the current tree (apps/web/out changed since it ran). Re-run npm run verify before deploy.",
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "C-no-verify-record",
+      "description": "不存在成功的 verify 记录",
+      "exitCode": 1,
+      "gateSteps": [],
+      "blockedBy": "No evidence/build-verification.json. Run npm run verify before deploy.",
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "C2-verify-record-FAIL",
+      "description": "verify 记录存在但 status 为 FAIL",
+      "exitCode": 1,
+      "gateSteps": [],
+      "blockedBy": "Last verification status is FAIL, not PASS. Deployment blocked.",
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "D-lock-changed",
+      "description": "package-lock.json 在验证之后被改动",
+      "exitCode": 1,
+      "gateSteps": [],
+      "blockedBy": "Verification does not match the current tree (package-lock.json changed since it ran). Re-run npm run verify before deploy.",
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "D2-frozen-ui-changed",
+      "description": "冻结 UI 文件在验证之后被改动",
+      "exitCode": 1,
+      "gateSteps": [],
+      "blockedBy": "Web byte integrity failed: apps/web/app/globals.css",
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "D3-nextenv-tampered",
+      "description": "next-env.d.ts 被植入非法导入",
+      "exitCode": 1,
+      "gateSteps": [],
+      "blockedBy": "next-env.d.ts: unexpected content at line 8",
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "E-all-satisfied",
+      "description": "全部前提满足（对照：应到达 wrangler，先迁移后发布）",
+      "exitCode": 0,
+      "gateSteps": [
+        "web integrity 21/21 frozen, 2/2 managed",
+        "offline check exit 0",
+        "verification record status PASS",
+        "verification bound to current source, lock and output",
+        "apps/web/out/index.html present"
+      ],
+      "blockedBy": "{\"event\":\"free_video_error\",\"stage\":\"ai_director\",\"requestId\":\"79875230-c692-40bd-b78f-f75192f0ce62\",\"reason\":\"ai_model_deprecated\"}",
+      "wranglerCalls": [
+        "d1 migrations apply DB --remote --config wrangler.resolved.jsonc",
+        "deploy --config wrangler.resolved.jsonc"
+      ],
+      "reachedMigration": true,
+      "reachedDeploy": true,
+      "expectReachWrangler": true,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "F-migration-fails",
+      "description": "迁移子进程返回非零，deploy 不得执行",
+      "exitCode": 1,
+      "gateSteps": [
+        "web integrity 21/21 frozen, 2/2 managed",
+        "offline check exit 0",
+        "verification record status PASS",
+        "verification bound to current source, lock and output",
+        "apps/web/out/index.html present"
+      ],
+      "blockedBy": "node /tmp/fv003gate-zZc3M5/node_modules/wrangler/bin/wrangler.js d1 migrations apply DB --remote --config wrangler.resolved.jsonc failed (exit 1). Stopped; no further steps executed.",
+      "wranglerCalls": [
+        "d1 migrations apply DB --remote --config wrangler.resolved.jsonc"
+      ],
+      "reachedMigration": true,
+      "reachedDeploy": false,
+      "expectReachWrangler": true,
+      "verdict": "PASS",
+      "allCallsFromStub": true
+    },
+    {
+      "id": "PLAN-only",
+      "description": "deploy:plan 只输出计划",
+      "exitCode": 0,
+      "wranglerCalls": [],
+      "reachedMigration": false,
+      "reachedDeploy": false,
+      "expectReachWrangler": false,
+      "verdict": "PASS",
+      "planOutputKeys": [
+        "worker",
+        "account",
+        "databaseId",
+        "commands"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "pass": 10,
+    "fail": 0,
+    "failedIds": []
+  }
+}

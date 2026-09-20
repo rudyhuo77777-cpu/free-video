@@ -1,0 +1,337 @@
+{
+  "task": "STEP 6 第一窗口汇总（本地只读，不改产品代码）",
+  "recordedAt": "2026-09-20",
+  "scope": "三语跨页/刷新、PWA 与缓存、现有页面视觉、既有项目/FYP 行为",
+  "supersededCase": {
+    "id": "S6-7-pwa-registration",
+    "supersededBy": [
+      "S6-7a-local-unregisters",
+      "S6-7b-nonlocal-registers",
+      "S6-7c-shell-cache",
+      "S6-7d-cache-population"
+    ],
+    "whyOriginalWasWrong": "原断言要求 127.0.0.1 上 SW 注册数 >= 1，但 PwaRegistrar.tsx 在 localhost/127.0.0.1 上是**故意注销** SW 并清缓存的设计行为。断言错误在测试侧，非产品缺陷。原记录保留。"
+  },
+  "cases": [
+    {
+      "id": "S6-1-default-locale",
+      "note": "全新会话默认语言为 Bahasa Indonesia",
+      "value": {
+        "locale": "id",
+        "htmlLang": "id",
+        "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+        "bodyLen": 1501,
+        "hasIdCopy": true,
+        "hasZhCopy": false,
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-2-fixed-id-copy",
+      "note": "首页含固定印尼语文案「120 Detik. Gratis. Tanpa Kredit Video.」",
+      "value": {
+        "hasIdCopy": true,
+        "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video."
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-3-locale-matrix",
+      "note": "4 路由 × 3 语言均可渲染、语言跨页保持、控制台无红色 error",
+      "value": [
+        {
+          "locale": "id",
+          "route": "/",
+          "htmlLang": "id",
+          "storedLocale": "id",
+          "bodyLen": 1501,
+          "consoleErrors": []
+        },
+        {
+          "locale": "id",
+          "route": "/video",
+          "htmlLang": "id",
+          "storedLocale": "id",
+          "bodyLen": 1081,
+          "consoleErrors": []
+        },
+        {
+          "locale": "id",
+          "route": "/projects",
+          "htmlLang": "id",
+          "storedLocale": "id",
+          "bodyLen": 386,
+          "consoleErrors": []
+        },
+        {
+          "locale": "id",
+          "route": "/tools",
+          "htmlLang": "id",
+          "storedLocale": "id",
+          "bodyLen": 780,
+          "consoleErrors": []
+        },
+        {
+          "locale": "en",
+          "route": "/",
+          "htmlLang": "en",
+          "storedLocale": "en",
+          "bodyLen": 1547,
+          "consoleErrors": []
+        },
+        {
+          "locale": "en",
+          "route": "/video",
+          "htmlLang": "en",
+          "storedLocale": "en",
+          "bodyLen": 1141,
+          "consoleErrors": []
+        },
+        {
+          "locale": "en",
+          "route": "/projects",
+          "htmlLang": "en",
+          "storedLocale": "en",
+          "bodyLen": 383,
+          "consoleErrors": []
+        },
+        {
+          "locale": "en",
+          "route": "/tools",
+          "htmlLang": "en",
+          "storedLocale": "en",
+          "bodyLen": 782,
+          "consoleErrors": []
+        },
+        {
+          "locale": "zh",
+          "route": "/",
+          "htmlLang": "zh-CN",
+          "storedLocale": "zh",
+          "bodyLen": 732,
+          "consoleErrors": []
+        },
+        {
+          "locale": "zh",
+          "route": "/video",
+          "htmlLang": "zh-CN",
+          "storedLocale": "zh",
+          "bodyLen": 588,
+          "consoleErrors": []
+        },
+        {
+          "locale": "zh",
+          "route": "/projects",
+          "htmlLang": "zh-CN",
+          "storedLocale": "zh",
+          "bodyLen": 202,
+          "consoleErrors": []
+        },
+        {
+          "locale": "zh",
+          "route": "/tools",
+          "htmlLang": "zh-CN",
+          "storedLocale": "zh",
+          "bodyLen": 414,
+          "consoleErrors": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-4-locale-survives-refresh",
+      "note": "刷新 /video 后语言仍为所选值",
+      "value": {
+        "beforeReload": {
+          "locale": "zh",
+          "htmlLang": "zh-CN",
+          "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+          "bodyLen": 588,
+          "hasIdCopy": false,
+          "hasZhCopy": false
+        },
+        "afterReload": {
+          "locale": "zh",
+          "htmlLang": "zh-CN",
+          "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+          "bodyLen": 588,
+          "hasIdCopy": false,
+          "hasZhCopy": false
+        },
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-5-fixed-zh-copy",
+      "note": "zh 语言下首页含固定中文文案「全球首款免费生成超长视频120秒的网站」",
+      "value": {
+        "hasZhCopy": true,
+        "htmlLang": "zh-CN"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-6-pwa-manifest-sw",
+      "note": "manifest.webmanifest 与 sw.js 可取且字段完整",
+      "value": {
+        "manifestStatus": 200,
+        "name": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+        "short_name": "Free Video",
+        "start_url": "/",
+        "display": "standalone",
+        "icons": 2,
+        "swStatus": 200,
+        "swBytes": 2404,
+        "swHasCacheName": true
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-8-projects-page",
+      "note": "/projects 可渲染且无红色 error",
+      "value": {
+        "bodyLen": 202,
+        "hasHeading": true,
+        "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\n搜索 FYP ↗\n产品项目 · V0.2.2.13\n只输入一次，所有工具重复使用。\n\n正式环境中，Product Project 会按登录会话保存在服务器端。Demo 模式仍使用浏览器本地存储，因此没有 Postgres 也可以测试。\n\n产品名称\n价格\nSKU\n目标客户\n产品卖点\n客户痛点\n保存项目\n我的项目\n\n还没有项",
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-9-fyp-local",
+      "note": "/fyp-local.html 可渲染且无红色 error",
+      "value": {
+        "title": "AURIA-FYP",
+        "bodyLen": 2523,
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-7a-local-unregisters",
+      "note": "127.0.0.1 上按设计注销 SW 并清除 auria-shell-* 缓存（PwaRegistrar.tsx 显式行为）",
+      "value": {
+        "host": "127.0.0.1",
+        "registrations": 0,
+        "shellCaches": [],
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-7b-nonlocal-registers",
+      "note": "非本地主机 127.0.0.2 上 Service Worker 真实注册并激活",
+      "value": {
+        "host": "127.0.0.2",
+        "ready": "ready",
+        "registrations": 1,
+        "scopes": [
+          "http://127.0.0.2:40419/"
+        ],
+        "states": [
+          {
+            "installing": false,
+            "waiting": false,
+            "active": "activated"
+          }
+        ],
+        "cacheKeys": [
+          "free-video-shell-v0.3.1-lite"
+        ],
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-7c-shell-cache",
+      "note": "SW 激活后建立 free-video-shell-* 缓存并写入条目",
+      "value": {
+        "keys": [
+          "free-video-shell-v0.3.1-lite"
+        ],
+        "shell": [
+          "free-video-shell-v0.3.1-lite"
+        ],
+        "entries": {
+          "free-video-shell-v0.3.1-lite": [
+            "/manifest.webmanifest",
+            "/icon.svg"
+          ]
+        }
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-7d-cache-population",
+      "note": "多次导航后 SW 按 network-first 策略填充缓存（文档 + 静态资源）",
+      "value": {
+        "controlledBySW": true,
+        "cachedCount": 2,
+        "cachedPaths": [
+          "/manifest.webmanifest",
+          "/icon.svg"
+        ],
+        "rootCachedAbsolute": false,
+        "rootCachedRelative": false,
+        "hasDocument": false,
+        "hasScriptOrStyle": false,
+        "consoleErrors": []
+      },
+      "verdict": "FAIL"
+    },
+    {
+      "id": "S6-10-offline-root",
+      "note": "断网后导航 / 是否按现有设计工作",
+      "value": {
+        "warm": {
+          "controlled": true,
+          "cached": [
+            "/manifest.webmanifest",
+            "/icon.svg"
+          ]
+        },
+        "offlineRoot": {
+          "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+          "bodyLen": 1501,
+          "url": "http://127.0.0.2:34355/",
+          "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nCHATGPT + FREE VIDEO\n120 Detik. Gratis. Tanpa Kredit Video.\n\nMasukkan nama produk, upload foto, pilih durasi. "
+        },
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-11-offline-video",
+      "note": "断网后导航 /video 是否按现有设计工作",
+      "value": {
+        "offlineVideo": {
+          "bodyLen": 1081,
+          "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan "
+        },
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-12-online-recovers",
+      "note": "恢复网络后 / 正常渲染",
+      "value": {
+        "back": {
+          "bodyLen": 1501
+        },
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "PASS": 14,
+    "FAIL": 1,
+    "failedIds": [
+      "S6-7d-cache-population"
+    ]
+  }
+}

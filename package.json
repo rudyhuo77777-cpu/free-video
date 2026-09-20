@@ -1,6 +1,6 @@
 {
   "name": "free-video-cloudflare-lite",
-  "version": "0.3.1",
+  "version": "0.3.3-verification.2",
   "private": true,
   "workspaces": [
     "apps/web",
@@ -12,17 +12,28 @@
     "typecheck": "npm run build -w @auria/core && npm run typecheck -w @auria/web",
     "dev:web": "npm run build -w @auria/core && npm run dev -w @auria/web",
     "voice-bridge": "node apps/voice-bridge/server.mjs",
-    "preview": "npm run build && wrangler dev --port 8790",
-    "deploy": "wrangler deploy",
+    "test": "node --no-warnings tests/regression.mjs && node --no-warnings tests/release-guards.mjs && node --no-warnings tests/verification-fix.mjs",
+    "check:offline": "node scripts/check-offline.mjs",
+    "verify": "node scripts/verify.mjs",
+    "preview": "node scripts/start-local.mjs",
+    "migrate:local": "wrangler d1 migrations apply DB --local --config wrangler.local.jsonc",
+    "deploy": "node scripts/deploy-production.mjs",
+    "deploy:plan": "node scripts/deploy-production.mjs --plan",
     "audit:lite": "node scripts/lite-audit.mjs",
-    "audit:ui": "node scripts/ui-integrity.mjs"
+    "audit:ui": "node scripts/ui-integrity.mjs",
+    "test:core-recovery": "node --no-warnings tests/regression.mjs",
+    "test:ai:real": "node scripts/test-ai-real.mjs --accept-ai-usage",
+    "test:runtime:local": "node scripts/test-runtime-local.mjs",
+    "verify:build": "node scripts/verify.mjs --install-if-missing",
+    "audit:web": "node scripts/web-integrity.mjs",
+    "test:verification": "node --no-warnings tests/verification-fix.mjs"
   },
   "devDependencies": {
     "typescript": "5.9.2",
     "wrangler": "4.131.1"
   },
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=22.16.0"
   },
   "type": "module"
 }

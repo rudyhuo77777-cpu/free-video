@@ -1,0 +1,513 @@
+{
+  "version": "0.3.3",
+  "node": "v22.22.3",
+  "sqlite": "real local Node SQLite; D1-shaped transaction adapter",
+  "ai": "fixtures/fault injection; NOT remote inference",
+  "timestamp": "2026-09-20T14:24:21.106Z",
+  "pass": 95,
+  "fail": 0,
+  "total": 95,
+  "results": [
+    {
+      "id": "B01",
+      "title": "migration apply ledger is repeatable, six application tables",
+      "status": "PASS"
+    },
+    {
+      "id": "B02",
+      "title": "migrated quota returns JSON",
+      "status": "PASS"
+    },
+    {
+      "id": "D01",
+      "title": "unmigrated DB returns 503 JSON rather than rejected Promise",
+      "status": "PASS"
+    },
+    {
+      "id": "D02",
+      "title": "readiness rejects incomplete tables",
+      "status": "PASS"
+    },
+    {
+      "id": "A15",
+      "title": "valid structured AI fixture, 15s",
+      "status": "PASS"
+    },
+    {
+      "id": "A30",
+      "title": "valid structured AI fixture, 30s",
+      "status": "PASS"
+    },
+    {
+      "id": "A60",
+      "title": "valid structured AI fixture, 60s",
+      "status": "PASS"
+    },
+    {
+      "id": "A90",
+      "title": "valid structured AI fixture, 90s",
+      "status": "PASS"
+    },
+    {
+      "id": "A120",
+      "title": "valid structured AI fixture, 120s",
+      "status": "PASS"
+    },
+    {
+      "id": "A01",
+      "title": "schema fallback retains complete schema and repair context",
+      "status": "PASS"
+    },
+    {
+      "id": "A02",
+      "title": "structurally invalid JSON receives bounded repair",
+      "status": "PASS"
+    },
+    {
+      "id": "A03",
+      "title": "empty scenes rejected, never fabricated into a successful script",
+      "status": "PASS"
+    },
+    {
+      "id": "A04",
+      "title": "duplicate IDs normalized without changing scene content",
+      "status": "PASS"
+    },
+    {
+      "id": "Q01",
+      "title": "simple AI failure refunds once and RETAINS a failed audit record",
+      "status": "PASS"
+    },
+    {
+      "id": "Q02",
+      "title": "post-completion quota-read error NEVER refunds finished work",
+      "status": "PASS"
+    },
+    {
+      "id": "Q03",
+      "title": "refund storage failure rolls back both operations, remains recoverable",
+      "status": "PASS"
+    },
+    {
+      "id": "Q04",
+      "title": "expired reserved job can be retried and charged once",
+      "status": "PASS"
+    },
+    {
+      "id": "Q05",
+      "title": "atomic rate gate admits exactly one of 12 concurrent requests",
+      "status": "PASS"
+    },
+    {
+      "id": "Q06",
+      "title": "duplicate completed job reuses durable result without AI/debit",
+      "status": "PASS"
+    },
+    {
+      "id": "F01",
+      "title": "FYP token is consumed exactly once under concurrency",
+      "status": "PASS"
+    },
+    {
+      "id": "H01",
+      "title": "malformed percent-encoded Cookie does not reject fetch",
+      "status": "PASS"
+    },
+    {
+      "id": "H02",
+      "title": "malformed JSON returns controlled 400",
+      "status": "PASS"
+    },
+    {
+      "id": "H03",
+      "title": "null request body returns controlled 400",
+      "status": "PASS"
+    },
+    {
+      "id": "D03",
+      "title": "readiness cache cannot leak across different D1 bindings",
+      "status": "PASS"
+    },
+    {
+      "id": "D04",
+      "title": "readiness rejects six old tables without the new migration",
+      "status": "PASS"
+    },
+    {
+      "id": "D05",
+      "title": "readiness rejects missing required index",
+      "status": "PASS"
+    },
+    {
+      "id": "D06",
+      "title": "upgrade preserves project/results and does not over-refund old uncharged rows",
+      "status": "PASS"
+    },
+    {
+      "id": "Q07",
+      "title": "12 concurrent reservations cannot exceed three free credits",
+      "status": "PASS"
+    },
+    {
+      "id": "Q08",
+      "title": "12 same-key reservations produce one lease and one debit",
+      "status": "PASS"
+    },
+    {
+      "id": "Q09",
+      "title": "double failure/refund releases exactly one credit",
+      "status": "PASS"
+    },
+    {
+      "id": "Q10",
+      "title": "completed job cannot be refunded by a late failure",
+      "status": "PASS"
+    },
+    {
+      "id": "Q11",
+      "title": "late attempt cannot complete or refund a newer lease",
+      "status": "PASS"
+    },
+    {
+      "id": "Q12",
+      "title": "failure in final reservation statement rolls the debit back",
+      "status": "PASS"
+    },
+    {
+      "id": "Q13",
+      "title": "failure in refund status change preserves both reservation and debit",
+      "status": "PASS"
+    },
+    {
+      "id": "Q14",
+      "title": "different payload under same idempotency key is rejected",
+      "status": "PASS"
+    },
+    {
+      "id": "Q15",
+      "title": "other guest cannot read or reuse job key",
+      "status": "PASS"
+    },
+    {
+      "id": "Q16",
+      "title": "temporary persistence failure is not classified as AI failure",
+      "status": "PASS"
+    },
+    {
+      "id": "Q17",
+      "title": "lost response AFTER durable completion cannot refund or invoke AI again",
+      "status": "PASS"
+    },
+    {
+      "id": "Q18",
+      "title": "expired status becomes failed for unchanged frontend polling contract",
+      "status": "PASS"
+    },
+    {
+      "id": "Q19",
+      "title": "completed replay does not consume rate allowance",
+      "status": "PASS"
+    },
+    {
+      "id": "Q20",
+      "title": "free cap returns 402 without extra pending rows/debits",
+      "status": "PASS"
+    },
+    {
+      "id": "Q21",
+      "title": "valid retry after failed AI works without duplicated debit",
+      "status": "PASS"
+    },
+    {
+      "id": "Q22",
+      "title": "repeated expiry recovery cannot refund completed credits",
+      "status": "PASS"
+    },
+    {
+      "id": "R01",
+      "title": "expired rate bucket resets atomically",
+      "status": "PASS"
+    },
+    {
+      "id": "F02",
+      "title": "concurrent FYP handoff creation consumes its binding once",
+      "status": "PASS"
+    },
+    {
+      "id": "F03",
+      "title": "foreign or expired FYP token does not reveal payload",
+      "status": "PASS"
+    },
+    {
+      "id": "H04",
+      "title": "unknown API never falls through to HTML",
+      "status": "PASS"
+    },
+    {
+      "id": "H05",
+      "title": "encoded invalid path returns JSON 400",
+      "status": "PASS"
+    },
+    {
+      "id": "H06",
+      "title": "array JSON body rejected",
+      "status": "PASS"
+    },
+    {
+      "id": "H07",
+      "title": "oversized body without Content-Length rejected during streaming",
+      "status": "PASS"
+    },
+    {
+      "id": "H08",
+      "title": "missing AI binding fails before quota reservation",
+      "status": "PASS"
+    },
+    {
+      "id": "H09",
+      "title": "liveness is separate from database readiness",
+      "status": "PASS"
+    },
+    {
+      "id": "H10",
+      "title": "ready reports inference not checked and does not call AI",
+      "status": "PASS"
+    },
+    {
+      "id": "H11",
+      "title": "unexpected project storage failure remains controlled JSON",
+      "status": "PASS"
+    },
+    {
+      "id": "H12",
+      "title": "cross-origin write is rejected",
+      "status": "PASS"
+    },
+    {
+      "id": "A05",
+      "title": "AI response wrapper variants are decoded",
+      "status": "PASS"
+    },
+    {
+      "id": "A06",
+      "title": "balanced parser supports quoted braces and JSON fences",
+      "status": "PASS"
+    },
+    {
+      "id": "A07",
+      "title": "ambiguous multiple JSON objects are rejected",
+      "status": "PASS"
+    },
+    {
+      "id": "A08",
+      "title": "NaN/infinity durations and empty voice cannot pass validator",
+      "status": "PASS"
+    },
+    {
+      "id": "A09",
+      "title": "malformed AI output never exceeds two calls",
+      "status": "PASS"
+    },
+    {
+      "id": "A10",
+      "title": "auth/quota/upstream errors are not blindly retried",
+      "status": "PASS"
+    },
+    {
+      "id": "A11",
+      "title": "AI timeout is bounded and never starts an overlapping retry",
+      "status": "PASS"
+    },
+    {
+      "id": "A12",
+      "title": "long video request has bounded larger output budget",
+      "status": "PASS"
+    },
+    {
+      "id": "A13",
+      "title": "invalid enum or unreasonable total duration triggers rejection",
+      "status": "PASS"
+    },
+    {
+      "id": "P01",
+      "title": "product project create/list contract preserved",
+      "status": "PASS"
+    },
+    {
+      "id": "P02",
+      "title": "null asset scene receives JSON 400",
+      "status": "PASS"
+    },
+    {
+      "id": "S01",
+      "title": "non-API path goes to original static asset binding",
+      "status": "PASS"
+    },
+    {
+      "id": "T01",
+      "title": "real Voice Bridge HTTP CORS includes both :8790 origins and denies unrelated site",
+      "status": "PASS"
+    },
+    {
+      "id": "F04",
+      "title": "only configured FYP origin receives CORS preflight",
+      "status": "PASS"
+    },
+    {
+      "id": "X00",
+      "title": "FIXTURE_AI: the narration budget matches the measured real-F5 figures (CR-002)",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X01",
+      "title": "FIXTURE_AI: directorSchema pins the scene-count range for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X02",
+      "title": "FIXTURE_AI: scene-count lower bound minus one is rejected for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X03",
+      "title": "FIXTURE_AI: scene-count lower and upper bounds are accepted for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X04",
+      "title": "FIXTURE_AI: scene-count upper bound plus one is rejected for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X05",
+      "title": "FIXTURE_AI: total scene duration outside the +/-30% window is rejected",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X06",
+      "title": "FIXTURE_AI: a single scene longer than 15s is rejected",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X07",
+      "title": "FIXTURE_AI: narration word budget is enforced on both sides for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI 15s:6-25 30s:11-54 60s:21-111 90s:32-167 120s:42-224"
+    },
+    {
+      "id": "X08",
+      "title": "FIXTURE_AI: an unsupported duration is rejected outright",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X09",
+      "title": "FIXTURE_AI: duplicate scene ids are normalised to unique ids without inventing content",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X10",
+      "title": "FIXTURE_AI: ten malformed AI response shapes each map to a stable error code",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X11",
+      "title": "FIXTURE_AI: markdown-fenced and prose-wrapped JSON are recovered, not templated",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X12",
+      "title": "FIXTURE_AI: empty scenes and empty narration are rejected, never filled in",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X13",
+      "title": "FIXTURE_AI: five durations x ten malformed shapes never yield a templated success",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X14",
+      "title": "FIXTURE_AI: 401/403 become ai_auth_failed with exactly one model call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X15",
+      "title": "FIXTURE_AI: 429 becomes ai_quota_exceeded with exactly one model call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X16",
+      "title": "FIXTURE_AI: 5xx and unknown upstream failures become ai_upstream_unavailable, one call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X17",
+      "title": "FIXTURE_AI: an untrusted error code is never echoed back as the reason",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X18",
+      "title": "FIXTURE_AI: a malformed result is repaired at most once, so at most two model calls",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X19",
+      "title": "FIXTURE_AI: a successful repair on the second call is accepted",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X20",
+      "title": "FIXTURE_AI: a timeout raises ai_timeout and never issues another model call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X21",
+      "title": "FIXTURE_AI: a missing or non-callable AI binding fails before any inference",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X22",
+      "title": "FIXTURE_AI: every one of the five durations reaches the model with its pinned max_tokens",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X23",
+      "title": "FIXTURE_AI: a late AI result cannot complete a job whose lease already expired",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X24",
+      "title": "FIXTURE_AI: a late AI result cannot overwrite a newer owner of the same key",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X25",
+      "title": "FIXTURE_AI: a late refund from a stale owner cannot release a second credit",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    }
+  ]
+}

@@ -1,0 +1,352 @@
+{
+  "task": "C2-4 端到端验收：新预算与真实 F5 语速匹配（15/30/60/90/120）",
+  "recordedAt": "2026-09-19T14:32:04.314Z",
+  "narration": "REAL local Supertonic F5 / id（CR-002 C2-1 / C2-1b 实测 WAV）",
+  "sourceRun": "evidence/dev/STEP-5/T5-9/（单次运行，按任务卡切片）",
+  "durationsCovered": [
+    15,
+    30,
+    60,
+    90,
+    120
+  ],
+  "runsPerDuration": 2,
+  "renderResults": [
+    {
+      "id": "T5-9-15s",
+      "note": "15 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 470939,
+            "file": "t59-15s-run1.mp4"
+          },
+          "opfsLeftovers": []
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 470939,
+            "file": "t59-15s-run2.mp4"
+          },
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-30s",
+      "note": "30 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 942720,
+            "file": "t59-30s-run1.mp4"
+          },
+          "opfsLeftovers": []
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 942720,
+            "file": "t59-30s-run2.mp4"
+          },
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-60s",
+      "note": "60 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 1839258,
+            "file": "t59-60s-run1.mp4"
+          },
+          "opfsLeftovers": []
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "memory",
+            "size": 1839258,
+            "file": "t59-60s-run2.mp4"
+          },
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-90s",
+      "note": "90 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 2474704,
+            "file": "t59-90s-run1.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-90s-cf87efe4.mp4",
+              "size": 2474704
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 2474704,
+            "file": "t59-90s-run2.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-90s-82692422.mp4",
+              "size": 2474704
+            }
+          ]
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "id": "T5-9-120s",
+      "note": "120 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 3306722,
+            "file": "t59-120s-run1.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-120s-5c310fcf.mp4",
+              "size": 3306722
+            }
+          ]
+        },
+        {
+          "ok": true,
+          "error": null,
+          "out": {
+            "mode": "opfs",
+            "size": 3306722,
+            "file": "t59-120s-run2.mp4"
+          },
+          "opfsLeftovers": [
+            {
+              "name": "free-video-botol-minum-stainless-120s-e8bc6689.mp4",
+              "size": 3306722
+            }
+          ]
+        }
+      ],
+      "verdict": "PASS"
+    }
+  ],
+  "mp4Verification": {
+    "verifiedAt": "2026-09-19T14:31:05.016Z",
+    "tool": "ffprobe/ffmpeg 6.1.1",
+    "narration": "REAL local Supertonic F5 / id",
+    "criteria": {
+      "durationToleranceSec": 0.1,
+      "frameTolerance": 2,
+      "nonSilentMaxDb": -60
+    },
+    "files": [
+      {
+        "file": "t59-120s-run1.mp4",
+        "target": 120,
+        "durationSec": 120,
+        "tolOk": true,
+        "video": "h264 540x960",
+        "frames": 1440,
+        "expectedFrames": 1440,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 3306722,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.6",
+        "maxDb": -10.1,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-120s-run2.mp4",
+        "target": 120,
+        "durationSec": 120,
+        "tolOk": true,
+        "video": "h264 540x960",
+        "frames": 1440,
+        "expectedFrames": 1440,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 3306722,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.6",
+        "maxDb": -10.1,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-15s-run1.mp4",
+        "target": 15,
+        "durationSec": 15.018667,
+        "tolOk": true,
+        "video": "h264 720x1280",
+        "frames": 225,
+        "expectedFrames": 225,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 470939,
+        "fullDecodeExit": 0,
+        "meanDb": "-25.5",
+        "maxDb": -11.1,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-15s-run2.mp4",
+        "target": 15,
+        "durationSec": 15.018667,
+        "tolOk": true,
+        "video": "h264 720x1280",
+        "frames": 225,
+        "expectedFrames": 225,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 470939,
+        "fullDecodeExit": 0,
+        "meanDb": "-25.5",
+        "maxDb": -11.1,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-30s-run1.mp4",
+        "target": 30,
+        "durationSec": 30.016,
+        "tolOk": true,
+        "video": "h264 720x1280",
+        "frames": 450,
+        "expectedFrames": 450,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 942720,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.8",
+        "maxDb": -9.7,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-30s-run2.mp4",
+        "target": 30,
+        "durationSec": 30.016,
+        "tolOk": true,
+        "video": "h264 720x1280",
+        "frames": 450,
+        "expectedFrames": 450,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 942720,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.8",
+        "maxDb": -9.7,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-60s-run1.mp4",
+        "target": 60,
+        "durationSec": 60.010667,
+        "tolOk": true,
+        "video": "h264 720x1280",
+        "frames": 900,
+        "expectedFrames": 900,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 1839258,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.9",
+        "maxDb": -10.1,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-60s-run2.mp4",
+        "target": 60,
+        "durationSec": 60.010667,
+        "tolOk": true,
+        "video": "h264 720x1280",
+        "frames": 900,
+        "expectedFrames": 900,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 1839258,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.9",
+        "maxDb": -10.1,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-90s-run1.mp4",
+        "target": 90,
+        "durationSec": 90.005333,
+        "tolOk": true,
+        "video": "h264 540x960",
+        "frames": 1080,
+        "expectedFrames": 1080,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 2474704,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.6",
+        "maxDb": -9.9,
+        "nonSilent": true
+      },
+      {
+        "file": "t59-90s-run2.mp4",
+        "target": 90,
+        "durationSec": 90.005333,
+        "tolOk": true,
+        "video": "h264 540x960",
+        "frames": 1080,
+        "expectedFrames": 1080,
+        "framesOk": true,
+        "audio": "aac 48000Hz",
+        "sizeBytes": 2474704,
+        "fullDecodeExit": 0,
+        "meanDb": "-24.6",
+        "maxDb": -9.9,
+        "nonSilent": true
+      }
+    ],
+    "allPass": true
+  },
+  "noDegradationProof": {
+    "qualityParamsUnchanged": "分辨率/fps/Quality/codec 逐行与 STEP 5 改动前一致（唯一差异是 FV-005 授权的 maximumPacketCount）",
+    "ttsParamsUnchanged": "apps/web/lib/client/tts.ts sha256 与接管基线一致；voice-bridge 仍锁定 --voice F5 --lang id",
+    "durationEnumUnchanged": "worker/index.js VALID_DURATIONS = [15,30,60,90,120] 未变",
+    "videoNotShortened": "每个产物时长与目标差 ≤0.1s，帧数 = 目标×fps 精确"
+  },
+  "status": "SELF_TESTED",
+  "acceptance": "REVIEW_PENDING"
+}

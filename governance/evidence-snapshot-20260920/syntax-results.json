@@ -1,0 +1,122 @@
+{
+  "release": "0.3.3.2",
+  "passed": 23,
+  "total": 23,
+  "results": [
+    {
+      "path": "apps/voice-bridge/server.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/check-offline.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/core-recovery-test.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/deploy-production.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/lite-audit.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/local-test-support.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/process.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/start-local.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/test-ai-real.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/test-runtime-local.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/ui-integrity.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "scripts/web-integrity.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "tests/ai-probe-worker.js",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "tests/helpers.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "tests/regression.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "tests/release-guards.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "tests/runtime-probe-worker.js",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "tests/verification-fix.mjs",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "worker/db.js",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "worker/director.js",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "worker/http.js",
+      "exitCode": 0,
+      "message": ""
+    },
+    {
+      "path": "worker/index.js",
+      "exitCode": 0,
+      "message": ""
+    }
+  ]
+}

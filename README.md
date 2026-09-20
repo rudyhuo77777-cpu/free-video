@@ -1,55 +1,71 @@
-# Free Video v0.3.1 Lite
+# Free Video v0.3.3.2 — 单包整合版
 
-This is the lightweight Cloudflare deployment build of Free Video.
+**这是完整工程，不是补丁。只下载、解压这一个包即可。**
 
-## What was removed
+已将 v0.3.3 Backend Recovery 与 v0.3.3.1 Verification Fix 实际合并，并与原 v0.3.3.1 完整版的发布源码逐文件交叉核对。无需旧版本文件夹，不运行更新器，不需要应用第二个 ZIP。建议解压到新的 `free-video-v0.3.3.2-integrated-flat` 目录，避免与旧版残留文件混合。
 
-Railway, Docker, Postgres, Redis, BullMQ, the separate AI Worker service, queue polling, database migration scripts and cloud video rendering are removed.
+## 你现在只需做的事
 
-## What remains
+需要 Node.js >=22.16.0。在当前解压目录打开 PowerShell：
 
-- Existing Free Video UI and local browser video renderer.
-- 15/30/60/90/120 second local MP4 rendering.
-- One Cloudflare Worker for API routes.
-- Cloudflare Workers AI (`@cf/meta/llama-3.1-8b-instruct-fast`) for Director JSON. No external AI API key is required.
-- One Cloudflare D1 binding for the 3-free-script quota, Product Projects, idempotency and FYP handoff state.
-- Wikimedia Commons + Openverse as keyless media sources.
-- Optional Pixabay/Pexels keys for more stock video.
-- Optional Windows localhost Supertonic F5 voice bridge.
+```powershell
+.\CHECK-LOCAL.cmd
+```
 
-## Production shape
+离线检查成功时显示 `CHECK_EXIT=0`。它不安装依赖、不调用云端AI、不修改GitHub、Cloudflare或生产D1。日志保存在 `evidence/local-check-output.txt`。
 
-Browser/PWA → Cloudflare static assets + one Worker → Workers AI / D1 / public media APIs → browser local render → MP4.
+需要继续真实构建验证时：
 
-There is no Redis, no queue and no Postgres service to keep running.
+```powershell
+.\VERIFY-BUILD.cmd
+```
 
-## Cloudflare Git deployment
+这一条依次执行：构建前离线检查 → 缺少声明版本依赖时联网安装 → `npm run build` → `npm run typecheck` → 构建后再次执行同一套离线检查。任何一步失败立即停止。最终成功应为 `VERIFY_BUILD_EXIT=0`，日志为 `evidence/verify-build-output.txt`。
 
-The repository root is the Worker project.
+**不要再手工恢复、复制或编辑 `next-env.d.ts`。不要用 `git restore`，本 ZIP 不要求存在 `.git`。**
 
-- Build command: `npm run build`
-- Deploy command: `npx wrangler deploy`
-- Production branch: `main`
+现有旧目录和已经安装的依赖不会被本包修改或搬移。新目录首次完整构建需要联网安装依赖；不要为了省一次安装把旧代码覆盖回来。
 
-`wrangler.jsonc` already declares the static assets, Workers AI binding and D1 binding. Current Wrangler automatically provisions the draft D1 binding on first deploy, so there is no database ID to paste before the first deployment.
+## 交给 Codex 审计
 
-After the first successful deployment, add the custom domain `freevideo.eco-velo.com` in Cloudflare.
+在 Codex 中打开本解压目录，输入：
 
-## Optional media keys
+```text
+阅读当前目录的 AGENTS.md 和 CODEX-AUDIT.md，按其中要求在独立副本审计当前 v0.3.3.2 完整工程。不要修改原工程、UI或生产环境。不要要求另外一个 ZIP 或旧版本目录。
+```
 
-Without any key the app still uses Wikimedia Commons and Openverse. If needed later, add Worker runtime secrets named:
+`CODEX-AUDIT.md` 已放在根目录。审计对象就是这一个完整工程。原UI/Core参考哈希、测试、迁移、验收脚本和本轮打包证据均在包内。离线检查依赖 Node 自带 SQLite；不是远程 Workers AI 测试。
 
-- `PIXABAY_API_KEY`
-- `PEXELS_API_KEY`
+## 本版边界
 
-## Windows local voice
+- UI、颜色、尺寸、布局、三语、页面、按钮位置、浏览器Renderer和TTS客户端不改。
+- Worker业务模块、D1迁移SQL、Core源文件、AI默认模型及Wrangler绑定不改。
+- `apps/web` 发布源码全23文件与v0.3.3原包字节一致；构建后对其中21文件仍严格验字节，另外两个Next管理文件按规则校验。
+- 原18项UI哈希脚本和原23项Web哈希清单不改、不重算成新基线。
+- `next-env.d.ts` 仅允许必需Next引用、允许的生成路由类型导入、普通注释和BOM/换行差异；任意代码或类型抑制仍失败。
+- `tsconfig.json` 仅容许已列明的Next自动变化，其他配置仍按原结构严格验证。
+- 不重新引入Railway、Docker、Postgres、Redis、BullMQ或独立常驻AI Worker。
 
-`START-VOICE-BRIDGE-WINDOWS.ps1` remains optional. The base website can deploy without it. The browser renderer stays local and does not use a cloud video-generation service.
+对外发行版：`v0.3.3.2`；根package.json版本：`0.3.3-verification.2`。后端代码未改，API仍报告 `0.3.3-lite`；Web/Core子包版本未为凑发行号而改写。它们不是部署失败的判据。
 
-## Production hardening in v0.3.1
+## 原有后续入口
 
-- Keeps the existing UI byte-for-byte unchanged.
-- Pins Wrangler to 4.131.1 for repeatable Cloudflare builds.
-- Restores GET `/api/scripts/jobs/:id` compatibility for the existing client polling path.
-- Adds a D1-backed per-IP daily AI request cap without extra services.
-- Supports Turnstile verification automatically if `TURNSTILE_SECRET_KEY` and the existing `NEXT_PUBLIC_TURNSTILE_SITE_KEY` are configured; it remains optional for the zero-setup launch.
+- `npm run test:runtime:local`：隔离的本地workerd/D1测试；需已安装Wrangler，不绑定远程AI或生产D1。
+- `npm run preview`：先verify，迁移本地D1，启动8790预览。网页实际生成脚本时会使用远程Workers AI额度；先确认自己的账号授权和用量。
+- `npm run test:ai:real`：真实云端AI测试，会使用AI额度。不是离线检查，审计代理需另取得费用/用量授权。
+- Windows本地语音仍用Supertonic 3/F5/印尼语；手机TTS没有因此自动完成。
+- 正式发布只按 `CLOUDFLARE-DEPLOY.md`，需要确认已有生产D1与账号，并显式迁移后才发布。不因解压或本地检查自动上线。
+
+## 本轮验证结论
+
+实际执行记录及限制见 `RELEASE-REPORT.md` 和 `evidence/`。本轮离线套件通过；真实依赖安装遇到 npm DNS `EAI_AGAIN`，Next构建探测因 `next: not found` 未通过。没有取得本版完整Next构建、真实远程AI、F5声音或最终手机MP4验收证据。
+
+用户此前v0.3.3的Windows构建成功日志属于那次构建，不冒充本版新一轮测试。生成形态回归明确使用fixtures，不冒充真正的Next build。
+
+## 文件清单说明
+
+`SOURCE-MANIFEST.json` 用于校验刚解压的发行文件，运行测试或构建后evidence和生成文件可以改变；不要把归档清单直接当成构建后的不可变清单。
+
+工作树使用 `npm run audit:web` / `npm run audit:ui`。`INTEGRATION-MANIFEST.json`记录来源ZIP哈希和未改变的原文件哈希，最终整合不需要在用户电脑再次执行。
+
+Next生成文件规则依据：https://nextjs.org/docs/app/api-reference/config/typescript （本轮2026-09-17核对）

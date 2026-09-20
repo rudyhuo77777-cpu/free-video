@@ -1,0 +1,62 @@
+--- /tmp/claude-1000/-mnt-c-Users-Hongyan-Downloads-free-video-v0-3-3-2-integrated-flat/647685d9-1a81-43a2-a122-ca4fd32ed49d/scratchpad/scope-guard-check.pre-GA002.mjs	2026-09-20 17:32:54.380538035 +0700
++++ governance/scope-guard-check.mjs	2026-09-20 17:05:11.834963700 +0700
+@@ -35,7 +35,7 @@
+ // TRACEABILITY.json (governanceApprovals[] with matching path/from/to/approvedAt).
+ // ---------------------------------------------------------------------------
+ const SELF_PATH = 'governance/scope-guard-check.mjs';
+-const SELF_SHA256 = 'a7bf389c8c57608523e6dfdd30b312b9ef8cca3545bcab9eaa33dee53da57729';
++const SELF_SHA256 = '034d13b2225dcf94726245d85bdff176e7b0187124d1bd6e1bf8b6bea45cf1ce';
+ const CONTROL_FILES = {
+   'governance/SCOPE-GUARD.md': '2f24af74ecf7de2fa01e02e583487fb2e209f8bdeccfc2648800a2dc5a121a4f',
+   'governance/baseline-v0.3.3.2.sha256': '99b2b0776af45a5cedbde72772f137bce189f7002ea114920e323a976af93872'
+@@ -93,13 +93,17 @@
+   } catch { return { rebaseline: [], governance: [] }; }
+ }
+ 
++// OBS-006, second manifestation (2026-09-20, same A9 scope). B3 carried the identical
++// single-hop limitation B4 had: a frozen file re-baselined twice walks
++// takeover -> RB-1-002.to -> RB-1-003.to, and no single approved record says
++// takeover -> current, nor should one. Same walker, same strictness.
+ function frozenApproval(approvals, p, fromHash, toHash) {
++  const hops = [];
+   for (const r of approvals.rebaseline) {
+     if (r.path !== p) continue;
+-    if (r.from !== fromHash || r.to !== toHash) continue;
+-    return { record: r.id, approval: r.approval, approvedAt: r.approvedAt };
++    hops.push({ from: r.from, to: r.to, record: r.id, approval: r.approval, approvedAt: r.approvedAt });
+   }
+-  return null;
++  return deriveChain(hops, fromHash, toHash).ok;
+ }
+ 
+ // Live, non-REVERTED locationsUpdated entries for one location, as from -> to hops.
+@@ -123,8 +127,7 @@
+ // this exact location, be non-REVERTED, live, and start exactly where the previous hop ended.
+ // A fork, a dead end, a cycle or an overlong chain resolves to nothing, i.e. BLOCK.
+ const MAX_APPROVAL_CHAIN_HOPS = 32;
+-function locationChain(approvals, location, fromValue, toValue) {
+-  const hops = locationHops(approvals, location);
++function deriveChain(hops, fromValue, toValue) {
+   const chain = [];
+   const visited = new Set([fromValue]);
+   let cursor = fromValue;
+@@ -135,7 +138,7 @@
+     }
+     const next = hops.filter(h => h.from === cursor);
+     if (next.length === 0) {
+-      return { ok: null, chain, stoppedAt: cursor, reason: '没有以该值为 from 的已批准 locationsUpdated 条目' };
++      return { ok: null, chain, stoppedAt: cursor, reason: '没有以该值为 from 的已批准记录' };
+     }
+     if (next.length > 1) {
+       return { ok: null, chain, stoppedAt: cursor, reason: `同一 from 有 ${next.length} 条候选条目，无法唯一推导` };
+@@ -152,6 +155,10 @@
+   return { ok: { record: last.record, approval: last.approval, approvedAt: last.approvedAt, chain }, chain, stoppedAt: cursor, reason: null };
+ }
+ 
++function locationChain(approvals, location, fromValue, toValue) {
++  return deriveChain(locationHops(approvals, location), fromValue, toValue);
++}
++
+ function locationApproval(approvals, location, fromValue, toValue) {
+   // Unbound / partially bound lookup (baseline-holder files) keeps the original semantics:
+   // one live entry naming this location is what suppresses the alert.

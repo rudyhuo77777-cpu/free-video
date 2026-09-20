@@ -1,0 +1,108 @@
+{
+  "pass": 24,
+  "fail": 1,
+  "total": 25,
+  "results": [
+    {
+      "id": "release name and version",
+      "status": "PASS"
+    },
+    {
+      "id": "21 frozen web files unchanged; 2 Next-managed files validated",
+      "status": "FAIL",
+      "message": "next-env.d.ts: unexpected content at line 4"
+    },
+    {
+      "id": "Core source and original migration retain reference bytes",
+      "status": "PASS"
+    },
+    {
+      "id": "production plan rejects missing account",
+      "status": "PASS"
+    },
+    {
+      "id": "production plan rejects missing DB identity",
+      "status": "PASS"
+    },
+    {
+      "id": "production plan rejects local placeholder DB",
+      "status": "PASS"
+    },
+    {
+      "id": "production plan refuses wrong Worker name",
+      "status": "PASS"
+    },
+    {
+      "id": "production plan refuses multiple D1 bindings",
+      "status": "PASS"
+    },
+    {
+      "id": "production operation sequence migrates before publishing",
+      "status": "PASS"
+    },
+    {
+      "id": "plan-only command executes with no Wrangler/deployment required",
+      "status": "PASS"
+    },
+    {
+      "id": "failed process stops command sequence",
+      "status": "PASS"
+    },
+    {
+      "id": "preview config cannot access production D1",
+      "status": "PASS"
+    },
+    {
+      "id": "real AI test config has no D1 or production entry",
+      "status": "PASS"
+    },
+    {
+      "id": "runtime test config has no remote AI or D1",
+      "status": "PASS"
+    },
+    {
+      "id": "declared startup/test scripts actually exist",
+      "status": "PASS"
+    },
+    {
+      "id": "deprecated model is rejected before inference",
+      "status": "PASS"
+    },
+    {
+      "id": "new default matches configured model",
+      "status": "PASS"
+    },
+    {
+      "id": "old -fast model is not mistakenly blacklisted",
+      "status": "PASS"
+    },
+    {
+      "id": "numeric upstream 403 becomes stable auth error, no retry",
+      "status": "PASS"
+    },
+    {
+      "id": "untrusted error code is not returned as a diagnostic secret",
+      "status": "PASS"
+    },
+    {
+      "id": "readiness rejects deprecated runtime model, no inference",
+      "status": "PASS"
+    },
+    {
+      "id": "deprecated model cannot take a free-script credit",
+      "status": "PASS"
+    },
+    {
+      "id": "custom model fallback request still contains full contract",
+      "status": "PASS"
+    },
+    {
+      "id": "production plan refuses test-only entry",
+      "status": "PASS"
+    },
+    {
+      "id": "production plan refuses missing AI binding",
+      "status": "PASS"
+    }
+  ]
+}

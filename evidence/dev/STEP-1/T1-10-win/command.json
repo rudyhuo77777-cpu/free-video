@@ -1,0 +1,16 @@
+{
+  "command": "node",
+  "args": [
+    "--no-warnings",
+    "governance/repro/fv005-010-renderer.mjs"
+  ],
+  "cwd": "C:\\Users\\Hongyan\\Downloads\\free-video-v0.3.3.2-integrated-flat",
+  "startedAt": "2026-09-19T01:30:58.282Z",
+  "finishedAt": "2026-09-19T01:31:21.302Z",
+  "durationMs": 23020,
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "node": "v24.15.0",
+  "platform": "win32"
+}

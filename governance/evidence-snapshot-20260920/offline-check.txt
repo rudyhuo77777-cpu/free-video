@@ -1,0 +1,227 @@
+PASS apps/web/app/globals.css
+PASS apps/web/app/layout.tsx
+PASS apps/web/app/page.tsx
+PASS apps/web/app/projects/page.tsx
+PASS apps/web/app/tools/page.tsx
+PASS apps/web/app/video/page.tsx
+PASS apps/web/components/LanguageProvider.tsx
+PASS apps/web/components/Nav.tsx
+PASS apps/web/components/PwaRegistrar.tsx
+PASS apps/web/components/TurnstileBox.tsx
+PASS apps/web/lib/client/tts.ts
+PASS apps/web/lib/client/video-renderer.ts
+PASS apps/web/public/fyp-local.html
+PASS apps/web/public/icon-192.png
+PASS apps/web/public/icon-512.png
+PASS apps/web/public/icon.svg
+PASS apps/web/public/manifest.webmanifest
+PASS apps/web/public/reset-local-cache.html
+
+UI integrity: 18/18 PASS
+PASS Wrangler pinned
+PASS core + static web build, no separate service
+PASS no BullMQ/Redis/Postgres dependency
+PASS no obsolete backend service or container files
+PASS no Next server route directory
+PASS static Next export retained
+PASS one production Worker entry
+PASS static assets + API precedence
+PASS AI binding declared
+PASS one D1 binding, explicit migrations
+PASS no request-time DDL
+PASS additive migration files present
+PASS default model not in known deprecation list
+PASS local D1 stays local and separate
+PASS local AI explicitly remote
+PASS UI unchanged check included
+PASS real behaviour regression included
+PASS deployment routed through migration guard
+PASS idempotent job GET compatibility
+PASS keyless Commons and Openverse kept
+PASS local render/TTS clients present
+PASS fixed Indonesian copy preserved
+PASS fixed Chinese copy preserved
+
+STRUCTURAL AUDIT: 23/23 PASS. This is not behavioural or online acceptance.
+PASS B01 migration apply ledger is repeatable, six application tables
+PASS B02 migrated quota returns JSON
+{"event":"free_video_error","stage":"d1_schema","requestId":"b3c6e8a0-fded-4b46-9bf3-41848ca78fd3","reason":"quota_database_unavailable"}
+PASS D01 unmigrated DB returns 503 JSON rather than rejected Promise
+PASS D02 readiness rejects incomplete tables
+PASS A15 valid structured AI fixture, 15s
+PASS A30 valid structured AI fixture, 30s
+PASS A60 valid structured AI fixture, 60s
+PASS A90 valid structured AI fixture, 90s
+PASS A120 valid structured AI fixture, 120s
+PASS A01 schema fallback retains complete schema and repair context
+PASS A02 structurally invalid JSON receives bounded repair
+PASS A03 empty scenes rejected, never fabricated into a successful script
+PASS A04 duplicate IDs normalized without changing scene content
+{"event":"free_video_error","stage":"ai_director","requestId":"ac1756a9-db12-435a-bbf5-5afccfa54723","reason":"ai_upstream_unavailable"}
+PASS Q01 simple AI failure refunds once and RETAINS a failed audit record
+{"event":"free_video_error","stage":"d1_quota_read","requestId":"ca5e63e0-b4f1-495c-85c8-60148fc83ee1","reason":"quota_read_unavailable"}
+PASS Q02 post-completion quota-read error NEVER refunds finished work
+{"event":"free_video_error","stage":"ai_director","requestId":"dad3b142-0301-440e-aa76-7c3e77c2ad25","reason":"ai_upstream_unavailable"}
+{"event":"free_video_error","stage":"d1_refund","requestId":"dad3b142-0301-440e-aa76-7c3e77c2ad25","reason":"refund_pending_recovery"}
+PASS Q03 refund storage failure rolls back both operations, remains recoverable
+PASS Q04 expired reserved job can be retried and charged once
+PASS Q05 atomic rate gate admits exactly one of 12 concurrent requests
+PASS Q06 duplicate completed job reuses durable result without AI/debit
+PASS F01 FYP token is consumed exactly once under concurrency
+PASS H01 malformed percent-encoded Cookie does not reject fetch
+{"event":"free_video_error","stage":"api","requestId":"288d8172-616a-4003-bcdf-26d49b3eb3a1","reason":"invalid_json"}
+PASS H02 malformed JSON returns controlled 400
+{"event":"free_video_error","stage":"api","requestId":"44bf550c-95ed-4e3a-a9e6-32bf4a687e80","reason":"invalid_json_object"}
+PASS H03 null request body returns controlled 400
+PASS D03 readiness cache cannot leak across different D1 bindings
+PASS D04 readiness rejects six old tables without the new migration
+PASS D05 readiness rejects missing required index
+PASS D06 upgrade preserves project/results and does not over-refund old uncharged rows
+PASS Q07 12 concurrent reservations cannot exceed three free credits
+PASS Q08 12 same-key reservations produce one lease and one debit
+PASS Q09 double failure/refund releases exactly one credit
+PASS Q10 completed job cannot be refunded by a late failure
+PASS Q11 late attempt cannot complete or refund a newer lease
+PASS Q12 failure in final reservation statement rolls the debit back
+PASS Q13 failure in refund status change preserves both reservation and debit
+{"event":"free_video_error","stage":"idempotency","requestId":"3101b96b-1d93-45f2-ad5d-13ce3e4b3a8e","reason":"idempotency_conflict"}
+PASS Q14 different payload under same idempotency key is rejected
+{"event":"free_video_error","stage":"api","requestId":"1668a053-dbc1-43cc-811c-c5ebc356bf28","reason":"not_found"}
+{"event":"free_video_error","stage":"api","requestId":"d2079a45-a641-4266-8213-c5c7e20b1e2e","reason":"not_found"}
+PASS Q15 other guest cannot read or reuse job key
+{"event":"free_video_error","stage":"d1_persist","requestId":"0ca317aa-ff6a-4f8e-8e65-32f8aea44d40","reason":"persistence_unconfirmed"}
+PASS Q16 temporary persistence failure is not classified as AI failure
+{"event":"free_video_error","stage":"d1_persist","requestId":"d68f0132-dd3f-4920-9fe5-ecdccaf19543","reason":"persistence_unconfirmed"}
+PASS Q17 lost response AFTER durable completion cannot refund or invoke AI again
+PASS Q18 expired status becomes failed for unchanged frontend polling contract
+PASS Q19 completed replay does not consume rate allowance
+PASS Q20 free cap returns 402 without extra pending rows/debits
+{"event":"free_video_error","stage":"ai_director","requestId":"945ad356-f129-4dd0-aac0-a2494c8605fd","reason":"ai_upstream_unavailable"}
+PASS Q21 valid retry after failed AI works without duplicated debit
+PASS Q22 repeated expiry recovery cannot refund completed credits
+PASS R01 expired rate bucket resets atomically
+{"event":"free_video_error","stage":"fyp","requestId":"11b17807-962f-4be0-ab45-3a65ed9d8f46","reason":"invalid_return_binding"}
+PASS F02 concurrent FYP handoff creation consumes its binding once
+PASS F03 foreign or expired FYP token does not reveal payload
+PASS H04 unknown API never falls through to HTML
+{"event":"free_video_error","stage":"api","requestId":"ac0c09ef-eb98-436b-b1ef-8d4d6230f986","reason":"invalid_job_id"}
+PASS H05 encoded invalid path returns JSON 400
+{"event":"free_video_error","stage":"api","requestId":"16aa7bfb-5816-4f10-84f0-f27a323ac7b6","reason":"invalid_json_object"}
+PASS H06 array JSON body rejected
+PASS H07 oversized body without Content-Length rejected during streaming
+{"event":"free_video_error","stage":"ai_director","requestId":"e260e2ee-e46f-4bbd-8253-6dbad3d247ef","reason":"ai_binding_unavailable"}
+PASS H08 missing AI binding fails before quota reservation
+{"event":"free_video_error","stage":"d1_schema","requestId":"497d474b-ab3e-44df-ac2b-8ba15f9544b4","reason":"quota_database_unavailable"}
+PASS H09 liveness is separate from database readiness
+PASS H10 ready reports inference not checked and does not call AI
+{"event":"free_video_error","stage":"api","requestId":"8653af70-e93f-4beb-9ed1-0ae8b5f03f95","reason":"internal_error"}
+PASS H11 unexpected project storage failure remains controlled JSON
+{"event":"free_video_error","stage":"api","requestId":"17ecd1b0-21c7-4ba6-80e1-94739e4cfb45","reason":"origin_not_allowed"}
+PASS H12 cross-origin write is rejected
+PASS A05 AI response wrapper variants are decoded
+PASS A06 balanced parser supports quoted braces and JSON fences
+PASS A07 ambiguous multiple JSON objects are rejected
+PASS A08 NaN/infinity durations and empty voice cannot pass validator
+PASS A09 malformed AI output never exceeds two calls
+PASS A10 auth/quota/upstream errors are not blindly retried
+PASS A11 AI timeout is bounded and never starts an overlapping retry
+PASS A12 long video request has bounded larger output budget
+PASS A13 invalid enum or unreasonable total duration triggers rejection
+PASS P01 product project create/list contract preserved
+PASS P02 null asset scene receives JSON 400
+PASS S01 non-API path goes to original static asset binding
+PASS T01 real Voice Bridge HTTP CORS includes both :8790 origins and denies unrelated site
+{"event":"free_video_error","stage":"fyp","requestId":"beeba6e2-e80c-4a87-a501-f3dd423192e8","reason":"origin_not_allowed"}
+PASS F04 only configured FYP origin receives CORS preflight
+
+REGRESSION: 69/69 PASS; 0 FAIL
+PASS release name and version
+PASS 21 frozen web files unchanged; 2 Next-managed files validated
+PASS Core source and original migration retain reference bytes
+PASS production plan rejects missing account
+PASS production plan rejects missing DB identity
+PASS production plan rejects local placeholder DB
+PASS production plan refuses wrong Worker name
+PASS production plan refuses multiple D1 bindings
+PASS production operation sequence migrates before publishing
+PASS plan-only command executes with no Wrangler/deployment required
+PASS failed process stops command sequence
+PASS preview config cannot access production D1
+PASS real AI test config has no D1 or production entry
+PASS runtime test config has no remote AI or D1
+PASS declared startup/test scripts actually exist
+PASS deprecated model is rejected before inference
+PASS new default matches configured model
+PASS old -fast model is not mistakenly blacklisted
+PASS numeric upstream 403 becomes stable auth error, no retry
+PASS untrusted error code is not returned as a diagnostic secret
+{"event":"free_video_error","stage":"ai_director","requestId":"b0584088-7ede-4b37-81e2-ceba4b75c417","reason":"ai_model_deprecated"}
+PASS readiness rejects deprecated runtime model, no inference
+{"event":"free_video_error","stage":"ai_director","requestId":"c6e3bfb4-977e-45a8-ae32-b992b4c2380d","reason":"ai_model_deprecated"}
+PASS deprecated model cannot take a free-script credit
+PASS custom model fallback request still contains full contract
+PASS production plan refuses test-only entry
+PASS production plan refuses missing AI binding
+
+RELEASE GUARDS: 25/25 PASS; 0 FAIL
+PASS V01 clean 23-file baseline uses 21 frozen and 2 validated files
+PASS V02 original next-env two-reference seed is accepted
+PASS V03 Next production route import and generated comments are accepted
+PASS V04 Next development route import is accepted
+PASS V05 Windows UTF8 BOM and CRLF in generated declaration are accepted
+PASS V06 user manual standard declaration need not be restored
+PASS V07 missing required Next reference is rejected
+PASS V08 unknown triple-slash directive cannot pass as a comment
+PASS V09 path traversal import is rejected
+PASS V10 arbitrary package import is rejected
+PASS V11 injected declaration is rejected
+PASS V12 ts-nocheck cannot hide an invalid declaration
+PASS V13 duplicate references are rejected
+PASS V14 duplicate route imports are rejected
+PASS V15 UTF16 is not mistaken for UTF8
+PASS V16 malformed UTF8 is rejected
+PASS V17 empty declaration is rejected
+PASS V18 oversized declaration is rejected
+PASS V19 original tsconfig is accepted
+PASS V20 both observed Next tsconfig updates are accepted
+PASS V21 JSX-only Next update is accepted
+PASS V22 dev-types-only Next update is accepted
+PASS V23 BOM CRLF and formatting in tsconfig are accepted
+PASS V24 strict=false is rejected
+PASS V25 noEmit=false is rejected
+PASS V26 new compiler flags are rejected
+PASS V27 changed compilation target is rejected
+PASS V28 removed source include is rejected
+PASS V29 unrelated include is rejected
+PASS V30 duplicate include is rejected
+PASS V31 weakened exclude is rejected
+PASS V32 unexpected JSX mode is rejected
+PASS V33 unrelated extends is rejected
+PASS V34 malformed config is rejected
+PASS V35 build-shaped declaration and tsconfig pass combined gate
+PASS V36 CSS changes still fail even a single appended byte
+PASS V37 video page changes still fail
+PASS V38 client renderer changes still fail
+PASS V39 changing next.config.ts cannot bypass build errors
+PASS V40 changing web dependencies is rejected
+PASS V41 a missing frozen file is rejected
+PASS V42 extra source routes are rejected
+PASS V43 generated output directories and build info are ignored
+PASS V44 original hash manifest cannot be rewritten to bless edits
+PASS V45 tsconfig reference cannot be weakened
+PASS V46 validation never rewrites or restores managed files
+PASS V47 exact same offline gate runs BEFORE and AFTER build and typecheck
+PASS V48 failed build stops before typecheck and post-gate
+PASS V49 failed post-build gate fails verification
+PASS V50 failed pre-gate prevents installation and build
+PASS V51 failed dependency installation stops before build
+PASS V52 existing dependencies avoid reinstall
+PASS V53 missing dependencies install before build, never migrate or deploy
+PASS V54 two simulated build cycles do not require generated-file restoration
+PASS V55 dependency preflight detects missing or wrong installed versions
+PASS V56 nested output-named directories cannot hide new source routes
+
+VERIFICATION FIX: 56/56 PASS; 0 FAIL
+Generated-file tests use build-shaped fixtures. A genuine next build remains a separate verification gate.
+
+OFFLINE CHECK PASS. AI outputs were fixtures. This is NOT remote AI, full build, or MP4 device acceptance.

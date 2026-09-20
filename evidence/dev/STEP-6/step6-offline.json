@@ -1,0 +1,56 @@
+{
+  "task": "STEP 6 / T6-3 离线行为直测",
+  "recordedAt": "2026-09-20T10:39:07.163Z",
+  "cases": [
+    {
+      "id": "S6-10-offline-root",
+      "note": "断网后导航 / 是否按现有设计工作",
+      "value": {
+        "warm": {
+          "controlled": true,
+          "cached": [
+            "/manifest.webmanifest",
+            "/icon.svg"
+          ]
+        },
+        "offlineRoot": {
+          "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+          "bodyLen": 1501,
+          "url": "http://127.0.0.2:34355/",
+          "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nCHATGPT + FREE VIDEO\n120 Detik. Gratis. Tanpa Kredit Video.\n\nMasukkan nama produk, upload foto, pilih durasi. "
+        },
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-11-offline-video",
+      "note": "断网后导航 /video 是否按现有设计工作",
+      "value": {
+        "offlineVideo": {
+          "bodyLen": 1081,
+          "text": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi director. HP kamu jadi studio.\n\nDirector dan "
+        },
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-12-online-recovers",
+      "note": "恢复网络后 / 正常渲染",
+      "value": {
+        "back": {
+          "bodyLen": 1501
+        },
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "pass": 3,
+    "fail": 0,
+    "failedIds": []
+  }
+}

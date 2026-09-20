@@ -1,0 +1,243 @@
+{
+  "frozenAt": "2026-09-20",
+  "why": "用户 2026-09-20 指令：立即保留当前 10 条 MP4、对应源音频、测试输入、探测日志和源码摘要，不再覆盖。",
+  "producedBy": "governance/repro/fv005-010-fix-verify.mjs，本机 WSL/Linux Chrome，OBS-007 修复后（no-preference 软件编码路径）",
+  "rendererSha256": "ba843e7c5acfc9d104acc5ba34dfa7b03460082ff77ba38da0657c3e281c12b5",
+  "runEnvironment": {
+    "browser": "Chromium via CDP (headless)",
+    "videoPath": "avc1 no-preference（软件）",
+    "audioPath": "@mediabunny/aac-encoder 软件回退，44100Hz",
+    "hardwareH264Available": false
+  },
+  "mp4": [
+    {
+      "file": "fv006-real-f5-15s.mp4",
+      "sizeBytes": 697033,
+      "sha256": "de94c0794003699a28998c45881b652702c42771ab9ebb2e9cee3483f7d9f74d"
+    },
+    {
+      "file": "fv010-60s-fitting.mp4",
+      "sizeBytes": 2577938,
+      "sha256": "f53ec57c1b707ee59ff5c33585dc48f9bd6c73314954eb6dc948e43d697518de"
+    },
+    {
+      "file": "t59-120s-run1.mp4",
+      "sizeBytes": 4631871,
+      "sha256": "d4c543f18256e65b214883e547cefeb34a7349772049c269e7558f0115ace417"
+    },
+    {
+      "file": "t59-120s-run2.mp4",
+      "sizeBytes": 4635336,
+      "sha256": "82e68fb2d4ba0cf012304b645f4bd49344e21bea1fef9aaa6be576f8bb8f73db"
+    },
+    {
+      "file": "t59-15s-run1.mp4",
+      "sizeBytes": 694915,
+      "sha256": "2ccc72b52c672ff9944f14e7e6a61d61a17cfcd2d75ad86a8e4f08a05b59a4ad"
+    },
+    {
+      "file": "t59-15s-run2.mp4",
+      "sizeBytes": 690781,
+      "sha256": "9abfcb25e2df49233400bfa8433857227291ff2b2b0628a36539c61940b6902b"
+    },
+    {
+      "file": "t59-30s-run1.mp4",
+      "sizeBytes": 1350546,
+      "sha256": "84f3f222500792e593740ec03186b64a79d16232cacb219ad0dcbdceb60f124c"
+    },
+    {
+      "file": "t59-30s-run2.mp4",
+      "sizeBytes": 1345543,
+      "sha256": "0d5f7097d335722e5b982d905a4cbc6f50f39a67714dc81001d9440dcceab32c"
+    },
+    {
+      "file": "t59-60s-run1.mp4",
+      "sizeBytes": 2569358,
+      "sha256": "30d201343a5945b3fece57e7048b186c4100d3de8564328c9cc43349f6d8dd64"
+    },
+    {
+      "file": "t59-60s-run2.mp4",
+      "sizeBytes": 2571477,
+      "sha256": "8660be927e81e6ad9d067efc79dd1d1077d902d88ed36a4b7a1d51a8c3cb9747"
+    },
+    {
+      "file": "t59-90s-run1.mp4",
+      "sizeBytes": 3485053,
+      "sha256": "62908eda99bcc2524d5b7c14914b04fe37fc2ecce51eddd85671275789c35b38"
+    },
+    {
+      "file": "t59-90s-run2.mp4",
+      "sizeBytes": 3485553,
+      "sha256": "2aab33f413f4df72f797601df3abacc1b6ab43caf4519b7a012b9a558c2a98f0"
+    }
+  ],
+  "sourceAudio": [
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/long-1.wav",
+      "sizeBytes": 1118252,
+      "sha256": "68d7dae48484eaa950b94884aecd098c10eafd1fc5e6eb4854e219d3c5400bb6",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/long-2.wav",
+      "sizeBytes": 1198124,
+      "sha256": "9d9beb728ef8446c85b2a8bcf0abb53b47307434215084ca507285a45f212884",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/long-3.wav",
+      "sizeBytes": 1265708,
+      "sha256": "024b17c2614fded61014860ded74d87a79f63a55496d7203cbd8d2f8502c009d",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/long-4.wav",
+      "sizeBytes": 1161260,
+      "sha256": "cb71b80db5d4f954b1a329ebcd5c02773de54b272a9d18f6ef4a630ec63fdd07",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/medium-1.wav",
+      "sizeBytes": 577580,
+      "sha256": "b42a208f0a50d854bdb9463884c34e388a5ddc1e00631affcb5bc0f6a76d9ce3",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/medium-2.wav",
+      "sizeBytes": 565292,
+      "sha256": "68067bc2a0c5cfe905bb7f9d9f90a1807caff1597188c4fef07d459c88829525",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/medium-3.wav",
+      "sizeBytes": 614444,
+      "sha256": "888d0f0c4e95149c40fb638b7dd9d8314faf89137230e297b3970706c5e42b85",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/medium-4.wav",
+      "sizeBytes": 577580,
+      "sha256": "05c5d20b94da1084c2cdad209ac1bd25c6b9674300696e07a719895edcd33474",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/multi-1.wav",
+      "sizeBytes": 1056812,
+      "sha256": "71c2002fb9e191cd838de8537c73a5d45fe34a6606264317cf6a9ad6023e4291",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/multi-2.wav",
+      "sizeBytes": 1228844,
+      "sha256": "c7402d65380d99a970400ef1720b10927d774e633ca5cefd6d119f6a3c97ec63",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/multi-3.wav",
+      "sizeBytes": 1222700,
+      "sha256": "f76a3ff93aa6b4ae6191b927096922afdb672e2b88dd7c95952ff24d8fdcd9c0",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/multi-4.wav",
+      "sizeBytes": 1099820,
+      "sha256": "9f9be618cdaf52788036d723950a3cdb46e57b37f2c8d6e7878800be76058155",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/short-1.wav",
+      "sizeBytes": 227372,
+      "sha256": "dd48ea8065a423868abad6a0777192c98394dc4ee8b7cd1375fad687bc572fd8",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/short-2.wav",
+      "sizeBytes": 276524,
+      "sha256": "81d529677c1b89e735bfec0bf99549a0900521119a0c8e72b073e5ba3952636b",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/short-3.wav",
+      "sizeBytes": 208940,
+      "sha256": "666d415ee4536577b6ae56681fa705f883962c42c28b25517a47bf6063115297",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1/wav/short-4.wav",
+      "sizeBytes": 233516,
+      "sha256": "ba3a66909988d109a64e83ab3e6192dab84d79d1c9ed569f3d9b2fc66a964ac7",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1b/wav/lf-120s.wav",
+      "sizeBytes": 10085624,
+      "sha256": "2d6496ca3ad3c7cd274264872d893e103b5a4c4eb766eafb2cd9150c2e7fd27a",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1b/wav/lf-30s.wav",
+      "sizeBytes": 2441096,
+      "sha256": "e06897e841fcf473b9bfebf768a05488a118b0edc0bdf23770d0310692e834eb",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1b/wav/lf-60s-b.wav",
+      "sizeBytes": 5510720,
+      "sha256": "1c77852f27bff3514d73964d8ee96cdc17f3cd41906ec90a39361e92aac0a404",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1b/wav/lf-60s.wav",
+      "sizeBytes": 4876004,
+      "sha256": "1ab03f963c23f5399cf2cfad5ab8692878723f159cf3f5476415ea1760e4a9a8",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    },
+    {
+      "path": "evidence/dev/CR-002/C2-1b/wav/lf-90s.wav",
+      "sizeBytes": 7632284,
+      "sha256": "4e4b8884327dbcc7ca1f37cffa34267c671da9569e570e1e871e90892c890576",
+      "note": "真实本地 Supertonic F5 / id 输出，原地留存未被覆盖"
+    }
+  ],
+  "probeLogs": [
+    {
+      "path": "evidence/dev/OBS-007/T-OBS7-3/fv005-010.json",
+      "sha256": "89d318aabb9873a11bb8493c2d5693f54b06c0b8cce1b5e1efcc6990fe1b8b38"
+    },
+    {
+      "path": "evidence/dev/OBS-007/T-OBS7-3/fv005-010.stderr.log",
+      "sha256": "cb1667b6580a8802ab1a241b37347cf5a56203326ba9b0c811b57bd3413d6d96"
+    },
+    {
+      "path": "evidence/dev/OBS-007/T-OBS7-3/mp4-verification.json",
+      "sha256": "d1de17e8cf3681f307f054e58642e75cbf80873c50e3b1a62b44b9ab06452eaf"
+    },
+    {
+      "path": "evidence/dev/CR-003/fv-reverify/fv005-010.json",
+      "sha256": "55c82686a52ba32a145845fec3ca65727ddbca98c249763f483a62b6c7694b79"
+    }
+  ],
+  "sourceSnapshot": [
+    {
+      "path": "evidence/dev/OBS-007/artifacts-frozen-20260920/source/video-renderer.ts.at-ba843e7c",
+      "sha256": "ba843e7c5acfc9d104acc5ba34dfa7b03460082ff77ba38da0657c3e281c12b5",
+      "equalsWorkingTree": true
+    }
+  ],
+  "verification": {
+    "tool": "ffprobe/ffmpeg 6.1.1",
+    "result": "10/10 全部通过：时长容差内、分辨率与帧数与修复前一致、h264+aac、完整解码 exit 0、非静音",
+    "detail": "evidence/dev/OBS-007/T-OBS7-3/mp4-verification.json"
+  },
+  "lostPriorArtifacts": {
+    "what": "2026-09-19 Windows 本机（硬件 H.264 路径）产出的 12 条 MP4 二进制",
+    "status": "历史测试记录保留；原始 MP4 已丢失；不能声称现在仍可复查",
+    "recordsThatSurvive": [
+      "evidence/dev/STEP-5/T5-9/mp4-verification.json（10 个文件的 ffprobe 核验）",
+      "evidence/dev/STEP-5/T5-verify/mp4-verification.json（FV-005 的 6 个文件）",
+      "evidence/dev/CR-002/C2-4/result.json（每次渲染字节数）"
+    ],
+    "correction": "CORRECTION-005"
+  },
+  "hardwarePathRegressionOutstanding": "最终候选必须补齐修复后的硬件路径（Windows 本机）回归；本目录的软件路径通过不能替代。补测时记为『新一轮运行』，不得冒充旧产物恢复。"
+}

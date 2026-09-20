@@ -1,0 +1,142 @@
+{
+  "task": "OBS-008 验收（三层分离）",
+  "recordedAt": "2026-09-20T14:12:54.266Z",
+  "cacheName": "free-video-shell-v0.3.3.2-lite",
+  "cases": [
+    {
+      "id": "O8-1-sw-activated",
+      "note": "SW 已注册并 activated 且控制页面",
+      "value": {
+        "count": 1,
+        "states": [
+          "activated"
+        ],
+        "controller": true,
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "O8-2-sw-cache-content",
+      "note": "SW Cache Storage 含 document 与关键静态资源",
+      "value": {
+        "allCacheKeys": [
+          "free-video-shell-v0.3.3.2-lite"
+        ],
+        "count": 17,
+        "paths": [
+          "/manifest.webmanifest",
+          "/icon.svg",
+          "/icon-192.png",
+          "/video",
+          "/",
+          "/_next/static/chunks/1q0-f-vq65fl_.css",
+          "/_next/static/chunks/19mx3mg6lkumu.js",
+          "/_next/static/chunks/310vm2bl3xxpt.js",
+          "/_next/static/chunks/1eh83f1trsv72.js",
+          "/_next/static/chunks/3byuobrkyz9bj.js",
+          "/_next/static/chunks/turbopack-2ts_dc91w-it6.js",
+          "/_next/static/chunks/3n3489r2ni_76.js",
+          "/_next/static/chunks/13k9px3a1hz92.js",
+          "/_next/static/chunks/3gc_j-y9el39j.js",
+          "/_next/static/chunks/2kjmw93bimjv_.js",
+          "/_next/static/chunks/3ehje88bn25pr.js",
+          "/_next/static/chunks/0uwc81lcwzd99.js"
+        ],
+        "hasRoot": true,
+        "hasVideo": true,
+        "hasNextAssets": true,
+        "oldCachePresent": false
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "O8-3-old-cache-purged",
+      "note": "新版本激活后旧 cache 已被清理，不污染当前版本",
+      "value": {
+        "oldCachePresent": false,
+        "allCacheKeys": [
+          "free-video-shell-v0.3.3.2-lite"
+        ]
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "O8-4-offline-root",
+      "note": "HTTP 缓存禁用 + 完全断网下 / 可打开且非错误页/空白页",
+      "value": {
+        "len": 1501,
+        "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+        "htmlLang": "id",
+        "hasNav": true,
+        "hasIdCopy": true,
+        "head": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nCHATGPT + FREE VIDEO\n120 Detik. Gratis. Tanpa Kredit Video.\n\nMasukkan ",
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "O8-5-offline-video",
+      "note": "HTTP 缓存禁用 + 完全断网下 /video 可打开且非错误页/空白页",
+      "value": {
+        "len": 1081,
+        "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+        "htmlLang": "id",
+        "hasNav": true,
+        "hasIdCopy": false,
+        "head": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nVIDEO JUALAN GRATIS · V0.2.2.13\nMasukkan produk. Free Video jadi direc",
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "O8-6-offline-locale-nav",
+      "note": "断网页面仍为默认印尼语且导航完整",
+      "value": {
+        "root": {
+          "htmlLang": "id",
+          "hasNav": true,
+          "hasIdCopy": true
+        },
+        "video": {
+          "htmlLang": "id",
+          "hasNav": true
+        }
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "O8-7-online-recovers",
+      "note": "恢复网络后正常更新",
+      "value": {
+        "len": 1501,
+        "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video.",
+        "htmlLang": "id",
+        "hasNav": true,
+        "hasIdCopy": true,
+        "head": "Free Video\nBahasa Indonesia\nEnglish\n中文\nCari FYP ↗\nCHATGPT + FREE VIDEO\n120 Detik. Gratis. Tanpa Kredit Video.\n\nMasukkan ",
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "O8-8-no-console-errors",
+      "note": "全过程 Console 无新增错误",
+      "value": {
+        "collected": []
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "pass": 8,
+    "fail": 0,
+    "failedIds": []
+  },
+  "layerSeparation": {
+    "httpCache": "层3 起用 Network.setCacheDisabled(true) 关闭，排除 HTTP 缓存贡献",
+    "swCacheStorage": "层2 直接列举 free-video-shell-v0.3.3.2-lite 条目",
+    "trueOffline": "层3 用 Network.emulateNetworkConditions{offline:true}"
+  }
+}

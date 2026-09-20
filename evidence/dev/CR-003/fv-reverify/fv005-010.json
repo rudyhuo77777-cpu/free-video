@@ -1,0 +1,172 @@
+{
+  "task": "T5-3/4/5/6 renderer fix verification",
+  "recordedAt": "2026-09-20T05:37:52.456Z",
+  "narration": "REAL local Supertonic F5 / id WAVs from CR-002 C2-1 and C2-1b",
+  "cases": [
+    {
+      "id": "T5-9-15s",
+      "note": "15 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        },
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "id": "T5-9-30s",
+      "note": "30 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        },
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "id": "T5-9-60s",
+      "note": "60 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        },
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "id": "T5-9-90s",
+      "note": "90 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 29 / 865000 bps, 540x960, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        },
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 29 / 865000 bps, 540x960, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "id": "T5-9-120s",
+      "note": "120 秒真实 F5 连续两次导出",
+      "value": [
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 29 / 865000 bps, 540x960, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        },
+        {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 29 / 865000 bps, 540x960, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+          "out": null,
+          "opfsLeftovers": []
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    {
+      "id": "FV-005-cleanup",
+      "note": "失败后 OPFS 不得残留临时文件",
+      "value": {
+        "error": "narration_silent",
+        "opfsLeftovers": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "FV-006",
+      "note": "全零 PCM 被拒；真实 F5 通过",
+      "value": {
+        "silentResult": {
+          "rejected": true,
+          "error": "narration_silent"
+        },
+        "realResult": {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters."
+        }
+      },
+      "verdict": "FAIL"
+    },
+    {
+      "id": "FV-009",
+      "note": "挂起素材连接必须在有限时间内失败并走回退",
+      "value": {
+        "settled": null,
+        "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters.",
+        "elapsedMs": 10276
+      },
+      "verdict": "FAIL"
+    },
+    {
+      "id": "FV-010",
+      "note": "超出有效语音必须明确失败；仅尾部静音可裁",
+      "value": {
+        "overflowResult": {
+          "rejected": true,
+          "error": "narration_exceeds_duration"
+        },
+        "normalResult": {
+          "ok": false,
+          "error": "This specific encoder configuration (avc1.64001f, quantizer 22 / 2829000 bps, 720x1280, hardware acceleration: prefer-hardware) is not supported in this environment. Consider using another codec or changing your video parameters."
+        },
+        "fittingSourceTail": {
+          "durationSec": 55.28299319727891,
+          "tailSeconds": -0.000006802721088661201,
+          "rmsDb": null,
+          "peak": 0
+        }
+      },
+      "verdict": "FAIL"
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "pass": 1,
+    "fail": 8,
+    "failedIds": [
+      "T5-9-15s",
+      "T5-9-30s",
+      "T5-9-60s",
+      "T5-9-90s",
+      "T5-9-120s",
+      "FV-006",
+      "FV-009",
+      "FV-010"
+    ]
+  }
+}

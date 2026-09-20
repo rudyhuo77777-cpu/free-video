@@ -1,0 +1,33 @@
+--- governance/evidence-snapshot-pre-step2/verification-fix.mjs.before	2026-09-19 08:58:01.657135700 +0700
++++ tests/verification-fix.mjs	2026-09-19 08:58:34.364088100 +0700
+@@ -88,6 +88,30 @@
+ 
+ await test('V56 nested output-named directories cannot hide new source routes',()=>withTree(r=>{put(r,'apps/web/app/out/page.tsx','export default function Page() {return null;}');assert.throws(()=>verifyWebIntegrity(r),/Unexpected Web source/);}));
+ 
++// --- STEP 2 additions for FV-001 (real Next 16.3.3 root-params import) and
++// --- FV-002 (U+2028 / U+2029 line separators). Existing V01-V56 are unchanged.
++const generatedWithRootParams=seed+'import "./.next/types/routes.d.ts";\nimport "./.next/types/root-params.d.ts";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n';
++const LS=' ', PS=' ';
++
++await test('V57 real Next 16.3.3 production root-params import is accepted',()=>assert.equal(validateNextEnv(generatedWithRootParams).generatedRootParamsImport,'./.next/types/root-params.d.ts'));
++await test('V58 Next development root-params import is accepted',()=>assert.equal(validateNextEnv(generatedWithRootParams.replace(/\.next\/types\//g,'.next/dev/types/')).generatedRootParamsImport,'./.next/dev/types/root-params.d.ts'));
++await test('V59 root-params import alone still requires both Next references',()=>assert.throws(()=>validateNextEnv('import "./.next/types/root-params.d.ts";'),/both required/));
++await test('V60 duplicate root-params imports are rejected',()=>assert.throws(()=>validateNextEnv(generatedWithRootParams+'import "./.next/types/root-params.d.ts";'),/duplicate generated root-params/));
++await test('V61 routes and root-params are counted independently',()=>{const r=validateNextEnv(generatedWithRootParams);assert.equal(r.generatedRouteImport,'./.next/types/routes.d.ts');assert.equal(r.generatedRootParamsImport,'./.next/types/root-params.d.ts');});
++await test('V62 root-params path traversal is rejected',()=>assert.throws(()=>validateNextEnv(seed+'import "../../.next/types/root-params.d.ts";'),/unexpected content/));
++await test('V63 root-params lookalike filename is rejected',()=>assert.throws(()=>validateNextEnv(seed+'import "./.next/types/root-params.evil.d.ts";'),/unexpected content/));
++await test('V64 arbitrary file under .next/types is still rejected',()=>assert.throws(()=>validateNextEnv(seed+'import "./.next/types/anything.d.ts";'),/unexpected content/));
++await test('V65 U+2028 after a comment cannot hide an import',()=>assert.throws(()=>validateNextEnv(seed+'// NOTE: This file should not be edited'+LS+'import "untrusted-package";'),/unexpected content/));
++await test('V66 U+2029 after a comment cannot hide a declaration',()=>assert.throws(()=>validateNextEnv(seed+'// NOTE: This file should not be edited'+PS+'declare const injected: any;'),/unexpected content/));
++await test('V67 U+2028 after a comment cannot hide a triple-slash directive',()=>assert.throws(()=>validateNextEnv(seed+'// NOTE'+LS+'/// <reference types="anything" />'),/unexpected directive/));
++await test('V68 U+2029 cannot hide a ts-nocheck suppression',()=>assert.throws(()=>validateNextEnv(seed+'// NOTE'+PS+'// @ts-nocheck'),/suppression/));
++await test('V69 U+2028 cannot hide a path traversal import',()=>assert.throws(()=>validateNextEnv(seed+'// NOTE'+LS+'import "../../other.d.ts";'),/unexpected content/));
++await test('V70 U+2028 cannot smuggle a duplicate required reference',()=>assert.throws(()=>validateNextEnv(seed+'// NOTE'+LS+'/// <reference types="next" />'),/duplicate required reference/));
++await test('V74 U+2028 cannot smuggle an unknown triple-slash directive',()=>assert.throws(()=>validateNextEnv(seed+'// NOTE'+LS+'/// <reference types="untrusted" />'),/unexpected directive/));
++await test('V71 line separators do not break the accepted real generated form',()=>assert.equal(validateNextEnv(generatedWithRootParams.replace(/\n/g,LS)).requiredReferences,2));
++await test('V72 real generated declaration passes the combined gate',()=>withTree(r=>{put(r,'apps/web/next-env.d.ts',generatedWithRootParams);put(r,'apps/web/tsconfig.json',JSON.stringify(generatedConfig()));const out=verifyWebIntegrity(r);assert.equal(out.frozenFiles,21);assert.equal(out.managedFiles,2);}));
++await test('V73 two build cycles with root-params need no restoration',()=>withTree(r=>{for(let i=0;i<2;i++){verifyWebIntegrity(r);put(r,'apps/web/next-env.d.ts',(i?'﻿':'')+generatedWithRootParams.replace(/\n/g,i?'\r\n':'\n'));put(r,'apps/web/tsconfig.json',JSON.stringify(generatedConfig(),null,2));verifyWebIntegrity(r);}}));
++
+ const fail=results.filter(x=>x.status==='FAIL').length;
+ fs.mkdirSync(path.join(root,'evidence'),{recursive:true});
+ fs.writeFileSync(path.join(root,'evidence/verification-fix-results.json'),JSON.stringify({release:'0.3.3.2',pass:results.length-fail,fail,total:results.length,mode:'fixtures-and-verification-policy-tests; NOT real Next build',results},null,2)+'\n');

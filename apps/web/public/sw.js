@@ -1,5 +1,5 @@
-const CACHE = 'free-video-shell-v0.3.1-lite';
-const SHELL = ['/manifest.webmanifest', '/icon.svg'];
+const CACHE = 'free-video-shell-v0.3.3.2-lite';
+const SHELL = ['/', '/video', '/manifest.webmanifest', '/icon.svg'];
 const IS_LOCALHOST = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
 self.addEventListener('install', event => {
@@ -11,7 +11,9 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(Promise.all([
     self.clients.claim(),
-    caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('auria-shell-') && k !== CACHE).map(k => caches.delete(k))))
+    caches.keys().then(keys => Promise.all(keys
+      .filter(k => (k.startsWith('auria-shell-') || k.startsWith('free-video-shell-')) && k !== CACHE)
+      .map(k => caches.delete(k))))
   ]));
 });
 
@@ -41,7 +43,15 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(req)
         .then(res => {
-          if (res.ok) caches.open(CACHE).then(cache => cache.put(req, res.clone())).catch(() => undefined);
+          // OBS-008: the clone has to happen HERE, synchronously. Cloning inside the
+          // caches.open() callback ran after `return res` had already handed the body to
+          // the page, so every put failed with "Response body is already used" and was
+          // swallowed by the catch below — which is why no document or script ever reached
+          // the shell cache and caches.match('/') could never hit.
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then(cache => cache.put(req, copy)).catch(() => undefined);
+          }
           return res;
         })
         .catch(() => caches.match(req).then(hit => hit || (req.destination === 'document' ? caches.match('/') : undefined)))
@@ -51,7 +61,10 @@ self.addEventListener('fetch', event => {
 
   event.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
-      if (res.ok && res.type === 'basic') caches.open(CACHE).then(cache => cache.put(req, res.clone())).catch(() => undefined);
+      if (res.ok && res.type === 'basic') {
+        const copy = res.clone();
+        caches.open(CACHE).then(cache => cache.put(req, copy)).catch(() => undefined);
+      }
       return res;
     }))
   );

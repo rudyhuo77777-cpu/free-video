@@ -1,0 +1,31 @@
+{
+  "capturedAt": "2026-09-19T14:25:01.731Z",
+  "states": [
+    {
+      "id": "A-initial",
+      "note": "首次加载，未做任何操作",
+      "nodeCount": 79,
+      "pngBytes": 322771,
+      "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video."
+    },
+    {
+      "id": "B-ready",
+      "note": "一次成功生成后的就绪态（Director 来自夹具）",
+      "nodeCount": 136,
+      "pngBytes": 527495,
+      "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video."
+    },
+    {
+      "id": "C-lost-ack-error",
+      "note": "完成回执丢失后的错误态",
+      "nodeCount": 136,
+      "pngBytes": 527385,
+      "title": "Free Video — 120 Detik. Gratis. Tanpa Kredit Video."
+    }
+  ],
+  "dbAfter": {
+    "completed": 2,
+    "quotaUsed": 2,
+    "aiCalls": 2
+  }
+}

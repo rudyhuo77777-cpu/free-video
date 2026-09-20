@@ -1,0 +1,80 @@
+{
+  "comparedAt": "2026-09-20",
+  "note": "RB-1-003 视觉未变化取证。基准 = RB-1-002 之后的留存捕获（本次改动前状态）。",
+  "baselineDir": "evidence/dev/STEP-5/visual/after",
+  "currentDir": "evidence/dev/OBS-007/visual/after",
+  "states": [
+    {
+      "id": "A-initial",
+      "png": {
+        "identical": true,
+        "before": "1be92935f8037369",
+        "after": "1be92935f8037369"
+      },
+      "styles.txt": {
+        "identical": true,
+        "before": "c7f3ab326b82902c",
+        "after": "c7f3ab326b82902c"
+      },
+      "rects.txt": {
+        "identical": true,
+        "before": "c4622f7d15c08204",
+        "after": "c4622f7d15c08204"
+      },
+      "text.txt": {
+        "identical": true,
+        "before": "c5dc0391bb26d870",
+        "after": "c5dc0391bb26d870"
+      }
+    },
+    {
+      "id": "B-ready",
+      "png": {
+        "identical": true,
+        "before": "7fe17d12485849fa",
+        "after": "7fe17d12485849fa"
+      },
+      "styles.txt": {
+        "identical": true,
+        "before": "aaa674caf7ce05af",
+        "after": "aaa674caf7ce05af"
+      },
+      "rects.txt": {
+        "identical": true,
+        "before": "e73069d8a87253cd",
+        "after": "e73069d8a87253cd"
+      },
+      "text.txt": {
+        "identical": true,
+        "before": "58c1607764a61a52",
+        "after": "58c1607764a61a52"
+      }
+    },
+    {
+      "id": "C-lost-ack-error",
+      "png": {
+        "identical": true,
+        "before": "06c3e7f89515cc6e",
+        "after": "06c3e7f89515cc6e"
+      },
+      "styles.txt": {
+        "identical": true,
+        "before": "aaa674caf7ce05af",
+        "after": "aaa674caf7ce05af"
+      },
+      "rects.txt": {
+        "identical": true,
+        "before": "e73069d8a87253cd",
+        "after": "e73069d8a87253cd"
+      },
+      "text.txt": {
+        "identical": true,
+        "before": "8ed96ddef28746dd",
+        "after": "8ed96ddef28746dd"
+      }
+    }
+  ],
+  "globalsCssSha256": "75ad636a4eadb32633060c3fc4c66bf7b66b533666ed68ec5ee226499e42993d",
+  "globalsCssUnchanged": true,
+  "allIdentical": true
+}

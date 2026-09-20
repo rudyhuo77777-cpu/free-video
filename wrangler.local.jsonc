@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "free-video-local",
+  "main": "./worker/index.js",
+  "compatibility_date": "2026-09-17",
+  "assets": {
+    "directory": "./apps/web/out",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ],
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "free-video-local",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "migrations",
+      "remote": false
+    }
+  ],
+  "vars": {
+    "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "FREE_SCRIPT_LIMIT": "3",
+    "FYP_URL": "https://fyp.eco-velo.com",
+    "AI_TIMEOUT_MS": "45000"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

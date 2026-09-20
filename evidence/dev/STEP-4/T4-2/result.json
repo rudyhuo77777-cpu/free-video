@@ -1,0 +1,44 @@
+{
+  "task": "T4-2",
+  "title": "AI 返回形态的 JSON 解析与容错（夹具）",
+  "aiLayer": "FIXTURE_AI —— 确定性本地夹具与故障注入，非远程推理。禁止表述为「AI 已通过」。",
+  "sourceRun": "evidence/dev/STEP-4/T4-all/（单次运行，按任务卡切片）",
+  "command": "node --no-warnings tests/regression.mjs",
+  "exitCode": 0,
+  "environment": "WSL2 Linux; Node v22.22.3",
+  "executor": "Implementer(Claude)",
+  "testType": "unit + integration-sqlite",
+  "assertions": [
+    {
+      "id": "X10",
+      "title": "FIXTURE_AI: ten malformed AI response shapes each map to a stable error code",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X11",
+      "title": "FIXTURE_AI: markdown-fenced and prose-wrapped JSON are recovered, not templated",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X12",
+      "title": "FIXTURE_AI: empty scenes and empty narration are rejected, never filled in",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X13",
+      "title": "FIXTURE_AI: five durations x ten malformed shapes never yield a templated success",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "pass": 4,
+    "fail": 0
+  },
+  "status": "FIXTURE_AI PASS (SELF_TESTED)",
+  "acceptance": "REVIEW_PENDING"
+}

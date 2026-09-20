@@ -1,0 +1,88 @@
+--- governance/evidence-snapshot-pre-step2/verify.mjs.before	2026-09-19 08:59:25.984524700 +0700
++++ scripts/verify.mjs	2026-09-19 08:59:26.006073600 +0700
+@@ -1,9 +1,69 @@
+ // Pre-build and post-build gates use the SAME policy. No restore and no baseline rewriting.
+ import fs from 'node:fs';
+ import path from 'node:path';
++import crypto from 'node:crypto';
+ import {fileURLToPath} from 'node:url';
+ import {requireNode,run,npm,root} from './process.mjs';
+ 
++// Fingerprints bind ONE successful verification to the exact source, dependency lock and
++// build output it was produced from. Deploy re-computes them and refuses to publish when
++// they no longer match. Nothing here changes the phase order or the exit-code semantics.
++const SKIP_DIRS=new Set(['node_modules','.next','out','.git','evidence','governance','.claude']);
++const sha256=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
++
++function walkFiles(dir,rel,out,skipDirs){
++  let entries;
++  try{entries=fs.readdirSync(dir,{withFileTypes:true});}catch{return out;}
++  for(const entry of entries){
++    if(entry.isSymbolicLink())continue;
++    const name=rel?`${rel}/${entry.name}`:entry.name;
++    if(entry.isDirectory()){if(skipDirs.has(entry.name))continue;walkFiles(path.join(dir,entry.name),name,out,skipDirs);}
++    else if(entry.isFile()){
++      if(name==='package-lock.json'||name.endsWith('.tsbuildinfo')||name.endsWith('wrangler.resolved.jsonc'))continue;
++      out.push(name);
++    }
++  }
++  return out;
++}
++
++function aggregate(projectRoot,files){
++  const lines=files.sort().map(f=>`${f} ${sha256(fs.readFileSync(path.join(projectRoot,f)))}`);
++  return {count:files.length,digest:sha256(lines.join('\n'))};
++}
++
++export function sourceFingerprint(projectRoot=root){
++  return aggregate(projectRoot,walkFiles(projectRoot,'',[],SKIP_DIRS));
++}
++
++export function outFingerprint(projectRoot=root){
++  const outDir=path.join(projectRoot,'apps/web/out');
++  if(!fs.existsSync(outDir))return {count:0,digest:null,missing:true};
++  const files=walkFiles(outDir,'',[],new Set());
++  return {...aggregate(outDir,files),missing:false};
++}
++
++export function lockFingerprint(projectRoot=root){
++  const lock=path.join(projectRoot,'package-lock.json');
++  if(!fs.existsSync(lock))return null;
++  return sha256(fs.readFileSync(lock));
++}
++
++export function fileSha256(projectRoot,relative){
++  const p=path.join(projectRoot,relative);
++  if(!fs.existsSync(p))return null;
++  return sha256(fs.readFileSync(p));
++}
++
++export function currentFingerprints(projectRoot=root){
++  return {
++    sourceFingerprint:sourceFingerprint(projectRoot),
++    lockFingerprint:lockFingerprint(projectRoot),
++    outFingerprint:outFingerprint(projectRoot),
++    nextEnvSha256:fileSha256(projectRoot,'apps/web/next-env.d.ts'),
++    tsconfigSha256:fileSha256(projectRoot,'apps/web/tsconfig.json')
++  };
++}
++
+ export function dependenciesMissing(projectRoot=root) {
+   const checks=[
+     ['typescript','5.9.2'], ['wrangler','4.131.1'], ['next','16.3.3'],
+@@ -44,6 +104,15 @@
+   }catch(error){evidence.status='FAIL';evidence.error=error.message;console.error(error.message);process.exitCode=1;}
+   finally {
+     evidence.finishedAt=new Date().toISOString();
++    Object.assign(evidence,currentFingerprints(root));
++    if(evidence.status==='PASS'&&(!evidence.lockFingerprint||evidence.outFingerprint.missing)){
++      evidence.status='FAIL';
++      evidence.error=evidence.error||(!evidence.lockFingerprint
++        ?'No package-lock.json: this verification cannot be bound to a dependency set.'
++        :'No apps/web/out output: this verification cannot be bound to a build artifact.');
++      process.exitCode=1;
++      console.error(evidence.error);
++    }
+     fs.mkdirSync(path.join(root,'evidence'),{recursive:true});
+     fs.writeFileSync(path.join(root,'evidence/build-verification.json'),JSON.stringify(evidence,null,2)+'\n');
+   }

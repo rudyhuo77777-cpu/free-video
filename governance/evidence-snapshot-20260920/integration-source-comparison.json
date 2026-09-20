@@ -1,0 +1,41 @@
+{
+  "release": "0.3.3.2",
+  "appliedUpdateMatchedPublishedFullSource": true,
+  "groups": {
+    "web": {
+      "identical": 23,
+      "total": 23,
+      "different": []
+    },
+    "worker": {
+      "identical": 4,
+      "total": 4,
+      "different": []
+    },
+    "migrations": {
+      "identical": 2,
+      "total": 2,
+      "different": []
+    },
+    "core_source": {
+      "identical": 5,
+      "total": 5,
+      "different": []
+    },
+    "voice_bridge": {
+      "identical": 2,
+      "total": 2,
+      "different": []
+    },
+    "wrangler": {
+      "identical": 4,
+      "total": 4,
+      "different": []
+    },
+    "original_baselines": {
+      "identical": 3,
+      "total": 3,
+      "different": []
+    }
+  }
+}

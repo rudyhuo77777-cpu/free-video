@@ -1,0 +1,16 @@
+{
+  "command": "node",
+  "args": [
+    "--no-warnings",
+    "governance/repro/fv004-ui-recovery.mjs"
+  ],
+  "cwd": "/mnt/c/Users/Hongyan/Downloads/free-video-v0.3.3.2-integrated-flat",
+  "startedAt": "2026-09-19T00:58:00.575Z",
+  "finishedAt": "2026-09-19T01:08:17.600Z",
+  "durationMs": 617044,
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "node": "v22.22.3",
+  "platform": "linux"
+}

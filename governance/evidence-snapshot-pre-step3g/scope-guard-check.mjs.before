@@ -1,0 +1,152 @@
+// Scope Guard mechanical checker — READ ONLY.
+// It never writes, never repairs, never recomputes a baseline, never auto-approves.
+// Exit codes: 0 = no change; 2 = changes need human adjudication; 3 = frozen baseline touched
+// without an approved RB-1 record; 1 = checker could not run.
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const args = process.argv.slice(2);
+const asJson = args.includes('--json');
+const baselineArg = args.includes('--baseline') ? args[args.indexOf('--baseline') + 1] : 'governance/baseline-v0.3.3.2.sha256';
+
+// Governance files created after the takeover snapshot. Their presence is expected and
+// is NOT a product-code change, but they are still reported under ADDED for transparency.
+const GOVERNANCE_ADDITIONS = new Set([
+  'CLAUDE.md', 'PRD.md', 'GOVERNANCE.md', 'STEPS-AND-ACCEPTANCE.md',
+  'CURRENT-STATE.md', 'DEVELOPMENT-PLAN.md', 'TRACEABILITY.json', 'CHANGELOG.md'
+]);
+
+const SKIP_DIRS = new Set(['node_modules', '.next', 'out', '.git', 'governance', '.claude']);
+
+// Paths whose bytes are frozen by a shipped baseline manifest. Changing any of them
+// requires an approved RB-1 record in TRACEABILITY.json.
+function frozenPaths() {
+  const frozen = new Set();
+  const managed = new Set(['apps/web/next-env.d.ts', 'apps/web/tsconfig.json']);
+  try {
+    const web = JSON.parse(fs.readFileSync(path.join(root, 'tests/web-baseline-sha256.json'), 'utf8'));
+    for (const p of Object.keys(web)) if (!managed.has(p)) frozen.add(p);
+  } catch { /* manifest unreadable: reported as a checker error below */ }
+  try {
+    const core = JSON.parse(fs.readFileSync(path.join(root, 'tests/core-baseline-sha256.json'), 'utf8'));
+    for (const p of Object.keys(core)) frozen.add(p);
+  } catch { /* same */ }
+  return frozen;
+}
+
+// Files that hold baseline hashes. Editing the hashes is a re-baseline action.
+// For scripts/web-integrity.mjs the charter's B4 targets the manifestHash CONSTANT, not any
+// edit to the file, so that one is checked by comparing the constant itself.
+const BASELINE_HOLDERS = new Set([
+  'tests/web-baseline-sha256.json',
+  'tests/core-baseline-sha256.json',
+  'scripts/ui-integrity.mjs'
+]);
+const MANIFEST_HASH_BASELINE = '7d22fba2c03c505a5c7e4bda6cc312d152ce9d3dc795da66b9f0815c79c2f753';
+function manifestHashChanged() {
+  try {
+    const src = fs.readFileSync(path.join(root, 'scripts/web-integrity.mjs'), 'utf8');
+    const m = src.match(/const\s+manifestHash\s*=\s*['"]([a-f0-9]{64})['"]/);
+    return !m || m[1] !== MANIFEST_HASH_BASELINE;
+  } catch { return true; }
+}
+
+function walk(dir, rel, out) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (SKIP_DIRS.has(entry.name)) continue;
+    const name = rel ? `${rel}/${entry.name}` : entry.name;
+    const full = path.join(dir, entry.name);
+    if (entry.isSymbolicLink()) { out.set(name, 'SYMLINK'); continue; }
+    if (entry.isDirectory()) walk(full, name, out);
+    else if (entry.isFile()) out.set(name, crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'));
+  }
+  return out;
+}
+
+function readBaseline(file) {
+  const map = new Map();
+  const text = fs.readFileSync(path.join(root, file), 'utf8');
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const m = line.match(/^([a-f0-9]{64})\s+(.+)$/);
+    if (!m) continue;
+    map.set(m[2].trim().replace(/^\.\//, ''), m[1]);
+  }
+  return map;
+}
+
+function approvedRebaselines() {
+  try {
+    const t = JSON.parse(fs.readFileSync(path.join(root, 'TRACEABILITY.json'), 'utf8'));
+    return new Set((t.rebaseline || []).filter(r => r.approvedAt).map(r => r.path));
+  } catch { return new Set(); }
+}
+
+let baseline;
+try { baseline = readBaseline(baselineArg); }
+catch (error) {
+  console.error(`scope-guard: cannot read baseline ${baselineArg}: ${error.message}`);
+  process.exit(1);
+}
+
+const current = walk(root, '', new Map());
+const frozen = frozenPaths();
+const approved = approvedRebaselines();
+
+const changed = [];
+const added = [];
+const removed = [];
+
+for (const [p, hash] of current) {
+  if (!baseline.has(p)) { added.push(p); continue; }
+  if (baseline.get(p) !== hash) changed.push({ path: p, from: baseline.get(p), to: hash });
+}
+for (const p of baseline.keys()) if (!current.has(p)) removed.push(p);
+
+const violations = [];
+for (const c of [...changed, ...removed.map(p => ({ path: p, from: baseline.get(p), to: null }))]) {
+  if (frozen.has(c.path) && !approved.has(c.path)) {
+    violations.push({ path: c.path, rule: 'B3', reason: '字节冻结文件被改动，但 TRACEABILITY.json.rebaseline 中没有已批准的 RB-1 记录' });
+  }
+  if (BASELINE_HOLDERS.has(c.path) && approved.size === 0) {
+    violations.push({ path: c.path, rule: 'B4', reason: '基线清单文件被改动，但没有任何已批准的 RB-1 记录' });
+  }
+}
+if (manifestHashChanged() && approved.size === 0) {
+  violations.push({ path: 'scripts/web-integrity.mjs:manifestHash', rule: 'B4', reason: 'manifestHash 常量被改动，但没有任何已批准的 RB-1 记录' });
+}
+
+const productAdditions = added.filter(p => !GOVERNANCE_ADDITIONS.has(p) && !p.startsWith('evidence/dev/'));
+const exitCode = violations.length ? 3 : (changed.length || removed.length || productAdditions.length) ? 2 : 0;
+
+if (asJson) {
+  console.log(JSON.stringify({
+    baseline: baselineArg, changed, added, removed, productAdditions, violations, exitCode,
+    counts: { changed: changed.length, added: added.length, removed: removed.length, violations: violations.length }
+  }, null, 2));
+} else {
+  console.log(`SCOPE GUARD CHECK (read-only) — baseline: ${baselineArg}`);
+  console.log(`CHANGED=${changed.length} ADDED=${added.length} REMOVED=${removed.length} VIOLATIONS=${violations.length}`);
+  if (changed.length) {
+    console.log('\nCHANGED FILES:');
+    for (const c of changed) console.log(`  ${c.path}${frozen.has(c.path) ? '  [FROZEN]' : ''}${BASELINE_HOLDERS.has(c.path) ? '  [BASELINE-HOLDER]' : ''}${c.path === 'scripts/web-integrity.mjs' ? (manifestHashChanged() ? '  [manifestHash CHANGED]' : '  [manifestHash unchanged]') : ''}`);
+  }
+  if (added.length) {
+    console.log('\nADDED FILES:');
+    for (const p of added) console.log(`  ${p}${GOVERNANCE_ADDITIONS.has(p) || p.startsWith('evidence/dev/') ? '  [governance]' : ''}`);
+  }
+  if (removed.length) {
+    console.log('\nREMOVED FILES:');
+    for (const p of removed) console.log(`  ${p}`);
+  }
+  if (violations.length) {
+    console.log('\nVIOLATIONS (require RB-1 approval before any ALLOW verdict):');
+    for (const v of violations) console.log(`  [${v.rule}] ${v.path} — ${v.reason}`);
+  }
+  console.log('\nThis tool reports facts only. The ALLOW/BLOCK verdict is given by the Scope Guard role.');
+}
+
+process.exit(exitCode);

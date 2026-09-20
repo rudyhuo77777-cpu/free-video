@@ -1,0 +1,48 @@
+{
+  "comparedAt": "2026-09-19T04:02:39.895Z",
+  "mustBeIdentical": [
+    {
+      "id": "A-initial",
+      "note": "首次加载 —— 必须逐像素相同",
+      "pngSha256Before": "1be92935f8037369acabd73db10ef95c8c9729193c36934b7d527eabe7e9b8d0",
+      "pngSha256After": "1be92935f8037369acabd73db10ef95c8c9729193c36934b7d527eabe7e9b8d0",
+      "pngIdentical": true,
+      "domIdentical": false,
+      "stylesIdentical": true,
+      "rectsIdentical": true,
+      "textIdentical": true
+    },
+    {
+      "id": "B-ready",
+      "note": "成功生成后的就绪态 —— 必须逐像素相同",
+      "pngSha256Before": "678ef7f3a8472ef62a036ffa7d2be7078455c6392024901e420f114e79135b26",
+      "pngSha256After": "678ef7f3a8472ef62a036ffa7d2be7078455c6392024901e420f114e79135b26",
+      "pngIdentical": true,
+      "domIdentical": false,
+      "stylesIdentical": true,
+      "rectsIdentical": true,
+      "textIdentical": true
+    }
+  ],
+  "behaviourChanged": [
+    {
+      "id": "C-lost-ack-error",
+      "note": "行为被修复：原为错误态，现为恢复出的就绪态",
+      "nodeCountBefore": 80,
+      "nodeCountAfter": 146,
+      "afterMatchesPreExistingReadyLayout": true
+    }
+  ],
+  "cssPrimitives": {
+    "classesBefore": 32,
+    "classesAfter": 31,
+    "newClasses": [],
+    "removedClasses": [
+      "error"
+    ],
+    "computedStyleVariantsBefore": 104,
+    "computedStyleVariantsAfter": 97,
+    "newComputedStyleVariants": 0
+  },
+  "globalsCssSha256": "75ad636a4eadb32633060c3fc4c66bf7b66b533666ed68ec5ee226499e42993d"
+}

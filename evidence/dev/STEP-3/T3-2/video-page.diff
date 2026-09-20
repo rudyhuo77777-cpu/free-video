@@ -1,0 +1,99 @@
+--- governance/evidence-snapshot-pre-step3/video-page.tsx.before	2026-09-19 11:00:15.978304700 +0700
++++ apps/web/app/video/page.tsx	2026-09-19 11:00:15.999136100 +0700
+@@ -189,6 +189,41 @@
+   }
+ } as const;
+ 
++// FV-004: a lost completion receipt must never cost the user a second free script.
++// The pending idempotency key is kept for the exact same input, so a retry replays the job
++// the server already finished instead of starting a new one. Storage is best-effort: when
++// sessionStorage is unavailable (private mode) the previous behaviour applies unchanged.
++const PENDING_SCRIPT_JOB_KEY = 'auria.video.pendingScriptJob';
++// Errors where the server may already hold a completed result despite the failed response.
++const REPLAYABLE_SCRIPT_ERRORS = new Set(['persistence_unconfirmed', 'refund_pending_recovery']);
++
++function readPendingScriptJob(): { key: string; fingerprint: string } | null {
++  try {
++    const raw = sessionStorage.getItem(PENDING_SCRIPT_JOB_KEY);
++    if (!raw) return null;
++    const value = JSON.parse(raw);
++    return typeof value?.key === 'string' && typeof value?.fingerprint === 'string'
++      ? { key: value.key, fingerprint: value.fingerprint }
++      : null;
++  } catch { return null; }
++}
++
++function writePendingScriptJob(value: { key: string; fingerprint: string } | null) {
++  try {
++    if (value) sessionStorage.setItem(PENDING_SCRIPT_JOB_KEY, JSON.stringify(value));
++    else sessionStorage.removeItem(PENDING_SCRIPT_JOB_KEY);
++  } catch { /* best effort only; never block rendering */ }
++}
++
++async function replayCompletedScriptJob(key: string): Promise<DirectorJson | null> {
++  try {
++    const res = await fetch(`/api/scripts/jobs/${encodeURIComponent(key)}`, { cache: 'no-store' });
++    if (!res.ok) return null;
++    const state = await res.json();
++    return state?.status === 'completed' && state.result ? state.result as DirectorJson : null;
++  } catch { return null; }
++}
++
+ export default function VideoPage() {
+   const [productName, setProductName] = useState('Portable Blender');
+   const [duration, setDuration] = useState<VideoDuration>(30);
+@@ -348,15 +383,41 @@
+       setNarrationWav(null);
+       setNarrationSource(null);
+     }
+-    try {
+-      const idempotencyKey = crypto.randomUUID();
++    const requestFingerprint = JSON.stringify({ productName, duration, fypContext, productContext, productProjectId });
++    const pendingJob = readPendingScriptJob();
++    const reusingPendingJob = pendingJob?.fingerprint === requestFingerprint;
++    let idempotencyKey = reusingPendingJob && pendingJob ? pendingJob.key : crypto.randomUUID();
++    writePendingScriptJob({ key: idempotencyKey, fingerprint: requestFingerprint });
++    const postScriptJob = async (key: string) => {
+       const res = await fetch('/api/scripts/jobs', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+-        body: JSON.stringify({ productName, duration, idempotencyKey, fypContext, productContext, productProjectId, turnstileToken })
++        body: JSON.stringify({ productName, duration, idempotencyKey: key, fypContext, productContext, productProjectId, turnstileToken })
+       });
+-      const first = await res.json();
+-      if (!res.ok) {
++      return { res, body: await res.json() };
++    };
++    try {
++      // A pending job for this exact input may already have completed on the server even
++      // though its receipt was lost. Replay it before spending another free script.
++      let recovered = reusingPendingJob ? await replayCompletedScriptJob(idempotencyKey) : null;
++      let attempt = recovered ? null : await postScriptJob(idempotencyKey).catch(async error => {
++        const replayed = await replayCompletedScriptJob(idempotencyKey);
++        if (replayed) { recovered = replayed; return null; }
++        throw error;
++      });
++      if (!recovered && attempt && !attempt.res.ok && attempt.body?.error === 'idempotency_conflict') {
++        // The stored key belongs to different input: this really is a new operation.
++        idempotencyKey = crypto.randomUUID();
++        writePendingScriptJob({ key: idempotencyKey, fingerprint: requestFingerprint });
++        attempt = await postScriptJob(idempotencyKey);
++      }
++      if (!recovered && attempt && !attempt.res.ok
++        && (attempt.res.status === 503 || REPLAYABLE_SCRIPT_ERRORS.has(attempt.body?.error))) {
++        recovered = await replayCompletedScriptJob(idempotencyKey);
++      }
++      const res = recovered ? null : attempt!.res;
++      const first = recovered ? { jobId: idempotencyKey, result: recovered } : attempt!.body;
++      if (res && !res.ok) {
+         if (first.error === 'free_script_limit_reached') throw new Error(msg('3 Script AI gratis sudah digunakan. Video dari script lama tetap bisa dibuat gratis.', 'All 3 free AI Scripts have been used. Videos from existing scripts can still be rendered for free.', '3 个免费 AI 脚本已经用完，但已有脚本仍然可以继续免费生成视频。'));
+         if (first.error === 'rate_limited') throw new Error(msg('Terlalu banyak permintaan. Coba beberapa saat lagi.', 'Too many requests. Please try again shortly.', '请求过多，请稍后再试。'));
+         if (['turnstile_required','turnstile_failed'].includes(first.error)) throw new Error(msg('Verifikasi anti-bot belum selesai. Silakan centang verifikasi lalu coba lagi.', 'Anti-bot verification is not complete. Finish the verification and try again.', '人机验证尚未完成，请完成验证后再试。'));
+@@ -383,6 +444,7 @@
+         }
+       }
+       if (!result) throw new Error(msg('Job belum selesai. Coba buka lagi beberapa saat lagi.', 'The job has not finished yet. Please try again shortly.', '任务尚未完成，请稍后再试。'));
++      writePendingScriptJob(null);
+       setDirector(result);
+       if (first.demo) setScriptsRemaining(current => Math.max(0, current - 1));
+       else if (typeof first.remaining === 'number') setScriptsRemaining(first.remaining);

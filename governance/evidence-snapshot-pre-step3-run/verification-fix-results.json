@@ -1,0 +1,305 @@
+{
+  "release": "0.3.3.2",
+  "pass": 74,
+  "fail": 0,
+  "total": 74,
+  "mode": "fixtures-and-verification-policy-tests; NOT real Next build",
+  "results": [
+    {
+      "name": "V01 clean 23-file baseline uses 21 frozen and 2 validated files",
+      "status": "PASS"
+    },
+    {
+      "name": "V02 original next-env two-reference seed is accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V03 Next production route import and generated comments are accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V04 Next development route import is accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V05 Windows UTF8 BOM and CRLF in generated declaration are accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V06 user manual standard declaration need not be restored",
+      "status": "PASS"
+    },
+    {
+      "name": "V07 missing required Next reference is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V08 unknown triple-slash directive cannot pass as a comment",
+      "status": "PASS"
+    },
+    {
+      "name": "V09 path traversal import is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V10 arbitrary package import is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V11 injected declaration is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V12 ts-nocheck cannot hide an invalid declaration",
+      "status": "PASS"
+    },
+    {
+      "name": "V13 duplicate references are rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V14 duplicate route imports are rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V15 UTF16 is not mistaken for UTF8",
+      "status": "PASS"
+    },
+    {
+      "name": "V16 malformed UTF8 is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V17 empty declaration is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V18 oversized declaration is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V19 original tsconfig is accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V20 both observed Next tsconfig updates are accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V21 JSX-only Next update is accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V22 dev-types-only Next update is accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V23 BOM CRLF and formatting in tsconfig are accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V24 strict=false is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V25 noEmit=false is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V26 new compiler flags are rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V27 changed compilation target is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V28 removed source include is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V29 unrelated include is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V30 duplicate include is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V31 weakened exclude is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V32 unexpected JSX mode is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V33 unrelated extends is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V34 malformed config is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V35 build-shaped declaration and tsconfig pass combined gate",
+      "status": "PASS"
+    },
+    {
+      "name": "V36 CSS changes still fail even a single appended byte",
+      "status": "PASS"
+    },
+    {
+      "name": "V37 video page changes still fail",
+      "status": "PASS"
+    },
+    {
+      "name": "V38 client renderer changes still fail",
+      "status": "PASS"
+    },
+    {
+      "name": "V39 changing next.config.ts cannot bypass build errors",
+      "status": "PASS"
+    },
+    {
+      "name": "V40 changing web dependencies is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V41 a missing frozen file is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V42 extra source routes are rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V43 generated output directories and build info are ignored",
+      "status": "PASS"
+    },
+    {
+      "name": "V44 original hash manifest cannot be rewritten to bless edits",
+      "status": "PASS"
+    },
+    {
+      "name": "V45 tsconfig reference cannot be weakened",
+      "status": "PASS"
+    },
+    {
+      "name": "V46 validation never rewrites or restores managed files",
+      "status": "PASS"
+    },
+    {
+      "name": "V47 exact same offline gate runs BEFORE and AFTER build and typecheck",
+      "status": "PASS"
+    },
+    {
+      "name": "V48 failed build stops before typecheck and post-gate",
+      "status": "PASS"
+    },
+    {
+      "name": "V49 failed post-build gate fails verification",
+      "status": "PASS"
+    },
+    {
+      "name": "V50 failed pre-gate prevents installation and build",
+      "status": "PASS"
+    },
+    {
+      "name": "V51 failed dependency installation stops before build",
+      "status": "PASS"
+    },
+    {
+      "name": "V52 existing dependencies avoid reinstall",
+      "status": "PASS"
+    },
+    {
+      "name": "V53 missing dependencies install before build, never migrate or deploy",
+      "status": "PASS"
+    },
+    {
+      "name": "V54 two simulated build cycles do not require generated-file restoration",
+      "status": "PASS"
+    },
+    {
+      "name": "V55 dependency preflight detects missing or wrong installed versions",
+      "status": "PASS"
+    },
+    {
+      "name": "V56 nested output-named directories cannot hide new source routes",
+      "status": "PASS"
+    },
+    {
+      "name": "V57 real Next 16.3.3 production root-params import is accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V58 Next development root-params import is accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "V59 root-params import alone still requires both Next references",
+      "status": "PASS"
+    },
+    {
+      "name": "V60 duplicate root-params imports are rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V61 routes and root-params are counted independently",
+      "status": "PASS"
+    },
+    {
+      "name": "V62 root-params path traversal is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V63 root-params lookalike filename is rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V64 arbitrary file under .next/types is still rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "V65 U+2028 after a comment cannot hide an import",
+      "status": "PASS"
+    },
+    {
+      "name": "V66 U+2029 after a comment cannot hide a declaration",
+      "status": "PASS"
+    },
+    {
+      "name": "V67 U+2028 after a comment cannot hide a triple-slash directive",
+      "status": "PASS"
+    },
+    {
+      "name": "V68 U+2029 cannot hide a ts-nocheck suppression",
+      "status": "PASS"
+    },
+    {
+      "name": "V69 U+2028 cannot hide a path traversal import",
+      "status": "PASS"
+    },
+    {
+      "name": "V70 U+2028 cannot smuggle a duplicate required reference",
+      "status": "PASS"
+    },
+    {
+      "name": "V74 U+2028 cannot smuggle an unknown triple-slash directive",
+      "status": "PASS"
+    },
+    {
+      "name": "V71 line separators do not break the accepted real generated form",
+      "status": "PASS"
+    },
+    {
+      "name": "V72 real generated declaration passes the combined gate",
+      "status": "PASS"
+    },
+    {
+      "name": "V73 two build cycles with root-params need no restoration",
+      "status": "PASS"
+    }
+  ]
+}

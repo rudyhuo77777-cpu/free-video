@@ -1,0 +1,43 @@
+--- governance/evidence-snapshot-pre-step5/director.js.before	2026-09-19 20:27:46.795245100 +0700
++++ worker/director.js	2026-09-19 20:27:46.812268300 +0700
+@@ -28,6 +28,21 @@
+   },required:['version','language','ratio','duration','productName','style','scenes','cta']};
+ }
+ function fail(code) {throw Object.assign(new Error(code),{code});}
++
++// CR-002 (FV-010 root cause). The old upper bound of 3.6 words/second was never measured
++// against the voice that actually speaks the narration. The page concatenates every scene's
++// voice into ONE utterance (apps/web/app/video/page.tsx) and the renderer decodes the WHOLE
++// WAV, so the governing figures are multi-sentence delivery plus the silence around it.
++// Measured on 22 real local Supertonic F5 / id samples (evidence/dev/CR-002/C2-1, C2-1b and
++// the Codex audit sample): multi-sentence speech runs at 2.10-2.26 words/second, with a fixed
++// 1.33 s of leading+trailing silence that does NOT scale with word count. A purely
++// proportional budget therefore fails on short narration, which is why the overhead is
++// modelled separately. Budget = (duration - overhead) x slowest measured rate x 0.90.
++const NARRATION_FIXED_OVERHEAD_SECONDS=1.33;
++const NARRATION_WORDS_PER_SECOND=1.8925;
++export function maxNarrationWords(duration) {
++  return Math.floor((duration-NARRATION_FIXED_OVERHEAD_SECONDS)*NARRATION_WORDS_PER_SECOND);
++}
+ export function extractJson(text) {
+   if(typeof text!=='string' || !text.trim()) fail('ai_json_missing');
+   if(text.length>80000) fail('ai_response_too_large');
+@@ -75,7 +90,7 @@
+   const out=sanitizeDirector({...raw,scenes:raw.scenes.map((s,i)=>({...s,id:`scene-${i+1}`}))},productName,duration);
+   if(out.scenes.some(s=>s.duration<1||s.duration>15) || out.scenes.reduce((n,s)=>n+s.duration,0)!==duration) fail('director_timeline_mismatch');
+   const words=out.scenes.reduce((n,s)=>n+s.voice.trim().split(/\s+/).length,0);
+-  if(words<Math.ceil(duration*0.35) || words>Math.ceil(duration*3.6)) fail('director_voice_budget');
++  if(words<Math.ceil(duration*0.35) || words>maxNarrationWords(duration)) fail('director_voice_budget');
+   return out;
+ }
+ 
+@@ -123,7 +138,8 @@
+ Kontrak JSON lengkap (juga berlaku tanpa JSON mode): ${contract}
+ Contoh BENTUK SATU SCENE, bukan seluruh hasil: ${JSON.stringify(example)}`;
+   const user=`Buat ${lo}-${hi} scene dengan total durasi tepat ${duration} detik. Setiap scene 1-15 detik.
+-Narasi ringkas dan berbeda sesuai fungsi scene, sekitar 1.5-2.5 kata/detik; hindari repetisi dan klaim tanpa bukti.
++Total narasi SELURUH scene maksimal ${maxNarrationWords(duration)} kata, supaya suara benar-benar selesai dalam ${duration} detik.
++Narasi ringkas dan berbeda sesuai fungsi scene, sekitar 1.5-1.8 kata/detik; hindari repetisi dan klaim tanpa bukti.
+ Hook di awal, produk dan kegunaan yang dapat dibuktikan di tengah, CTA di akhir. assetKeyword harus cocok dengan konteks gambar, bukan klaim bahwa stock footage menampilkan produk asli.
+ INPUT_JSON=${JSON.stringify({productName,duration,productContext,fypContext})}`;
+   for(let attempt=1;attempt<=2;attempt++) {

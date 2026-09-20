@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
 if (Test-Path ".env.local") {
-  Get-Content ".env.local" | ForEach-Object {
+  Get-Content ".env.local" -Encoding UTF8 | ForEach-Object {
     $line = $_.Trim()
     if ($line -and -not $line.StartsWith("#") -and $line.Contains("=")) {
       $parts = $line.Split("=", 2)
@@ -17,3 +17,5 @@ Write-Host "Starting AURIA Local Voice Bridge on 127.0.0.1:$port" -ForegroundCol
 Write-Host "Origin whitelist + pairing token are enabled. Voice is locked to F5 / id." -ForegroundColor Cyan
 Write-Host "It will use SUPERTONIC_EXE if set, otherwise try PATH/common Python 3.13 locations." -ForegroundColor Cyan
 node .\apps\voice-bridge\server.mjs
+
+if ($LASTEXITCODE -ne 0) { throw "Voice Bridge failed. No cloud TTS is used." }

@@ -1,0 +1,97 @@
+{
+  "release": "0.3.3.2",
+  "npmVersion": "0.3.3-verification.2",
+  "backendVersion": "0.3.3-lite",
+  "method": "Applied the original v0.3.3.1 updater to a fresh v0.3.3 extraction in an isolated build workspace; verified result against v0.3.3.1 full release; then changed release metadata and audit/readme instructions only.",
+  "inputArchives": {
+    "free-video-v0.3.3-backend-recovery-flat.zip": "0313124f5701d025e6d2002b5867b08c6e4d3a1c9b67707edddbed61ebbb98b9",
+    "free-video-v0.3.3.1-verification-update.zip": "67e62dd214272ef114e0eb5d75432ea2b15fda789a49612303ef51c1998d256c",
+    "free-video-v0.3.3.1-verification-fix-flat.zip": "4c9bb62b12614604fc708c44d66084e63d4001381e003371d7600a68b91dbb9c"
+  },
+  "inputsRequiredByEndUser": false,
+  "appliedUpdateMatchedPublishedFullSource": true,
+  "protectedComparisonToV033": {
+    "web": {
+      "identical": 23,
+      "total": 23,
+      "different": []
+    },
+    "worker": {
+      "identical": 4,
+      "total": 4,
+      "different": []
+    },
+    "migrations": {
+      "identical": 2,
+      "total": 2,
+      "different": []
+    },
+    "core_source": {
+      "identical": 5,
+      "total": 5,
+      "different": []
+    },
+    "voice_bridge": {
+      "identical": 2,
+      "total": 2,
+      "different": []
+    },
+    "wrangler": {
+      "identical": 4,
+      "total": 4,
+      "different": []
+    },
+    "original_baselines": {
+      "identical": 3,
+      "total": 3,
+      "different": []
+    }
+  },
+  "protectedOriginalFiles": {
+    "apps/voice-bridge/package.json": "d222d20ecd06d75599b68d044d7bb2cf331dec1072caf94717bd44568fe3a20b",
+    "apps/voice-bridge/server.mjs": "3599e25bacb1160421c9de82240c11cb122120316da98a27be2530048e2f34ad",
+    "apps/web/app/globals.css": "75ad636a4eadb32633060c3fc4c66bf7b66b533666ed68ec5ee226499e42993d",
+    "apps/web/app/layout.tsx": "78438edd01c56fa4de131b646c5890c04fee7f30437c792d0613a78111ad505e",
+    "apps/web/app/page.tsx": "654308c083b0d8dc158071785c5357276bab62109fea1dce5c2b47c7c4aafcd3",
+    "apps/web/app/projects/page.tsx": "82382c84700aee5b675e8c25d89ead52f75ab473f93571f226089a173b397bb6",
+    "apps/web/app/tools/page.tsx": "11fcfbeed9df6a600b330fc658b212cf4194f423fb8b9bd23fd8582a8ccb4264",
+    "apps/web/app/video/page.tsx": "eb84e158927e4ab89442911ad1e459e0b1762918d0686f718707a604c7e215e3",
+    "apps/web/components/LanguageProvider.tsx": "455f0a2ac0b401d07dc82de7a9cccaa606466b3dbd32c987b2144c518c4b0351",
+    "apps/web/components/Nav.tsx": "dc8f91cbddefa809b58127779b9ddb1874138403c89e40c6f634542a5017a6e4",
+    "apps/web/components/PwaRegistrar.tsx": "d980e0a967e332805f8a0c85b93078e675df47ff16abb040ebf067e34573da1e",
+    "apps/web/components/TurnstileBox.tsx": "a21f9bd3d6e398770b43193937a15199719ab9617dfecb7dea74de118072156e",
+    "apps/web/lib/client/tts.ts": "56d21d68bd842a204669c16215f264ea19d92b98d06208eb0b401f666f303c7e",
+    "apps/web/lib/client/video-renderer.ts": "aeb05b15279a0c94d7946d4ec34e2605d6faa89d9aa90e7ba979526d7922cbe9",
+    "apps/web/next-env.d.ts": "879741880b6ab48da99dcc06dcc674d381c9826137b0496bf7bb368f302de9fc",
+    "apps/web/next.config.ts": "9af23bc1e839ccc70caf1223e863efcb16f8de9c7025ae8a935be1c8a09d8e39",
+    "apps/web/package.json": "9d534257de0bd81f97106d84e20e658abb4bfe52cabf5ba6001a429519b2384f",
+    "apps/web/public/fyp-local.html": "61dd65490620ac804d14f04b92b67dc85f52e2aa1dc2f99c090501c6a6d08a40",
+    "apps/web/public/icon-192.png": "9d8fec8d115bf9edc6187e3dea0bdbcf07df8db023de04aebe81c9b56a8d2668",
+    "apps/web/public/icon-512.png": "9077f2919306625c55b1894c876120d284ab0d4723461d86a9f468c7deeb86cc",
+    "apps/web/public/icon.svg": "290a79f99a99c60df1906541d377d26612a041b8a9986e927c8d7cb7aa603623",
+    "apps/web/public/manifest.webmanifest": "2bb2ee224b08e00be0f4150589a05faa985b241a68c2ed7d5a4b7503d1368124",
+    "apps/web/public/reset-local-cache.html": "2ee3f0ddad3ae46a0b0a16da53b3344904df183971025daaeaa41c4df9fc5f93",
+    "apps/web/public/sw.js": "cbc4a0a5433a154679be65f5013396f16c0f0fddd6140284d46c5db6ff569cf7",
+    "apps/web/tsconfig.json": "f7b94a607a7d352aaf1e7ed59a1d29104632cda1ebde7de9372c398c1664bda0",
+    "migrations/0001_core.sql": "70e91254f540792074d549a4004602ed4b10ba4fd745c4b348ea10e24c7bfcb6",
+    "migrations/0002_atomic_jobs.sql": "23295ac6390a0414d27909cd338309147ee26ff3558b54168ea39345d8d3df11",
+    "packages/core/src/director.ts": "ce9e1661eb9a16a78375ffafbd2d908ec24266ee58d62fe0fe1d3dd6370f4ac2",
+    "packages/core/src/index.ts": "13c4847447b8a2fbf6a66d7d1f853bdff1323befaddb3d00df2bd89a7240b178",
+    "packages/core/src/templates.ts": "b2873ebfe2aa26a6d2769aa1ac8e2b65bc3ec95d42d1b0e95910e1ecefbfaaa1",
+    "packages/core/src/types.ts": "35226cf2d1fd2a9c2c79e1f9bcaaa9afd00c9b4c638c1eec574a0b6a2d18a916",
+    "packages/core/src/validate.ts": "324bea0dffd917da443540d1b8669f2444c75ec4d009fb40f2a7965ea6b929d0",
+    "scripts/ui-integrity.mjs": "961d8e923780030c575f0b409542ffe06c151ea9eaac9242ac855a312d56c4a7",
+    "tests/core-baseline-sha256.json": "c83882661748b6e3d2efd31a7632bc852b768bc0faea66f37ef61884a8ff2272",
+    "tests/web-baseline-sha256.json": "7d22fba2c03c505a5c7e4bda6cc312d152ce9d3dc795da66b9f0815c79c2f753",
+    "worker/db.js": "b1935faac6fd584f0dbf97167e20116d59d6b88920a46ab3bcb4c04f4308782d",
+    "worker/director.js": "d1929d94a2604b20e07fa187a68e90de5c675465ffc819464ebd1ec4f1a0e9d7",
+    "worker/http.js": "2277b63832c8b041f7507550604916fd88e2fc07952a5cf47209e2d842d61910",
+    "worker/index.js": "b2e57e32c78edc1160d2970b9c14c2e5f0c4c917c1e7d88fee7013fa2381bb97",
+    "wrangler.ai-test.jsonc": "afdbde936244f95df7dd348db1eaf1145b810e2709862668a2dd320d006a7ce2",
+    "wrangler.jsonc": "c45ee63882ce9eb99094fc0649252bc305bb90762bb56bcede1db04ecdea9d85",
+    "wrangler.local.jsonc": "2be16b77f046790425d0b7e0118536959e6cbbe696142cd1b10a72afd8249c46",
+    "wrangler.runtime-test.jsonc": "7cafeaaec7326109295003c32bc293a37561cfbc2879ddfc0cdb1743fadbbc2d"
+  },
+  "verificationPolicy": "21 Web files strict bytes, 2 Next-managed files content validated; original 23-file reference manifest unchanged.",
+  "note": "This provenance records packaging comparisons. Source-manifest hashes describe archive bytes, not an immutable post-build working tree. UI baselines must not be regenerated. No runtime/platform/model or AI/D1 policy changes."
+}

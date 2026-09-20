@@ -1,0 +1,112 @@
+{
+  "task": "G-2",
+  "title": "rebaseline 批准精确绑定",
+  "changeRequest": "CR-001",
+  "diff": "evidence/dev/STEP-3G/scope-guard-check.diff",
+  "sourceRun": "evidence/dev/STEP-3G/G-3/（单次反向测试运行，按任务卡切片）",
+  "acceptanceCriteria": [
+    "A2 已批准的 page.tsx rebaseline → ALLOW",
+    "用 A2 批准改其他冻结文件 → BLOCK",
+    "page.tsx 改到批准 to 以外 → BLOCK",
+    "篡改 manifestHash → BLOCK",
+    "已 REVERTED 的批准不再抑制 → BLOCK"
+  ],
+  "scenarios": [
+    {
+      "id": "R3-approved-page-rebaseline",
+      "note": "A2 已批准的 page.tsx rebaseline",
+      "expect": "ALLOW",
+      "got": "ALLOW",
+      "exitCode": 2,
+      "violationCount": 0,
+      "violations": [],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R4-a2-used-on-other-frozen-file",
+      "note": "拿 A2 的批准去改其他冻结文件 globals.css",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B3] apps/web/app/globals.css"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R4b-approved-file-changed-beyond-to",
+      "note": "page.tsx 被改成批准记录 to 以外的值",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B3] apps/web/app/video/page.tsx"
+      ],
+      "suppressions": [
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001",
+        "[B4] scripts/web-integrity.mjs:manifestHash <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R5-manifest-hash-tampered",
+      "note": "篡改 scripts/web-integrity.mjs 的 manifestHash",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 1,
+      "violations": [
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [
+        "[B3] apps/web/app/video/page.tsx <- RB-1-001",
+        "[B4] scripts/ui-integrity.mjs <- RB-1-001",
+        "[B4] tests/web-baseline-sha256.json <- RB-1-001"
+      ],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    },
+    {
+      "id": "R7-reverted-approval-does-not-suppress",
+      "note": "已 REVERTED 的批准记录不得再抑制告警",
+      "expect": "BLOCK",
+      "got": "BLOCK",
+      "exitCode": 3,
+      "violationCount": 4,
+      "violations": [
+        "[B3] apps/web/app/video/page.tsx",
+        "[B4] scripts/ui-integrity.mjs",
+        "[B4] tests/web-baseline-sha256.json",
+        "[B4] scripts/web-integrity.mjs:manifestHash"
+      ],
+      "suppressions": [],
+      "checkerUsed": "in-place (the copy's own checker)",
+      "verdict": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "pass": 5,
+    "fail": 0
+  },
+  "status": "SELF_TESTED",
+  "acceptance": "REVIEW_PENDING"
+}

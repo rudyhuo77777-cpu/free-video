@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "free-video-ai-probe-local-only",
+  "main": "./tests/ai-probe-worker.js",
+  "compatibility_date": "2026-09-17",
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
+  "vars": {
+    "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "AI_TIMEOUT_MS": "45000"
+  }
+}

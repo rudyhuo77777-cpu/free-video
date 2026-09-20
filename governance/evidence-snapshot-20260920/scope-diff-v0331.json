@@ -1,0 +1,24 @@
+{
+  "release": "0.3.3.2",
+  "changedFiles": [
+    "CLOUDFLARE-DEPLOY.md",
+    "README.md",
+    "RELEASE-REPORT.md",
+    "VERSION.json",
+    "package.json",
+    "scripts/verify.mjs",
+    "tests/release-guards.mjs",
+    "tests/verification-fix.mjs"
+  ],
+  "removedHistoricalNote": [
+    "VERIFICATION-FIX-v0.3.3.1.md"
+  ],
+  "addedFiles": [
+    "CODEX-AUDIT.md",
+    "INTEGRATION-MANIFEST.json",
+    "START-HERE.txt"
+  ],
+  "existingExecutableChanges": "version strings only",
+  "rootPackageChanges": "version only; scripts and dependencies unchanged",
+  "noSecondArchiveRequired": true
+}

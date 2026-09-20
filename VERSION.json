@@ -1,8 +1,8 @@
 {
   "name": "Free Video",
-  "version": "0.3.1-lite",
-  "date": "2026-09-16",
-  "status": "cloudflare-lite",
+  "version": "0.3.3.2-lite",
+  "date": "2026-09-17",
+  "status": "integrated-source-release; local verification evidence in RELEASE-REPORT.md; production acceptance not claimed",
   "domain": "https://freevideo.eco-velo.com",
   "architecture": {
     "frontend": "Next.js static export",
@@ -21,5 +21,8 @@
     "BullMQ",
     "separate AI worker",
     "server-side video rendering"
-  ]
+  ],
+  "verificationRelease": "0.3.3.2 Integrated Verification Fix",
+  "backendVersion": "0.3.3-lite",
+  "distribution": "single-self-contained-flat-package"
 }

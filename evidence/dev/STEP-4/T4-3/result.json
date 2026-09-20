@@ -1,0 +1,74 @@
+{
+  "task": "T4-3",
+  "title": "上游错误分类、超时与有限重试（夹具）",
+  "aiLayer": "FIXTURE_AI —— 确定性本地夹具与故障注入，非远程推理。禁止表述为「AI 已通过」。",
+  "sourceRun": "evidence/dev/STEP-4/T4-all/（单次运行，按任务卡切片）",
+  "command": "node --no-warnings tests/regression.mjs",
+  "exitCode": 0,
+  "environment": "WSL2 Linux; Node v22.22.3",
+  "executor": "Implementer(Claude)",
+  "testType": "unit + integration-sqlite",
+  "assertions": [
+    {
+      "id": "X14",
+      "title": "FIXTURE_AI: 401/403 become ai_auth_failed with exactly one model call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X15",
+      "title": "FIXTURE_AI: 429 becomes ai_quota_exceeded with exactly one model call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X16",
+      "title": "FIXTURE_AI: 5xx and unknown upstream failures become ai_upstream_unavailable, one call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X17",
+      "title": "FIXTURE_AI: an untrusted error code is never echoed back as the reason",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X18",
+      "title": "FIXTURE_AI: a malformed result is repaired at most once, so at most two model calls",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X19",
+      "title": "FIXTURE_AI: a successful repair on the second call is accepted",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X20",
+      "title": "FIXTURE_AI: a timeout raises ai_timeout and never issues another model call",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X21",
+      "title": "FIXTURE_AI: a missing or non-callable AI binding fails before any inference",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X22",
+      "title": "FIXTURE_AI: every one of the five durations reaches the model with its pinned max_tokens",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "pass": 9,
+    "fail": 0
+  },
+  "status": "FIXTURE_AI PASS (SELF_TESTED)",
+  "acceptance": "REVIEW_PENDING"
+}

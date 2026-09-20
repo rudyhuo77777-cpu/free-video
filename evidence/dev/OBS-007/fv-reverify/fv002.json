@@ -1,0 +1,204 @@
+{
+  "finding": "FV-002",
+  "recordedAt": "2026-09-20T10:10:50.691Z",
+  "samples": [
+    {
+      "id": "env-unicode-line-separator",
+      "shouldReject": true,
+      "accepted": false,
+      "error": "next-env.d.ts: unexpected content at line 4",
+      "tsStatementKinds": [
+        "ImportDeclaration"
+      ],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    },
+    {
+      "id": "env-unicode-paragraph-separator",
+      "shouldReject": true,
+      "accepted": false,
+      "error": "next-env.d.ts: unexpected content at line 4",
+      "tsStatementKinds": [
+        "FirstStatement"
+      ],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    },
+    {
+      "id": "env-unicode-line-separator-directive",
+      "shouldReject": true,
+      "accepted": false,
+      "error": "next-env.d.ts: unexpected directive at line 4",
+      "tsStatementKinds": [],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    },
+    {
+      "id": "real-next-generated",
+      "shouldReject": false,
+      "accepted": true,
+      "error": null,
+      "tsStatementKinds": [
+        "ImportDeclaration",
+        "ImportDeclaration"
+      ],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    },
+    {
+      "id": "control-path-traversal",
+      "shouldReject": true,
+      "accepted": false,
+      "error": "next-env.d.ts: unexpected content at line 3",
+      "tsStatementKinds": [
+        "ImportDeclaration"
+      ],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    },
+    {
+      "id": "control-arbitrary-package",
+      "shouldReject": true,
+      "accepted": false,
+      "error": "next-env.d.ts: unexpected content at line 3",
+      "tsStatementKinds": [
+        "ImportDeclaration"
+      ],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    },
+    {
+      "id": "control-ts-nocheck",
+      "shouldReject": true,
+      "accepted": false,
+      "error": "next-env.d.ts: TypeScript suppression directives are not allowed",
+      "tsStatementKinds": [],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    },
+    {
+      "id": "control-seed-only",
+      "shouldReject": false,
+      "accepted": true,
+      "error": null,
+      "tsStatementKinds": [],
+      "tsParseDiagnostics": 0,
+      "bypassReproduced": false
+    }
+  ],
+  "frozenMutations": {
+    "total": 21,
+    "rejected": 21,
+    "results": [
+      {
+        "path": "apps/web/app/globals.css",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/app/globals.css"
+      },
+      {
+        "path": "apps/web/app/layout.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/app/layout.tsx"
+      },
+      {
+        "path": "apps/web/app/page.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/app/page.tsx"
+      },
+      {
+        "path": "apps/web/app/projects/page.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/app/projects/page.tsx"
+      },
+      {
+        "path": "apps/web/app/tools/page.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/app/tools/page.tsx"
+      },
+      {
+        "path": "apps/web/app/video/page.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/app/video/page.tsx"
+      },
+      {
+        "path": "apps/web/components/LanguageProvider.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/components/LanguageProvider.tsx"
+      },
+      {
+        "path": "apps/web/components/Nav.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/components/Nav.tsx"
+      },
+      {
+        "path": "apps/web/components/PwaRegistrar.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/components/PwaRegistrar.tsx"
+      },
+      {
+        "path": "apps/web/components/TurnstileBox.tsx",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/components/TurnstileBox.tsx"
+      },
+      {
+        "path": "apps/web/lib/client/tts.ts",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/lib/client/tts.ts"
+      },
+      {
+        "path": "apps/web/lib/client/video-renderer.ts",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/lib/client/video-renderer.ts"
+      },
+      {
+        "path": "apps/web/next.config.ts",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/next.config.ts"
+      },
+      {
+        "path": "apps/web/package.json",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/package.json"
+      },
+      {
+        "path": "apps/web/public/fyp-local.html",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/public/fyp-local.html"
+      },
+      {
+        "path": "apps/web/public/icon-192.png",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/public/icon-192.png"
+      },
+      {
+        "path": "apps/web/public/icon-512.png",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/public/icon-512.png"
+      },
+      {
+        "path": "apps/web/public/icon.svg",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/public/icon.svg"
+      },
+      {
+        "path": "apps/web/public/manifest.webmanifest",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/public/manifest.webmanifest"
+      },
+      {
+        "path": "apps/web/public/reset-local-cache.html",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/public/reset-local-cache.html"
+      },
+      {
+        "path": "apps/web/public/sw.js",
+        "rejected": true,
+        "message": "Web byte integrity failed: apps/web/public/sw.js"
+      }
+    ]
+  },
+  "summary": {
+    "bypassesReproduced": [],
+    "falsePositives": []
+  }
+}

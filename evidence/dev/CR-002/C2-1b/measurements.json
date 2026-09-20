@@ -1,0 +1,115 @@
+{
+  "task": "C2-1b 长文本多句连读实测（闭合外推缺口）",
+  "recordedAt": "2026-09-19T13:24:07.477Z",
+  "engine": "/mnt/c/Users/Hongyan/AppData/Local/Programs/Python/Python311/Scripts/supertonic.exe",
+  "voice": "F5",
+  "lang": "id",
+  "why": "产品把全部场景旁白拼成一段多句连读再合成（apps/web/app/video/page.tsx:360），且渲染器解码整个 WAV（含头尾静音），因此支配性指标是「多句连读 + 文件时长」的词每秒。",
+  "method": {
+    "silenceThresholdDb": -50,
+    "windowMs": 20
+  },
+  "wordsPerSecondOnFileDuration": {
+    "mean": 2.15,
+    "min": 2.129,
+    "max": 2.171
+  },
+  "wordsPerSecondOnEffectiveSpeech": {
+    "mean": 2.194,
+    "min": 2.162,
+    "max": 2.256
+  },
+  "auditReference": {
+    "words": 133,
+    "fileDurationSec": 65.683673,
+    "wordsPerSecond": 2.025,
+    "note": "Codex 审计的真实 F5 样本，用作交叉校验"
+  },
+  "samples": [
+    {
+      "id": "lf-30s",
+      "nominalDuration": 30,
+      "words": 60,
+      "actualWords": 60,
+      "text": "Cek bentuk dan detail produk ini sebelum kamu memilih. Bahan stainless tebal membuat botol ini awet dipakai setiap hari.…",
+      "wavFile": "evidence/dev/CR-002/C2-1b/wav/lf-30s.wav",
+      "fileDurationSec": 27.6763,
+      "leadingSilenceSec": 0.42,
+      "trailingSilenceSec": 0.6563,
+      "effectiveSpeechSec": 26.6,
+      "wordsPerSecondEffective": 2.256,
+      "wordsPerSecondFileDuration": 2.168,
+      "fitsNominalDuration": true,
+      "overflowSec": -2.324,
+      "synthesisMs": 28796
+    },
+    {
+      "id": "lf-60s",
+      "nominalDuration": 60,
+      "words": 120,
+      "actualWords": 120,
+      "text": "Cek bentuk dan detail produk ini sebelum kamu memilih. Bahan stainless tebal membuat botol ini awet dipakai setiap hari.…",
+      "wavFile": "evidence/dev/CR-002/C2-1b/wav/lf-60s.wav",
+      "fileDurationSec": 55.283,
+      "leadingSilenceSec": 0.58,
+      "trailingSilenceSec": 0.663,
+      "effectiveSpeechSec": 54.04,
+      "wordsPerSecondEffective": 2.221,
+      "wordsPerSecondFileDuration": 2.171,
+      "fitsNominalDuration": true,
+      "overflowSec": -4.717,
+      "synthesisMs": 57561
+    },
+    {
+      "id": "lf-60s-b",
+      "nominalDuration": 60,
+      "words": 133,
+      "actualWords": 133,
+      "text": "Cek bentuk dan detail produk ini sebelum kamu memilih. Bahan stainless tebal membuat botol ini awet dipakai setiap hari.…",
+      "wavFile": "evidence/dev/CR-002/C2-1b/wav/lf-60s-b.wav",
+      "fileDurationSec": 62.4793,
+      "leadingSilenceSec": 0.5,
+      "trailingSilenceSec": 0.5593,
+      "effectiveSpeechSec": 61.42,
+      "wordsPerSecondEffective": 2.165,
+      "wordsPerSecondFileDuration": 2.129,
+      "fitsNominalDuration": false,
+      "overflowSec": 2.479,
+      "synthesisMs": 84974
+    },
+    {
+      "id": "lf-90s",
+      "nominalDuration": 90,
+      "words": 185,
+      "actualWords": 185,
+      "text": "Cek bentuk dan detail produk ini sebelum kamu memilih. Bahan stainless tebal membuat botol ini awet dipakai setiap hari.…",
+      "wavFile": "evidence/dev/CR-002/C2-1b/wav/lf-90s.wav",
+      "fileDurationSec": 86.5333,
+      "leadingSilenceSec": 0.4,
+      "trailingSilenceSec": 0.5733,
+      "effectiveSpeechSec": 85.56,
+      "wordsPerSecondEffective": 2.162,
+      "wordsPerSecondFileDuration": 2.138,
+      "fitsNominalDuration": true,
+      "overflowSec": -3.467,
+      "synthesisMs": 97220
+    },
+    {
+      "id": "lf-120s",
+      "nominalDuration": 120,
+      "words": 245,
+      "actualWords": 245,
+      "text": "Cek bentuk dan detail produk ini sebelum kamu memilih. Bahan stainless tebal membuat botol ini awet dipakai setiap hari.…",
+      "wavFile": "evidence/dev/CR-002/C2-1b/wav/lf-120s.wav",
+      "fileDurationSec": 114.349,
+      "leadingSilenceSec": 0.42,
+      "trailingSilenceSec": 0.689,
+      "effectiveSpeechSec": 113.24,
+      "wordsPerSecondEffective": 2.164,
+      "wordsPerSecondFileDuration": 2.143,
+      "fitsNominalDuration": true,
+      "overflowSec": -5.651,
+      "synthesisMs": 136427
+    }
+  ]
+}

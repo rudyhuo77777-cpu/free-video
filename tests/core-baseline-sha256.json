@@ -1,0 +1,8 @@
+{
+  "migrations/0001_core.sql": "70e91254f540792074d549a4004602ed4b10ba4fd745c4b348ea10e24c7bfcb6",
+  "packages/core/src/types.ts": "35226cf2d1fd2a9c2c79e1f9bcaaa9afd00c9b4c638c1eec574a0b6a2d18a916",
+  "packages/core/src/director.ts": "ce9e1661eb9a16a78375ffafbd2d908ec24266ee58d62fe0fe1d3dd6370f4ac2",
+  "packages/core/src/templates.ts": "b2873ebfe2aa26a6d2769aa1ac8e2b65bc3ec95d42d1b0e95910e1ecefbfaaa1",
+  "packages/core/src/validate.ts": "324bea0dffd917da443540d1b8669f2444c75ec4d009fb40f2a7965ea6b929d0",
+  "packages/core/src/index.ts": "13c4847447b8a2fbf6a66d7d1f853bdff1323befaddb3d00df2bd89a7240b178"
+}

@@ -1,0 +1,16 @@
+{
+  "command": "node",
+  "args": [
+    "--no-warnings",
+    "governance/repro/f5-rate-measure.mjs"
+  ],
+  "cwd": "/mnt/c/Users/Hongyan/Downloads/free-video-v0.3.3.2-integrated-flat",
+  "startedAt": "2026-09-19T13:12:47.100Z",
+  "finishedAt": "2026-09-19T13:15:38.026Z",
+  "durationMs": 170929,
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "node": "v22.22.3",
+  "platform": "linux"
+}

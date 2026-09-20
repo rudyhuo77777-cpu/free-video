@@ -1,0 +1,23 @@
+{
+  "A-initial": {
+    "pngIdentical": true,
+    "stylesIdentical": true,
+    "rectsIdentical": true,
+    "textIdentical": true
+  },
+  "B-ready": {
+    "pngIdentical": true,
+    "stylesIdentical": true,
+    "rectsIdentical": true,
+    "textIdentical": true
+  },
+  "C-lost-ack-error": {
+    "pngIdentical": true,
+    "stylesIdentical": true,
+    "rectsIdentical": true,
+    "textIdentical": true
+  },
+  "globalsCssSha256": "75ad636a4eadb32633060c3fc4c66bf7b66b533666ed68ec5ee226499e42993d",
+  "globalsCssUnchanged": true,
+  "allIdentical": true
+}

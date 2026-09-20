@@ -1,0 +1,74 @@
+{
+  "task": "T4-1",
+  "title": "Director schema 与五种时长结构边界（夹具）",
+  "aiLayer": "FIXTURE_AI —— 确定性本地夹具与故障注入，非远程推理。禁止表述为「AI 已通过」。",
+  "sourceRun": "evidence/dev/STEP-4/T4-all/（单次运行，按任务卡切片）",
+  "command": "node --no-warnings tests/regression.mjs",
+  "exitCode": 0,
+  "environment": "WSL2 Linux; Node v22.22.3",
+  "executor": "Implementer(Claude)",
+  "testType": "unit + integration-sqlite",
+  "assertions": [
+    {
+      "id": "X01",
+      "title": "FIXTURE_AI: directorSchema pins the scene-count range for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X02",
+      "title": "FIXTURE_AI: scene-count lower bound minus one is rejected for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X03",
+      "title": "FIXTURE_AI: scene-count lower and upper bounds are accepted for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X04",
+      "title": "FIXTURE_AI: scene-count upper bound plus one is rejected for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X05",
+      "title": "FIXTURE_AI: total scene duration outside the +/-30% window is rejected",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X06",
+      "title": "FIXTURE_AI: a single scene longer than 15s is rejected",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X07",
+      "title": "FIXTURE_AI: narration word budget is enforced on both sides for all five durations",
+      "status": "PASS",
+      "note": "FIXTURE_AI 15s:6-54 30s:11-108 60s:21-216 90s:32-324 120s:42-432"
+    },
+    {
+      "id": "X08",
+      "title": "FIXTURE_AI: an unsupported duration is rejected outright",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X09",
+      "title": "FIXTURE_AI: duplicate scene ids are normalised to unique ids without inventing content",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "pass": 9,
+    "fail": 0
+  },
+  "status": "FIXTURE_AI PASS (SELF_TESTED)",
+  "acceptance": "REVIEW_PENDING"
+}

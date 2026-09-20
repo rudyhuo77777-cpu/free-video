@@ -1,0 +1,41 @@
+Free Video
+Video Gratis
+Product Project
+Tools
+Bahasa Indonesia
+English
+中文
+Cari FYP ↗
+VIDEO JUALAN GRATIS · V0.2.2.13
+Masukkan produk. Free Video jadi director. HP kamu jadi studio.
+
+Director dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.
+
+Bahasa Indonesia
+English
+中文
+Nama produk
+Foto produk (opsional)
+Durasi
+15s
+30s
+60s
+90s
+120s
+Voice lokal WAV (opsional, untuk uji audio track)
+Renderer akan memotong/menambah silence agar audio tepat sepanjang video. Natural Voice Pack Supertonic tetap menjadi modul on-device terpisah, bukan API cloud berbayar.
+2 Script AI gratis tersisa.
+Render video dasar tidak mengurangi jatah script.
+CARA MEMBUAT VIDEO
+1. Masukkan nama produk →
+2. Upload foto produk jika ada →
+3. Pilih durasi 15–120 detik →
+4. Klik BUAT SCRIPT + VIDEO PLAN →
+5. Tunggu footage dan voice siap →
+6. Klik RENDER → setelah selesai klik DOWNLOAD MP4
+BUAT SCRIPT + VIDEO PLAN
+CEK LOCAL VOICE
+persistence_unconfirmed
+30 DETIK · 9:16
+Portable Blender
+Preview konsep. MP4 final dirender lokal.

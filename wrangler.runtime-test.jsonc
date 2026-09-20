@@ -1,0 +1,7 @@
+{
+  "name": "free-video-runtime-test",
+  "main": "./tests/runtime-probe-worker.js",
+  "compatibility_date": "2026-09-17",
+  "d1_databases": [{"binding":"DB","database_name":"free-video-runtime-test","database_id":"00000000-0000-0000-0000-000000000002","migrations_dir":"migrations","remote":false}],
+  "vars": {"FREE_SCRIPT_LIMIT":"3"}
+}

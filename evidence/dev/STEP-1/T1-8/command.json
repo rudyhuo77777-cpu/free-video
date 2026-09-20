@@ -1,0 +1,16 @@
+{
+  "command": "node",
+  "args": [
+    "--no-warnings",
+    "governance/repro/fv003-deploy.mjs"
+  ],
+  "cwd": "/mnt/c/Users/Hongyan/Downloads/free-video-v0.3.3.2-integrated-flat",
+  "startedAt": "2026-09-19T00:52:01.529Z",
+  "finishedAt": "2026-09-19T00:52:06.803Z",
+  "durationMs": 5282,
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "node": "v22.22.3",
+  "platform": "linux"
+}

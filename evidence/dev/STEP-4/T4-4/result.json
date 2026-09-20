@@ -1,0 +1,38 @@
+{
+  "task": "T4-4",
+  "title": "迟到结果与 owner 变更（夹具）",
+  "aiLayer": "FIXTURE_AI —— 确定性本地夹具与故障注入，非远程推理。禁止表述为「AI 已通过」。",
+  "sourceRun": "evidence/dev/STEP-4/T4-all/（单次运行，按任务卡切片）",
+  "command": "node --no-warnings tests/regression.mjs",
+  "exitCode": 0,
+  "environment": "WSL2 Linux; Node v22.22.3",
+  "executor": "Implementer(Claude)",
+  "testType": "unit + integration-sqlite",
+  "assertions": [
+    {
+      "id": "X23",
+      "title": "FIXTURE_AI: a late AI result cannot complete a job whose lease already expired",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X24",
+      "title": "FIXTURE_AI: a late AI result cannot overwrite a newer owner of the same key",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    },
+    {
+      "id": "X25",
+      "title": "FIXTURE_AI: a late refund from a stale owner cannot release a second credit",
+      "status": "PASS",
+      "note": "FIXTURE_AI"
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "pass": 3,
+    "fail": 0
+  },
+  "status": "FIXTURE_AI PASS (SELF_TESTED)",
+  "acceptance": "REVIEW_PENDING"
+}

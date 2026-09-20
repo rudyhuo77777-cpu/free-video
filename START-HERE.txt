@@ -1,0 +1,11 @@
+Free Video v0.3.3.2 单包整合版
+
+1. 这是完整工程，只解压这一个ZIP到新目录。无需旧包、补丁或更新器。
+2. 要用Codex审计：打开本目录，让Codex读取CODEX-AUDIT.md并在独立副本执行。
+3. 要自己验证：先双击CHECK-LOCAL.cmd。目标：CHECK_EXIT=0。
+4. 离线通过后，再双击VERIFY-BUILD.cmd。首次完整构建需要联网安装依赖；目标：VERIFY_BUILD_EXIT=0。
+5. 不要手工恢复next-env.d.ts，不要重新删除仓库或创建Cloudflare Worker。
+
+Node.js最低版本22.16.0。源码、UI和后端仍沿用v0.3.3；本版整合验收修复与单目录审计说明。
+本包没有替你执行部署或云端AI调用。离线PASS不代表真实AI、TTS或最终MP4已经验收。
+详细结果：RELEASE-REPORT.md；开始方式：README.md；审计指令：CODEX-AUDIT.md。

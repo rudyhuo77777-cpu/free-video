@@ -1,0 +1,44 @@
+// OBS-008 探针：代理提供一份带日志的 sw.js 副本（不改任何项目文件），查明 fetch handler 是否运行、put 是否报错。
+import fs from 'node:fs'; import http from 'node:http';
+const ROOT='/mnt/c/Users/Hongyan/Downloads/free-video-v0.3.3.2-integrated-flat';
+const { launch, Session } = await import(ROOT+'/governance/repro/cdp.mjs');
+const { startStack } = await import(ROOT+'/governance/repro/local-stack.mjs');
+const orig = fs.readFileSync(ROOT+'/apps/web/public/sw.js','utf8');
+// 仅加日志，不改逻辑
+let probe = orig
+  .replace("const CACHE = 'free-video-shell-v0.3.1-lite';", "const CACHE = 'probe-shell';\nconst LOG=[];\nconst flush=()=>caches.open('probe-log').then(c=>c.put('/__log', new Response(JSON.stringify(LOG.slice(-120)),{headers:{'content-type':'application/json'}}))).catch(()=>undefined);\nsetInterval(flush, 400);")
+  .replace("self.addEventListener('fetch', event => {\n  const req = event.request;",
+           "self.addEventListener('fetch', event => {\n  const req = event.request;\n  LOG.push({ev:'fetch',url:req.url,dest:req.destination,mode:req.mode,cacheable:undefined});")
+  .replace("  if (!isCacheableSameOrigin(req)) return;",
+           "  if (!isCacheableSameOrigin(req)) { LOG.push({ev:'skip-not-cacheable',url:req.url,dest:req.destination}); return; }")
+  .replace("          if (res.ok) caches.open(CACHE).then(cache => cache.put(req, res.clone())).catch(() => undefined);",
+           "          if (res.ok) caches.open(CACHE).then(cache => cache.put(req, res.clone())).then(()=>LOG.push({ev:'put-ok',url:req.url})).catch(e => LOG.push({ev:'put-fail',url:req.url,err:e.name+': '+e.message}));")
+  .replace("      if (res.ok && res.type === 'basic') caches.open(CACHE).then(cache => cache.put(req, res.clone())).catch(() => undefined);",
+           "      if (res.ok && res.type === 'basic') caches.open(CACHE).then(cache => cache.put(req, res.clone())).then(()=>LOG.push({ev:'put-ok2',url:req.url})).catch(e => LOG.push({ev:'put-fail2',url:req.url,err:e.name+': '+e.message}));");
+
+const stack = await startStack({});
+const proxy = http.createServer((req,res)=>{
+  if (req.url === '/sw-probe.js') { res.writeHead(200,{'content-type':'text/javascript; charset=utf-8','service-worker-allowed':'/'}); res.end(probe); return; }
+  const up=http.request({host:'127.0.0.1',port:stack.port,path:req.url,method:req.method,headers:{...req.headers,host:`127.0.0.1:${stack.port}`}},r=>{res.writeHead(r.statusCode,r.headers);r.pipe(res);});
+  up.on('error',e=>{res.writeHead(502);res.end(String(e.message));}); req.pipe(up);
+});
+await new Promise(r=>proxy.listen(0,'127.0.0.2',r));
+const BASE=`http://127.0.0.2:${proxy.address().port}`;
+const b=await launch({headless:true}); const s=await Session.connect(b.wsUrl); await s.attachToPage();
+const goto=async u=>{await s.navigate(u);await s.eval('new Promise(r=>setTimeout(r,700))');};
+
+await goto(BASE+'/');
+// 注销产品 SW，注册探针 SW
+await s.eval(`(async()=>{const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()));const r=await navigator.serviceWorker.register('/sw-probe.js',{scope:'/'});await navigator.serviceWorker.ready;return 1;})()`);
+await goto(BASE+'/'); await goto(BASE+'/video'); await goto(BASE+'/');
+const result = await s.eval(`(async()=>{
+  await new Promise(r=>setTimeout(r,1200));
+  let log=['no-log'];
+  try { const lc=await caches.open('probe-log'); const r=await lc.match('/__log'); if(r) log=await r.json(); } catch(e){ log=['log-error: '+e.message]; }
+  const keys=await caches.keys(); const out={controller:!!navigator.serviceWorker.controller, cacheKeys:keys, log};
+  if (keys.includes('probe-shell')) { const c=await caches.open('probe-shell'); out.probeEntries=(await c.keys()).map(r=>new URL(r.url).pathname); }
+  return out;
+})()`);
+console.log(JSON.stringify(result,null,2).slice(0,4000));
+s.close(); b.kill(); proxy.close(); await stack.close?.();
+process.exit(0);

@@ -1,0 +1,311 @@
+{
+  "task": "C2-2 依据实测确定保守预算与安全余量",
+  "recordedAt": "2026-09-19T13:27:06.083Z",
+  "basisOfMeasure": "文件时长（头静音+有效语音+尾静音）—— video-renderer.ts 的 decodeNarration 解码整个 WAV",
+  "governingForm": "多句连读 —— apps/web/app/video/page.tsx:360 把所有场景 voice 拼成一段再送 F5",
+  "modelRejected": {
+    "model": "纯比例 maxWords = d × rate",
+    "reason": "头尾静音是固定开销不随词数缩放；4 词样本 short-3 在纯比例模型下超出 0.08s"
+  },
+  "modelChosen": {
+    "formula": "maxWords(d) = floor((d - fixedOverheadSec) × effectiveRate)",
+    "fixedOverheadSec": 1.33,
+    "fixedOverheadBasis": "最大头静音 0.58s + 最大尾静音 0.7491s（21 个真实样本的逐项最大值）",
+    "slowestMultiSentenceEffectiveRate": 2.1028,
+    "safetyFactor": 0.9,
+    "effectiveRate": 1.8925
+  },
+  "safetyMarginExplanation": "基准取多句连读（产品实际形态）的最慢真实样本而非均值；固定开销取逐项最大值；再乘 0.90 覆盖用词长度、标点密度、数字读法等未穷尽的内容差异。",
+  "lowerBound": "ceil(duration*0.35) 保持不变 —— 未观察到下界导致的问题",
+  "promptConsistency": "提示词原文 sekitar 1.5-2.5 kata/detik。新上界等效语速 1.85 词/秒（60s）落在该区间内；原上界 3.6 在区间之外。需把提示词表述收紧到与新上界自洽。",
+  "sampleCount": 22,
+  "backCalculation": [
+    {
+      "src": "C2-1",
+      "id": "short-1",
+      "style": "short",
+      "words": 6,
+      "fileSec": 2.5774,
+      "effSec": 1.66,
+      "lead": 0.4,
+      "trail": 0.5174,
+      "nominalNeeded": 4.5,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "short-2",
+      "style": "short",
+      "words": 6,
+      "fileSec": 3.1347,
+      "effSec": 2.08,
+      "lead": 0.44,
+      "trail": 0.6147,
+      "nominalNeeded": 4.5,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "short-3",
+      "style": "short",
+      "words": 4,
+      "fileSec": 2.3684,
+      "effSec": 1.44,
+      "lead": 0.36,
+      "trail": 0.5684,
+      "nominalNeeded": 3.444,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "short-4",
+      "style": "short",
+      "words": 5,
+      "fileSec": 2.6471,
+      "effSec": 1.74,
+      "lead": 0.34,
+      "trail": 0.5671,
+      "nominalNeeded": 3.972,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "medium-1",
+      "style": "medium",
+      "words": 14,
+      "fileSec": 6.548,
+      "effSec": 5.46,
+      "lead": 0.46,
+      "trail": 0.628,
+      "nominalNeeded": 8.728,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "medium-2",
+      "style": "medium",
+      "words": 16,
+      "fileSec": 6.4087,
+      "effSec": 5.52,
+      "lead": 0.36,
+      "trail": 0.5287,
+      "nominalNeeded": 9.784,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "medium-3",
+      "style": "medium",
+      "words": 14,
+      "fileSec": 6.966,
+      "effSec": 5.88,
+      "lead": 0.44,
+      "trail": 0.646,
+      "nominalNeeded": 8.728,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "medium-4",
+      "style": "medium",
+      "words": 14,
+      "fileSec": 6.548,
+      "effSec": 5.54,
+      "lead": 0.48,
+      "trail": 0.528,
+      "nominalNeeded": 8.728,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "long-1",
+      "style": "long",
+      "words": 28,
+      "fileSec": 12.6781,
+      "effSec": 11.56,
+      "lead": 0.52,
+      "trail": 0.5981,
+      "nominalNeeded": 16.125,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "long-2",
+      "style": "long",
+      "words": 27,
+      "fileSec": 13.5837,
+      "effSec": 12.5,
+      "lead": 0.52,
+      "trail": 0.5637,
+      "nominalNeeded": 15.597,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "long-3",
+      "style": "long",
+      "words": 33,
+      "fileSec": 14.3499,
+      "effSec": 13.12,
+      "lead": 0.52,
+      "trail": 0.7099,
+      "nominalNeeded": 18.767,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "long-4",
+      "style": "long",
+      "words": 30,
+      "fileSec": 13.1657,
+      "effSec": 12.08,
+      "lead": 0.48,
+      "trail": 0.6057,
+      "nominalNeeded": 17.182,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "multi-1",
+      "style": "multi-sentence",
+      "words": 28,
+      "fileSec": 11.9815,
+      "effSec": 10.78,
+      "lead": 0.5,
+      "trail": 0.7015,
+      "nominalNeeded": 16.125,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "multi-2",
+      "style": "multi-sentence",
+      "words": 28,
+      "fileSec": 13.932,
+      "effSec": 12.92,
+      "lead": 0.5,
+      "trail": 0.512,
+      "nominalNeeded": 16.125,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "multi-3",
+      "style": "multi-sentence",
+      "words": 27,
+      "fileSec": 13.8623,
+      "effSec": 12.84,
+      "lead": 0.44,
+      "trail": 0.5823,
+      "nominalNeeded": 15.597,
+      "fits": true
+    },
+    {
+      "src": "C2-1",
+      "id": "multi-4",
+      "style": "multi-sentence",
+      "words": 27,
+      "fileSec": 12.4691,
+      "effSec": 11.3,
+      "lead": 0.42,
+      "trail": 0.7491,
+      "nominalNeeded": 15.597,
+      "fits": true
+    },
+    {
+      "src": "C2-1b",
+      "id": "lf-30s",
+      "style": "long-form-multi",
+      "words": 60,
+      "fileSec": 27.6763,
+      "effSec": 26.6,
+      "lead": 0.42,
+      "trail": 0.6563,
+      "nominalNeeded": 33.034,
+      "fits": true
+    },
+    {
+      "src": "C2-1b",
+      "id": "lf-60s",
+      "style": "long-form-multi",
+      "words": 120,
+      "fileSec": 55.283,
+      "effSec": 54.04,
+      "lead": 0.58,
+      "trail": 0.663,
+      "nominalNeeded": 64.738,
+      "fits": true
+    },
+    {
+      "src": "C2-1b",
+      "id": "lf-60s-b",
+      "style": "long-form-multi",
+      "words": 133,
+      "fileSec": 62.4793,
+      "effSec": 61.42,
+      "lead": 0.5,
+      "trail": 0.5593,
+      "nominalNeeded": 71.607,
+      "fits": true
+    },
+    {
+      "src": "C2-1b",
+      "id": "lf-90s",
+      "style": "long-form-multi",
+      "words": 185,
+      "fileSec": 86.5333,
+      "effSec": 85.56,
+      "lead": 0.4,
+      "trail": 0.5733,
+      "nominalNeeded": 99.084,
+      "fits": true
+    },
+    {
+      "src": "C2-1b",
+      "id": "lf-120s",
+      "style": "long-form-multi",
+      "words": 245,
+      "fileSec": 114.349,
+      "effSec": 113.24,
+      "lead": 0.42,
+      "trail": 0.689,
+      "nominalNeeded": 130.788,
+      "fits": true
+    },
+    {
+      "src": "Codex审计",
+      "id": "audit-60s",
+      "style": "long-form-multi",
+      "words": 133,
+      "fileSec": 65.683673,
+      "effSec": null,
+      "lead": null,
+      "trail": null,
+      "nominalNeeded": 71.607,
+      "fits": true
+    }
+  ],
+  "allSamplesFit": true,
+  "newBounds": {
+    "15": {
+      "current": 54,
+      "proposed": 25
+    },
+    "30": {
+      "current": 108,
+      "proposed": 54
+    },
+    "60": {
+      "current": 216,
+      "proposed": 111
+    },
+    "90": {
+      "current": 324,
+      "proposed": 167
+    },
+    "120": {
+      "current": 432,
+      "proposed": 224
+    }
+  }
+}

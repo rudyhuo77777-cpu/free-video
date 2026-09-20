@@ -1,0 +1,299 @@
+--- governance/evidence-snapshot-pre-step4/regression.mjs.before	2026-09-19 17:26:36.731805100 +0700
++++ tests/regression.mjs	2026-09-19 17:28:22.008385700 +0700
+@@ -10,6 +10,8 @@
+ import worker from '../worker/index.js';
+ import {ensureSchema,allowRate,quota,reserveJob,failJob,completeJob,recoverExpired,getJob,LEASE_MS} from '../worker/db.js';
+ import {createDirector,validateDirector,aiPayload,extractJson} from '../worker/director.js';
++import * as directorModule from '../worker/director.js';
++globalThis.__fvDirectorModule=directorModule;
+ import {readJson} from '../worker/http.js';
+ import {D1Adapter,req,env,director,body,guest,other,root} from './helpers.mjs';
+ const results=[];
+@@ -252,6 +254,287 @@
+     assert.equal(r.status,status);assert.equal(r.headers.get('access-control-allow-origin'),status===204?origin:null);
+   }
+ }));
++// ===========================================================================
++// STEP 4 — FIXTURE_AI coverage. Every AI here is a deterministic local fixture or a
++// fault injector; NO remote inference is performed. A PASS below means
++// "FIXTURE_AI PASS" for that layer only, never "the AI works".
++// Existing assertions above are unchanged.
++// ===========================================================================
++const SCENE_RANGES_EXPECTED={15:[4,6],30:[6,10],60:[10,16],90:[14,20],120:[18,24]};
++const DURATIONS=[15,30,60,90,120];
++const VOICE_POOL=[
++  'Cek bentuk dan detail produk ini sebelum kamu memilih.',
++  'Bahan stainless tebal membuat botol ini awet dipakai setiap hari.',
++  'Tutupnya rapat sehingga air tidak tumpah di dalam tas.',
++  'Ukurannya pas untuk dibawa ke kantor maupun ke kampus.',
++  'Bagian dalam mudah dibersihkan tanpa meninggalkan bau.',
++  'Suhu air tetap terjaga selama beberapa jam pemakaian.'
++];
++const TEMPLATE_POOL=['problem_hook','lifestyle','feature_3','zoom_detail','comparison','price_drop','countdown_cta','final_cta'];
++// Builds a director the ORIGINAL validateDirector accepts, with an explicit scene count.
++function fixtureDirectorFor(duration,sceneCount,{totalOverride=null,voiceWords=null}={}){
++  const count=sceneCount;
++  const target=totalOverride??duration;
++  const base=Math.floor(target/count);
++  const durations=Array.from({length:count},()=>Math.max(1,base));
++  let remainder=target-durations.reduce((a,b)=>a+b,0);
++  for(let i=0;remainder>0;i=(i+1)%count){durations[i]+=1;remainder--;}
++  for(let i=0;remainder<0;i=(i+1)%count){if(durations[i]>1){durations[i]-=1;remainder++;}}
++  const scenes=durations.map((d,i)=>({
++    id:`scene-${i+1}`,duration:d,
++    template:i===0?'problem_hook':TEMPLATE_POOL[(i%(TEMPLATE_POOL.length-1))+1],
++    assetKeyword:'stainless water bottle',headline:'Lihat detail produknya',
++    voice:VOICE_POOL[i%VOICE_POOL.length],camera:'push_in',transition:'cut'
++  }));
++  if(voiceWords!==null){
++    // Every scene needs at least one word (nonEmpty), so the minimum reachable total is
++    // `count`. Distribute the remainder so the achieved total is EXACTLY voiceWords.
++    const per=Array.from({length:count},()=>1);
++    let left=voiceWords-count;
++    for(let i=0;left>0;i=(i+1)%count){per[i]+=1;left--;}
++    scenes.forEach((s,i)=>{s.voice=Array.from({length:per[i]},()=>'kata').join(' ');});
++  }
++  return {version:'1.0',language:'id',ratio:'9:16',duration,productName:'Botol minum stainless',
++    style:'fast-commerce',cta:'Cek detail produknya sekarang.',scenes};
++}
++const rejects=(fn,code)=>{let thrown=null;try{fn();}catch(e){thrown=e;}assert(thrown,`expected ${code}, got success`);assert.equal(thrown.code,code,`expected ${code}, got ${thrown.code}`);};
++
++// --- T4-1 Director schema and the five duration boundaries -----------------
++await check('X01','FIXTURE_AI: directorSchema pins the scene-count range for all five durations',()=>{
++  const {directorSchema}=globalThis.__fvDirectorModule;
++  for(const d of DURATIONS){
++    const schema=directorSchema(d);
++    const [lo,hi]=SCENE_RANGES_EXPECTED[d];
++    assert.equal(schema.properties.scenes.minItems,lo,`${d}s minItems`);
++    assert.equal(schema.properties.scenes.maxItems,hi,`${d}s maxItems`);
++    assert.deepEqual(schema.properties.duration.enum,[d],`${d}s duration enum`);
++  }
++  return 'FIXTURE_AI';
++});
++await check('X02','FIXTURE_AI: scene-count lower bound minus one is rejected for all five durations',()=>{
++  for(const d of DURATIONS){const [lo]=SCENE_RANGES_EXPECTED[d];
++    rejects(()=>validateDirector(fixtureDirectorFor(d,lo-1),'Botol minum stainless',d),'director_scene_count');}
++  return 'FIXTURE_AI';
++});
++await check('X03','FIXTURE_AI: scene-count lower and upper bounds are accepted for all five durations',()=>{
++  for(const d of DURATIONS){const [lo,hi]=SCENE_RANGES_EXPECTED[d];
++    for(const n of [lo,hi]) assert.equal(validateDirector(fixtureDirectorFor(d,n),'Botol minum stainless',d).scenes.length,n);}
++  return 'FIXTURE_AI';
++});
++await check('X04','FIXTURE_AI: scene-count upper bound plus one is rejected for all five durations',()=>{
++  for(const d of DURATIONS){const [,hi]=SCENE_RANGES_EXPECTED[d];
++    rejects(()=>validateDirector(fixtureDirectorFor(d,hi+1),'Botol minum stainless',d),'director_scene_count');}
++  return 'FIXTURE_AI';
++});
++await check('X05','FIXTURE_AI: total scene duration outside the +/-30% window is rejected',()=>{
++  for(const d of DURATIONS){const [lo]=SCENE_RANGES_EXPECTED[d];
++    rejects(()=>validateDirector(fixtureDirectorFor(d,lo,{totalOverride:Math.floor(d*0.6)}),'Botol minum stainless',d),'director_timeline_mismatch');
++    rejects(()=>validateDirector(fixtureDirectorFor(d,lo,{totalOverride:Math.ceil(d*1.45)}),'Botol minum stainless',d),'director_timeline_mismatch');}
++  return 'FIXTURE_AI';
++});
++await check('X06','FIXTURE_AI: a single scene longer than 15s is rejected',()=>{
++  const d=60;const fx=fixtureDirectorFor(d,SCENE_RANGES_EXPECTED[d][0]);fx.scenes[0].duration=16;
++  rejects(()=>validateDirector(fx,'Botol minum stainless',d),'director_invalid_duration');
++  return 'FIXTURE_AI';
++});
++await check('X07','FIXTURE_AI: narration word budget is enforced on both sides for all five durations',()=>{
++  const words=fx=>fx.scenes.reduce((n,s)=>n+s.voice.trim().split(/\s+/).length,0);
++  const checked=[];
++  for(const d of DURATIONS){const [lo]=SCENE_RANGES_EXPECTED[d];
++    const min=Math.ceil(d*0.35),max=Math.ceil(d*3.6);
++    // one word per scene is the floor the schema itself imposes
++    if(min-1>=lo){
++      const under=fixtureDirectorFor(d,lo,{voiceWords:min-1});
++      assert.equal(words(under),min-1,`${d}s under-budget fixture must hold exactly ${min-1} words`);
++      rejects(()=>validateDirector(under,'Botol minum stainless',d),'director_voice_budget');
++    }
++    const over=fixtureDirectorFor(d,lo,{voiceWords:max+1});
++    assert.equal(words(over),max+1);
++    rejects(()=>validateDirector(over,'Botol minum stainless',d),'director_voice_budget');
++    const atMin=fixtureDirectorFor(d,lo,{voiceWords:Math.max(min,lo)});
++    assert(validateDirector(atMin,'Botol minum stainless',d));
++    const atMax=fixtureDirectorFor(d,lo,{voiceWords:max});
++    assert.equal(words(atMax),max);
++    assert(validateDirector(atMax,'Botol minum stainless',d));
++    checked.push(`${d}s:${min}-${max}`);}
++  return 'FIXTURE_AI '+checked.join(' ');
++});
++await check('X08','FIXTURE_AI: an unsupported duration is rejected outright',()=>{
++  for(const d of [0,14,45,121,200,-30]) rejects(()=>validateDirector(fixtureDirectorFor(60,10),'Botol minum stainless',d),'director_invalid_object');
++  return 'FIXTURE_AI';
++});
++await check('X09','FIXTURE_AI: duplicate scene ids are normalised to unique ids without inventing content',()=>{
++  const d=30;const fx=fixtureDirectorFor(d,SCENE_RANGES_EXPECTED[d][0]);
++  const originalVoices=fx.scenes.map(s=>s.voice);
++  fx.scenes.forEach(s=>{s.id='same-id';});
++  const out=validateDirector(fx,'Botol minum stainless',d);
++  assert.equal(new Set(out.scenes.map(s=>s.id)).size,out.scenes.length);
++  assert.deepEqual(out.scenes.map(s=>s.voice),originalVoices);
++  return 'FIXTURE_AI';
++});
++
++// --- T4-2 Response shape parsing and tolerance ----------------------------
++await check('X10','FIXTURE_AI: ten malformed AI response shapes each map to a stable error code',()=>{
++  const cases=[
++    ['empty string',()=>aiPayload({response:''}),'ai_json_missing'],
++    ['numeric response',()=>aiPayload({response:42}),'ai_json_missing'],
++    ['array response',()=>aiPayload({response:[1,2,3]}),'ai_json_missing'],
++    ['prose without JSON',()=>aiPayload({response:'maaf, saya tidak bisa'}),'ai_json_invalid'],
++    ['truncated JSON',()=>aiPayload({response:'{"version":"1.0","scenes":['}),'ai_json_invalid'],
++    ['two JSON objects',()=>aiPayload({response:'{"a":1} {"b":2}'}),'ai_json_invalid'],
++    ['upstream error envelope',()=>aiPayload({success:false,errors:[{message:'x'}]}),'ai_upstream_error'],
++    ['refusal',()=>aiPayload({choices:[{message:{refusal:'no'}}]}),'ai_refused'],
++    ['oversized response',()=>aiPayload({response:'x'.repeat(80001)}),'ai_response_too_large']
++  ];
++  for(const [name,fn,code] of cases){let t=null;try{fn();}catch(e){t=e;}assert(t,`${name}: expected ${code}`);assert.equal(t.code,code,`${name}`);}
++  // Observed contract, asserted where it actually holds: `response: null` is nullish, so the
++  // ?? chain in aiPayload() falls through and returns the envelope object. It is NOT an
++  // aiPayload error; validateDirector rejects it one layer later. S13 covers end to end.
++  assert.deepEqual(aiPayload({response:null}),{response:null},'null response falls through to the envelope');
++  rejects(()=>validateDirector(aiPayload({response:null}),'Botol minum stainless',15),'director_scene_count');
++  return 'FIXTURE_AI';
++});
++await check('X11','FIXTURE_AI: markdown-fenced and prose-wrapped JSON are recovered, not templated',()=>{
++  const d=30;const fx=fixtureDirectorFor(d,SCENE_RANGES_EXPECTED[d][0]);
++  const json=JSON.stringify(fx);
++  assert.deepEqual(aiPayload({response:'```json\n'+json+'\n```'}),fx);
++  assert.deepEqual(aiPayload({response:'Ini hasilnya:\n'+json+'\nselesai'}),fx);
++  assert.deepEqual(aiPayload({response:fx}),fx);
++  assert.deepEqual(aiPayload({result:{response:json}}),fx);
++  assert.deepEqual(aiPayload({choices:[{message:{content:json}}]}),fx);
++  return 'FIXTURE_AI';
++});
++await check('X12','FIXTURE_AI: empty scenes and empty narration are rejected, never filled in',()=>{
++  const d=30;const lo=SCENE_RANGES_EXPECTED[d][0];
++  const noScenes=fixtureDirectorFor(d,lo);noScenes.scenes=[];
++  rejects(()=>validateDirector(noScenes,'Botol minum stainless',d),'director_scene_count');
++  const emptyVoice=fixtureDirectorFor(d,lo);emptyVoice.scenes[1].voice='   ';
++  rejects(()=>validateDirector(emptyVoice,'Botol minum stainless',d),'director_empty_content');
++  const nullScene=fixtureDirectorFor(d,lo);nullScene.scenes[0]=null;
++  rejects(()=>validateDirector(nullScene,'Botol minum stainless',d),'director_empty_scene');
++  return 'FIXTURE_AI';
++});
++await check('X13','FIXTURE_AI: five durations x ten malformed shapes never yield a templated success',async()=>{
++  const shapes=[
++    ()=>({response:''}),()=>({response:null}),()=>({response:'not json'}),
++    ()=>({response:'{"version":"1.0"'}),()=>({response:'{"a":1}{"b":2}'}),
++    ()=>({success:false,errors:[{message:'x'}]}),()=>({choices:[{message:{refusal:'no'}}]}),
++    ()=>({response:{version:'1.0',language:'id',ratio:'9:16',scenes:[]}}),
++    ()=>({response:{version:'1.0',language:'en',ratio:'9:16',duration:15,productName:'x',style:'fast-commerce',cta:'x',scenes:[]}}),
++    ()=>({response:'x'.repeat(80001)})
++  ];
++  let successes=0,calls=0;
++  for(const d of DURATIONS){
++    for(const shape of shapes){
++      calls=0;
++      try{await createDirector({AI:{run:async()=>{calls++;return shape();}}},'Botol minum stainless',d,'','',{timeoutMs:4000});successes++;}
++      catch(e){assert(String(e.code||'').length>0,'error must carry a stable code');assert(calls<=2,`at most two model calls, saw ${calls}`);}
++    }
++  }
++  assert.equal(successes,0,'no malformed AI shape may produce a success');
++  return 'FIXTURE_AI';
++});
++
++// --- T4-3 Upstream error classification, timeout, bounded retry -----------
++await check('X14','FIXTURE_AI: 401/403 become ai_auth_failed with exactly one model call',async()=>{
++  for(const code of [401,403,'401','403']){
++    let calls=0;
++    await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;throw Object.assign(new Error('denied'),{code});}}},'Botol minum stainless',15,'','',{timeoutMs:4000}),e=>e.code==='ai_auth_failed');
++    assert.equal(calls,1,`code ${code} must not retry`);
++  }
++  return 'FIXTURE_AI';
++});
++await check('X15','FIXTURE_AI: 429 becomes ai_quota_exceeded with exactly one model call',async()=>{
++  let calls=0;
++  await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;throw Object.assign(new Error('rate'),{code:429});}}},'Botol minum stainless',15,'','',{timeoutMs:4000}),e=>e.code==='ai_quota_exceeded');
++  assert.equal(calls,1);
++  return 'FIXTURE_AI';
++});
++await check('X16','FIXTURE_AI: 5xx and unknown upstream failures become ai_upstream_unavailable, one call',async()=>{
++  for(const thrown of [Object.assign(new Error('bad gateway'),{code:502}),Object.assign(new Error('boom'),{code:500}),new Error('socket hang up')]){
++    let calls=0;
++    await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;throw thrown;}}},'Botol minum stainless',15,'','',{timeoutMs:4000}),e=>e.code==='ai_upstream_unavailable');
++    assert.equal(calls,1,'non-retryable upstream failure must not retry');
++  }
++  return 'FIXTURE_AI';
++});
++await check('X17','FIXTURE_AI: an untrusted error code is never echoed back as the reason',async()=>{
++  await assert.rejects(()=>createDirector({AI:{run:async()=>{throw Object.assign(new Error('provider unavailable'),{code:'SECRET-abcdef-token'});}}},'Botol minum stainless',15,'','',{timeoutMs:4000}),
++    e=>e.code==='ai_upstream_unavailable'&&!String(e.code).includes('SECRET'));
++  return 'FIXTURE_AI';
++});
++await check('X18','FIXTURE_AI: a malformed result is repaired at most once, so at most two model calls',async()=>{
++  let calls=0;
++  await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;return {response:'not json at all'};}}},'Botol minum stainless',15,'','',{timeoutMs:8000}),e=>String(e.code).startsWith('ai_json_'));
++  assert.equal(calls,2,'exactly one repair attempt');
++  return 'FIXTURE_AI';
++});
++await check('X19','FIXTURE_AI: a successful repair on the second call is accepted',async()=>{
++  const d=30;const good=fixtureDirectorFor(d,SCENE_RANGES_EXPECTED[d][0]);
++  let calls=0;
++  const out=await createDirector({AI:{run:async()=>{calls++;return calls===1?{response:'garbage'}:{response:good};}}},'Botol minum stainless',d,'','',{timeoutMs:8000});
++  assert.equal(calls,2);assert.equal(out.scenes.length,good.scenes.length);
++  return 'FIXTURE_AI';
++});
++await check('X20','FIXTURE_AI: a timeout raises ai_timeout and never issues another model call',async()=>{
++  let calls=0;
++  await assert.rejects(()=>createDirector({AI:{run:async()=>{calls++;return new Promise(()=>{});}}},'Botol minum stainless',15,'','',{timeoutMs:300}),e=>e.code==='ai_timeout');
++  await new Promise(r=>setTimeout(r,400));
++  assert.equal(calls,1,'no overlapping repair after a timeout');
++  return 'FIXTURE_AI';
++});
++await check('X21','FIXTURE_AI: a missing or non-callable AI binding fails before any inference',async()=>{
++  await assert.rejects(()=>createDirector({},'Botol minum stainless',15),e=>e.code==='ai_binding_unavailable');
++  await assert.rejects(()=>createDirector({AI:{}},'Botol minum stainless',15),e=>e.code==='ai_binding_unavailable');
++  return 'FIXTURE_AI';
++});
++await check('X22','FIXTURE_AI: every one of the five durations reaches the model with its pinned max_tokens',async()=>{
++  const expected={15:2048,30:3072,60:4096,90:6144,120:6144};
++  for(const d of DURATIONS){
++    let seen=null;
++    const good=fixtureDirectorFor(d,SCENE_RANGES_EXPECTED[d][0]);
++    await createDirector({AI:{run:async(_m,r)=>{seen=r;return {response:good};}}},'Botol minum stainless',d,'','',{timeoutMs:8000});
++    assert.equal(seen.max_tokens,expected[d],`${d}s max_tokens`);
++    assert(seen.messages[0].content.includes('assetKeyword'),'contract must be present');
++    assert(seen.messages[1].content.includes(`total durasi tepat ${d} detik`),'duration must be stated');
++  }
++  return 'FIXTURE_AI';
++});
++
++// --- T4-4 Late results and owner changes ----------------------------------
++await check('X23','FIXTURE_AI: a late AI result cannot complete a job whose lease already expired',async()=>withDB(async db=>{
++  const e=env(db);await ensureSchema(db);
++  const r=await reserveJob(db,guest,'late-1',await (async()=>'hash-1')(),3);
++  assert(r.acquired);
++  db.sqlite.exec("UPDATE script_requests SET lease_expires_at=1 WHERE idempotency_key='late-1'");
++  await recoverExpired(db,guest);
++  const completed=await completeJob(db,guest,'late-1',r.token,director(15));
++  assert.equal(completed,false,'an expired lease must not be completable');
++  const row=db.value("SELECT status,result_json,quota_charged FROM script_requests WHERE idempotency_key='late-1'");
++  assert.equal(row.status,'expired');assert.equal(row.result_json,null);assert.equal(Number(row.quota_charged),0);
++  return 'FIXTURE_AI';
++}));
++await check('X24','FIXTURE_AI: a late AI result cannot overwrite a newer owner of the same key',async()=>withDB(async db=>{
++  await ensureSchema(db);
++  const first=await reserveJob(db,guest,'late-2','hash-2',3);assert(first.acquired);
++  db.sqlite.exec("UPDATE script_requests SET status='failed',quota_charged=0,lease_token=NULL WHERE idempotency_key='late-2'");
++  const second=await reserveJob(db,guest,'late-2','hash-2',3);assert(second.acquired);
++  assert.notEqual(second.token,first.token,'a new attempt must fence the old one');
++  assert.equal(await completeJob(db,guest,'late-2',first.token,director(15)),false,'the stale owner must not complete');
++  assert.equal(await completeJob(db,guest,'late-2',second.token,director(15)),true);
++  return 'FIXTURE_AI';
++}));
++await check('X25','FIXTURE_AI: a late refund from a stale owner cannot release a second credit',async()=>withDB(async db=>{
++  await ensureSchema(db);
++  const first=await reserveJob(db,guest,'late-3','hash-3',3);assert(first.acquired);
++  assert.equal(used(db),1);
++  await failJob(db,guest,'late-3',first.token,'ai_upstream_unavailable');
++  assert.equal(used(db),0);
++  await failJob(db,guest,'late-3',first.token,'ai_upstream_unavailable');
++  assert.equal(used(db),0,'a repeated refund must not go below the real usage');
++  return 'FIXTURE_AI';
++}));
++
+ const pass=results.filter(r=>r.status==='PASS').length;
+ const summary={version:'0.3.3',node:process.version,sqlite:'real local Node SQLite; D1-shaped transaction adapter',ai:'fixtures/fault injection; NOT remote inference',timestamp:new Date().toISOString(),pass,fail:results.length-pass,total:results.length,results};
+ fs.mkdirSync(path.join(root,'evidence'),{recursive:true});fs.writeFileSync(path.join(root,'evidence/regression-results.json'),JSON.stringify(summary,null,2));

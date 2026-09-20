@@ -1,0 +1,107 @@
+{
+  "task": "CR-002 派生汇总：真实 F5 印尼语语速分布与波动",
+  "derivedFrom": "evidence/dev/CR-002/C2-2/analysis.json（未修改原文件）",
+  "derivedAt": "2026-09-20",
+  "purpose": "用户 2026-09-20 要求：记录实际词数、有效语音时长、词/秒和波动，禁止凭单个样本定预算。",
+  "rateDefinition": "words / effSec —— effSec 为去掉头尾静音后的有效语音时长（-50 dBFS RMS / 20ms 窗）",
+  "sampleCount": 22,
+  "measuredSampleCount": 21,
+  "excluded": [
+    {
+      "id": "audit-60s",
+      "src": "Codex审计",
+      "reason": "Codex 审计样本只有词数，无本地实测 effSec"
+    }
+  ],
+  "wordsRange": {
+    "min": 4,
+    "max": 245
+  },
+  "effSecRange": {
+    "min": 1.44,
+    "max": 113.24
+  },
+  "overall": {
+    "n": 21,
+    "min": 2.1028,
+    "max": 3.6145,
+    "mean": 2.4917,
+    "stdev": 0.3567,
+    "spreadMaxOverMin": 1.719
+  },
+  "byStyle": {
+    "long": {
+      "n": 4,
+      "min": 2.16,
+      "max": 2.5152,
+      "mean": 2.3952,
+      "stdev": 0.1399,
+      "spreadMaxOverMin": 1.164
+    },
+    "long-form-multi": {
+      "n": 5,
+      "min": 2.1622,
+      "max": 2.2556,
+      "mean": 2.1935,
+      "stdev": 0.0381,
+      "spreadMaxOverMin": 1.043
+    },
+    "medium": {
+      "n": 4,
+      "min": 2.381,
+      "max": 2.8986,
+      "mean": 2.5927,
+      "stdev": 0.1894,
+      "spreadMaxOverMin": 1.217
+    },
+    "multi-sentence": {
+      "n": 4,
+      "min": 2.1028,
+      "max": 2.5974,
+      "mean": 2.3142,
+      "stdev": 0.195,
+      "spreadMaxOverMin": 1.235
+    },
+    "short": {
+      "n": 4,
+      "min": 2.7778,
+      "max": 3.6145,
+      "mean": 3.0376,
+      "stdev": 0.3356,
+      "spreadMaxOverMin": 1.301
+    }
+  },
+  "slowestThree": [
+    {
+      "id": "multi-3",
+      "style": "multi-sentence",
+      "words": 27,
+      "effSec": 12.84,
+      "rate": 2.1028
+    },
+    {
+      "id": "long-2",
+      "style": "long",
+      "words": 27,
+      "effSec": 12.5,
+      "rate": 2.16
+    },
+    {
+      "id": "lf-90s",
+      "style": "long-form-multi",
+      "words": 185,
+      "effSec": 85.56,
+      "rate": 2.1622
+    }
+  ],
+  "budgetBasis": {
+    "chosenRate": 2.1028,
+    "why": "取产品实际形态（多句连读）的最慢真实样本，而非均值；均值 2.4917 会让一半样本超时",
+    "safetyFactor": 0.9,
+    "effectiveRate": 1.8925,
+    "fixedOverheadSec": 1.33,
+    "marginVsSlowestObserved": 1.1111
+  },
+  "allSamplesFitUnderNewBudget": true,
+  "notAccepted": "SELF_TESTED —— 本汇总是对既有实测数据的统计派生，未新增采样，未经非作者 Reviewer 验收。印尼语自然度仍未经母语者听审（A7 未提供）。"
+}

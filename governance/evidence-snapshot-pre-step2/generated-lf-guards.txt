@@ -1,0 +1,30 @@
+TEST MODE: explicit Next build-shaped fixtures, NOT a real Next build.
+PASS release name and version
+PASS 21 frozen web files unchanged; 2 Next-managed files validated
+PASS Core source and original migration retain reference bytes
+PASS production plan rejects missing account
+PASS production plan rejects missing DB identity
+PASS production plan rejects local placeholder DB
+PASS production plan refuses wrong Worker name
+PASS production plan refuses multiple D1 bindings
+PASS production operation sequence migrates before publishing
+PASS plan-only command executes with no Wrangler/deployment required
+PASS failed process stops command sequence
+PASS preview config cannot access production D1
+PASS real AI test config has no D1 or production entry
+PASS runtime test config has no remote AI or D1
+PASS declared startup/test scripts actually exist
+PASS deprecated model is rejected before inference
+PASS new default matches configured model
+PASS old -fast model is not mistakenly blacklisted
+PASS numeric upstream 403 becomes stable auth error, no retry
+PASS untrusted error code is not returned as a diagnostic secret
+PASS readiness rejects deprecated runtime model, no inference
+PASS deprecated model cannot take a free-script credit
+PASS custom model fallback request still contains full contract
+PASS production plan refuses test-only entry
+PASS production plan refuses missing AI binding
+
+RELEASE GUARDS: 25/25 PASS; 0 FAIL
+{"event":"free_video_error","stage":"ai_director","requestId":"0dcf702e-0c61-44b2-bf06-70893473c525","reason":"ai_model_deprecated"}
+{"event":"free_video_error","stage":"ai_director","requestId":"e84e913f-0640-4814-b970-20457786bfb8","reason":"ai_model_deprecated"}

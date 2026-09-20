@@ -1,0 +1,87 @@
+Free Video
+Video Gratis
+Product Project
+Tools
+Bahasa Indonesia
+English
+中文
+Cari FYP ↗
+VIDEO JUALAN GRATIS · V0.2.2.13
+Masukkan produk. Free Video jadi director. HP kamu jadi studio.
+
+Director dan Media Broker ada di cloud; decoding stock footage, subtitle, animasi dan MP4 final dikerjakan di perangkat. Untuk seller yang ingin memburu pola video FYP, hasil diarahkan ke AURIA-FYP.
+
+Bahasa Indonesia
+English
+中文
+Nama produk
+Foto produk (opsional)
+Durasi
+15s
+30s
+60s
+90s
+120s
+Voice lokal WAV (opsional, untuk uji audio track)
+Renderer akan memotong/menambah silence agar audio tepat sepanjang video. Natural Voice Pack Supertonic tetap menjadi modul on-device terpisah, bukan API cloud berbayar.
+1 Script AI gratis tersisa.
+Render video dasar tidak mengurangi jatah script.
+CARA MEMBUAT VIDEO
+1. Masukkan nama produk →
+2. Upload foto produk jika ada →
+3. Pilih durasi 15–120 detik →
+4. Klik BUAT SCRIPT + VIDEO PLAN →
+5. Tunggu footage dan voice siap →
+6. Klik RENDER → setelah selesai klik DOWNLOAD MP4
+BUAT SCRIPT + VIDEO PLAN
+SIAPKAN FOOTAGE GRATIS
+CEK LOCAL VOICE
+BUAT VOICE LOKAL F5
+Director siap. Free Video akan mencoba lagi menyiapkan footage/voice otomatis saat tombol Render ditekan.
+30 DETIK · 9:16
+Lihat detail produknya
+Preview konsep. MP4 final dirender lokal.
+DIRECTOR JSON
+6 scene
+1
+Lihat detail produknya
+problem_hook · 5s · push_in
+openverse stock
+2
+Lihat detail produknya
+feature_3 · 5s · push_in
+openverse stock
+3
+Lihat detail produknya
+zoom_detail · 5s · push_in
+openverse stock
+4
+Lihat detail produknya
+comparison · 5s · push_in
+openverse stock
+5
+Lihat detail produknya
+price_drop · 5s · push_in
+openverse stock
+6
+Lihat detail produknya
+countdown_cta · 5s · push_in
+openverse stock
+LOCAL RENDER
+MP4 dibuat di device
+
+Free Video dapat mendecode footage Pixabay/Pexels langsung di browser melalui URL provider. Kalau CORS/codec suatu file gagal, scene otomatis jatuh kembali ke foto produk/template tanpa menggagalkan seluruh video.
+
+RENDER 30 DETIK GRATIS
+BUTUH VIDEO YANG LEBIH FYP?
+Jangan menebak pola viral.
+
+AURIA-FYP mencari kandidat referensi lalu membedah hook, emosi, struktur dan Viral DNA. Produkmu ikut dikirim sebagai konteks supaya alurnya nyambung.
+
+CARI POLA FYP UNTUK PRODUK INI ↗
+MEDIA BROKER
+Footage yang benar-benar dipakai
+
+OPENVERSE · Fixture Author
+
+Lihat sumber ↗

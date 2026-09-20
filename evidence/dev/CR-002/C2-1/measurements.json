@@ -1,0 +1,708 @@
+{
+  "task": "C2-1 真实 F5 印尼语语速实测",
+  "recordedAt": "2026-09-19T13:15:38.016Z",
+  "engine": "/mnt/c/Users/Hongyan/AppData/Local/Programs/Python/Python311/Scripts/supertonic.exe",
+  "voice": "F5",
+  "lang": "id",
+  "method": {
+    "silenceThresholdDb": -50,
+    "windowMs": 20,
+    "effectiveSpeech": "从首个 RMS 超过阈值的窗口起，到最后一个超过阈值的窗口止",
+    "sensitivityReported": [
+      "-40dB",
+      "-60dB"
+    ]
+  },
+  "samples": 16,
+  "failed": 0,
+  "wordsPerSecondEffective": {
+    "mean": 2.585,
+    "sd": 0.361,
+    "min": 2.103,
+    "max": 3.614,
+    "slowest": "multi-3"
+  },
+  "byStyle": {
+    "short": {
+      "n": 4,
+      "mean": 3.038,
+      "min": 2.778,
+      "max": 3.614
+    },
+    "medium": {
+      "n": 4,
+      "mean": 2.593,
+      "min": 2.381,
+      "max": 2.899
+    },
+    "long": {
+      "n": 4,
+      "mean": 2.395,
+      "min": 2.16,
+      "max": 2.515
+    },
+    "multi-sentence": {
+      "n": 4,
+      "mean": 2.314,
+      "min": 2.103,
+      "max": 2.597
+    }
+  },
+  "silence": {
+    "leadingSec": {
+      "min": 0.34,
+      "max": 0.52,
+      "mean": 0.4488
+    },
+    "trailingSec": {
+      "min": 0.512,
+      "max": 0.7491,
+      "mean": 0.6013
+    }
+  },
+  "currentValidatorUpperBound": "3.6 词/秒 (worker/director.js:78)",
+  "promptStatedRate": "1.5-2.5 kata/detik (worker/director.js:126)",
+  "rootCauseHypothesis": "不成立：存在样本达到或超过 3.6 词/秒（max=3.614），需停止 CR-002 并重新分析",
+  "results": [
+    {
+      "id": "short-1",
+      "style": "short",
+      "text": "Botol ini ringan dan mudah dibawa.",
+      "words": 6,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/short-1.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 2.5774,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.4,
+      "trailingSilenceSec": 0.5174,
+      "effectiveSpeechSec": 1.66,
+      "speechRmsDb": -23.68,
+      "speechPeak": 0.2509,
+      "wordsPerSecondEffective": 3.614,
+      "wordsPerSecondFileDuration": 2.328,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.4,
+          "trailingSilenceSec": 0.5174,
+          "effectiveSpeechSec": 1.66,
+          "speechRmsDb": -23.68,
+          "speechPeak": 0.2509
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.38,
+          "trailingSilenceSec": 0.4974,
+          "effectiveSpeechSec": 1.7,
+          "speechRmsDb": -23.79,
+          "speechPeak": 0.2509
+        }
+      },
+      "synthesisMs": 4909
+    },
+    {
+      "id": "short-2",
+      "style": "short",
+      "text": "Tutupnya rapat sehingga air tidak tumpah.",
+      "words": 6,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/short-2.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 3.1347,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.44,
+      "trailingSilenceSec": 0.6147,
+      "effectiveSpeechSec": 2.08,
+      "speechRmsDb": -23.75,
+      "speechPeak": 0.2748,
+      "wordsPerSecondEffective": 2.885,
+      "wordsPerSecondFileDuration": 1.914,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.46,
+          "trailingSilenceSec": 0.6947,
+          "effectiveSpeechSec": 1.98,
+          "speechRmsDb": -23.54,
+          "speechPeak": 0.2748
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.44,
+          "trailingSilenceSec": 0.5547,
+          "effectiveSpeechSec": 2.14,
+          "speechRmsDb": -23.88,
+          "speechPeak": 0.2748
+        }
+      },
+      "synthesisMs": 5098
+    },
+    {
+      "id": "short-3",
+      "style": "short",
+      "text": "Cek detail produknya sekarang.",
+      "words": 4,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/short-3.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 2.3684,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.36,
+      "trailingSilenceSec": 0.5684,
+      "effectiveSpeechSec": 1.44,
+      "speechRmsDb": -24.07,
+      "speechPeak": 0.2473,
+      "wordsPerSecondEffective": 2.778,
+      "wordsPerSecondFileDuration": 1.689,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.36,
+          "trailingSilenceSec": 0.5684,
+          "effectiveSpeechSec": 1.44,
+          "speechRmsDb": -24.07,
+          "speechPeak": 0.2473
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.36,
+          "trailingSilenceSec": 0.4484,
+          "effectiveSpeechSec": 1.56,
+          "speechRmsDb": -24.42,
+          "speechPeak": 0.2473
+        }
+      },
+      "synthesisMs": 5777
+    },
+    {
+      "id": "short-4",
+      "style": "short",
+      "text": "Bahannya stainless tebal dan awet.",
+      "words": 5,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/short-4.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 2.6471,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.34,
+      "trailingSilenceSec": 0.5671,
+      "effectiveSpeechSec": 1.74,
+      "speechRmsDb": -23.62,
+      "speechPeak": 0.2663,
+      "wordsPerSecondEffective": 2.874,
+      "wordsPerSecondFileDuration": 1.889,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.34,
+          "trailingSilenceSec": 0.5671,
+          "effectiveSpeechSec": 1.74,
+          "speechRmsDb": -23.62,
+          "speechPeak": 0.2663
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.34,
+          "trailingSilenceSec": 0.5471,
+          "effectiveSpeechSec": 1.76,
+          "speechRmsDb": -23.67,
+          "speechPeak": 0.2663
+        }
+      },
+      "synthesisMs": 4626
+    },
+    {
+      "id": "medium-1",
+      "style": "medium",
+      "text": "Bahan stainless tebal membuat botol ini awet dipakai setiap hari, bahkan untuk perjalanan jauh.",
+      "words": 14,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/medium-1.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 6.548,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.46,
+      "trailingSilenceSec": 0.628,
+      "effectiveSpeechSec": 5.46,
+      "speechRmsDb": -24.56,
+      "speechPeak": 0.2858,
+      "wordsPerSecondEffective": 2.564,
+      "wordsPerSecondFileDuration": 2.138,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.46,
+          "trailingSilenceSec": 0.688,
+          "effectiveSpeechSec": 5.4,
+          "speechRmsDb": -24.51,
+          "speechPeak": 0.2858
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.44,
+          "trailingSilenceSec": 0.628,
+          "effectiveSpeechSec": 5.48,
+          "speechRmsDb": -24.58,
+          "speechPeak": 0.2858
+        }
+      },
+      "synthesisMs": 7538
+    },
+    {
+      "id": "medium-2",
+      "style": "medium",
+      "text": "Ukurannya pas untuk dibawa ke kantor maupun ke kampus, dan tetap muat di dalam tas kecil.",
+      "words": 16,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/medium-2.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 6.4087,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.36,
+      "trailingSilenceSec": 0.5287,
+      "effectiveSpeechSec": 5.52,
+      "speechRmsDb": -23.97,
+      "speechPeak": 0.2781,
+      "wordsPerSecondEffective": 2.899,
+      "wordsPerSecondFileDuration": 2.497,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.36,
+          "trailingSilenceSec": 0.5487,
+          "effectiveSpeechSec": 5.5,
+          "speechRmsDb": -23.95,
+          "speechPeak": 0.2781
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.36,
+          "trailingSilenceSec": 0.5087,
+          "effectiveSpeechSec": 5.54,
+          "speechRmsDb": -23.98,
+          "speechPeak": 0.2781
+        }
+      },
+      "synthesisMs": 7870
+    },
+    {
+      "id": "medium-3",
+      "style": "medium",
+      "text": "Bagian dalam mudah dibersihkan tanpa meninggalkan bau, jadi kamu tidak perlu khawatir soal kebersihan.",
+      "words": 14,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/medium-3.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 6.966,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.44,
+      "trailingSilenceSec": 0.646,
+      "effectiveSpeechSec": 5.88,
+      "speechRmsDb": -23.84,
+      "speechPeak": 0.3326,
+      "wordsPerSecondEffective": 2.381,
+      "wordsPerSecondFileDuration": 2.01,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.46,
+          "trailingSilenceSec": 0.666,
+          "effectiveSpeechSec": 5.84,
+          "speechRmsDb": -23.81,
+          "speechPeak": 0.3326
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.44,
+          "trailingSilenceSec": 0.646,
+          "effectiveSpeechSec": 5.88,
+          "speechRmsDb": -23.84,
+          "speechPeak": 0.3326
+        }
+      },
+      "synthesisMs": 7774
+    },
+    {
+      "id": "medium-4",
+      "style": "medium",
+      "text": "Suhu air tetap terjaga selama beberapa jam pemakaian, cocok untuk kegiatan di luar ruangan.",
+      "words": 14,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/medium-4.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 6.548,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.48,
+      "trailingSilenceSec": 0.528,
+      "effectiveSpeechSec": 5.54,
+      "speechRmsDb": -23.78,
+      "speechPeak": 0.2766,
+      "wordsPerSecondEffective": 2.527,
+      "wordsPerSecondFileDuration": 2.138,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.5,
+          "trailingSilenceSec": 0.528,
+          "effectiveSpeechSec": 5.52,
+          "speechRmsDb": -23.76,
+          "speechPeak": 0.2766
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.48,
+          "trailingSilenceSec": 0.508,
+          "effectiveSpeechSec": 5.56,
+          "speechRmsDb": -23.8,
+          "speechPeak": 0.2766
+        }
+      },
+      "synthesisMs": 9194
+    },
+    {
+      "id": "long-1",
+      "style": "long",
+      "text": "Kalau kamu sering lupa membawa minum, botol ini membantu karena ukurannya pas di tas, tutupnya rapat, dan bahannya tidak mudah penyok meskipun sering terbentur di perjalanan setiap hari.",
+      "words": 28,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/long-1.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 12.6781,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.52,
+      "trailingSilenceSec": 0.5981,
+      "effectiveSpeechSec": 11.56,
+      "speechRmsDb": -24.18,
+      "speechPeak": 0.3099,
+      "wordsPerSecondEffective": 2.422,
+      "wordsPerSecondFileDuration": 2.209,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.54,
+          "trailingSilenceSec": 0.6181,
+          "effectiveSpeechSec": 11.52,
+          "speechRmsDb": -24.16,
+          "speechPeak": 0.3099
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.52,
+          "trailingSilenceSec": 0.4581,
+          "effectiveSpeechSec": 11.7,
+          "speechRmsDb": -24.23,
+          "speechPeak": 0.3099
+        }
+      },
+      "synthesisMs": 12733
+    },
+    {
+      "id": "long-2",
+      "style": "long",
+      "text": "Sebelum memilih botol minum, cek dulu ketebalan bahannya, sistem penguncian tutupnya, dan apakah bagian dalamnya mudah dibersihkan, karena tiga hal itu yang paling menentukan kenyamanan pemakaian harian.",
+      "words": 27,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/long-2.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 13.5837,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.52,
+      "trailingSilenceSec": 0.5637,
+      "effectiveSpeechSec": 12.5,
+      "speechRmsDb": -23.78,
+      "speechPeak": 0.3204,
+      "wordsPerSecondEffective": 2.16,
+      "wordsPerSecondFileDuration": 1.988,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.54,
+          "trailingSilenceSec": 0.5837,
+          "effectiveSpeechSec": 12.46,
+          "speechRmsDb": -23.77,
+          "speechPeak": 0.3204
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.52,
+          "trailingSilenceSec": 0.5437,
+          "effectiveSpeechSec": 12.52,
+          "speechRmsDb": -23.79,
+          "speechPeak": 0.3204
+        }
+      },
+      "synthesisMs": 13497
+    },
+    {
+      "id": "long-3",
+      "style": "long",
+      "text": "Banyak orang membeli botol minum hanya melihat warnanya, padahal yang lebih penting adalah apakah suhu air tetap terjaga, apakah tutupnya benar benar rapat, dan apakah ukurannya sesuai dengan tas yang biasa kamu pakai.",
+      "words": 33,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/long-3.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 14.3499,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.52,
+      "trailingSilenceSec": 0.7099,
+      "effectiveSpeechSec": 13.12,
+      "speechRmsDb": -24.35,
+      "speechPeak": 0.3069,
+      "wordsPerSecondEffective": 2.515,
+      "wordsPerSecondFileDuration": 2.3,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.54,
+          "trailingSilenceSec": 0.7299,
+          "effectiveSpeechSec": 13.08,
+          "speechRmsDb": -24.34,
+          "speechPeak": 0.3069
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.52,
+          "trailingSilenceSec": 0.7099,
+          "effectiveSpeechSec": 13.12,
+          "speechRmsDb": -24.35,
+          "speechPeak": 0.3069
+        }
+      },
+      "synthesisMs": 17702
+    },
+    {
+      "id": "long-4",
+      "style": "long",
+      "text": "Perhatikan juga bagian ulir tutup dan karet penyegelnya, sebab dua bagian itu yang paling sering membuat air merembes di dalam tas, terutama kalau botol sering dimasukkan dan dikeluarkan sepanjang hari.",
+      "words": 30,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/long-4.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 13.1657,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.48,
+      "trailingSilenceSec": 0.6057,
+      "effectiveSpeechSec": 12.08,
+      "speechRmsDb": -24.1,
+      "speechPeak": 0.2857,
+      "wordsPerSecondEffective": 2.483,
+      "wordsPerSecondFileDuration": 2.279,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.48,
+          "trailingSilenceSec": 0.6257,
+          "effectiveSpeechSec": 12.06,
+          "speechRmsDb": -24.1,
+          "speechPeak": 0.2857
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.48,
+          "trailingSilenceSec": 0.5857,
+          "effectiveSpeechSec": 12.1,
+          "speechRmsDb": -24.11,
+          "speechPeak": 0.2857
+        }
+      },
+      "synthesisMs": 17241
+    },
+    {
+      "id": "multi-1",
+      "style": "multi-sentence",
+      "text": "Cek bentuk dan detail produk ini sebelum kamu memilih. Bahan stainless tebal membuat botol ini awet dipakai setiap hari. Tutupnya rapat sehingga air tidak tumpah di dalam tas.",
+      "words": 28,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/multi-1.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 11.9815,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.5,
+      "trailingSilenceSec": 0.7015,
+      "effectiveSpeechSec": 10.78,
+      "speechRmsDb": -24.07,
+      "speechPeak": 0.278,
+      "wordsPerSecondEffective": 2.597,
+      "wordsPerSecondFileDuration": 2.337,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.5,
+          "trailingSilenceSec": 0.7215,
+          "effectiveSpeechSec": 10.76,
+          "speechRmsDb": -24.07,
+          "speechPeak": 0.278
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.5,
+          "trailingSilenceSec": 0.6815,
+          "effectiveSpeechSec": 10.8,
+          "speechRmsDb": -24.08,
+          "speechPeak": 0.278
+        }
+      },
+      "synthesisMs": 16147
+    },
+    {
+      "id": "multi-2",
+      "style": "multi-sentence",
+      "text": "Ukurannya pas untuk dibawa ke kantor maupun ke kampus. Bagian dalam mudah dibersihkan tanpa meninggalkan bau. Suhu air tetap terjaga selama beberapa jam pemakaian. Cek detail produknya sekarang.",
+      "words": 28,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/multi-2.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 13.932,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.5,
+      "trailingSilenceSec": 0.512,
+      "effectiveSpeechSec": 12.92,
+      "speechRmsDb": -24.28,
+      "speechPeak": 0.2739,
+      "wordsPerSecondEffective": 2.167,
+      "wordsPerSecondFileDuration": 2.01,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.5,
+          "trailingSilenceSec": 0.532,
+          "effectiveSpeechSec": 12.9,
+          "speechRmsDb": -24.28,
+          "speechPeak": 0.2739
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.5,
+          "trailingSilenceSec": 0.492,
+          "effectiveSpeechSec": 12.94,
+          "speechRmsDb": -24.29,
+          "speechPeak": 0.2739
+        }
+      },
+      "synthesisMs": 13746
+    },
+    {
+      "id": "multi-3",
+      "style": "multi-sentence",
+      "text": "Apa yang perlu kamu cek sebelum membeli botol minum? Pertama, ketebalan bahannya. Kedua, sistem penguncian tutupnya. Ketiga, apakah bagian dalamnya mudah dibersihkan. Tiga hal itu paling menentukan.",
+      "words": 27,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/multi-3.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 13.8623,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.44,
+      "trailingSilenceSec": 0.5823,
+      "effectiveSpeechSec": 12.84,
+      "speechRmsDb": -24.23,
+      "speechPeak": 0.3495,
+      "wordsPerSecondEffective": 2.103,
+      "wordsPerSecondFileDuration": 1.948,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.44,
+          "trailingSilenceSec": 0.6023,
+          "effectiveSpeechSec": 12.82,
+          "speechRmsDb": -24.23,
+          "speechPeak": 0.3495
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.44,
+          "trailingSilenceSec": 0.5823,
+          "effectiveSpeechSec": 12.84,
+          "speechRmsDb": -24.23,
+          "speechPeak": 0.3495
+        }
+      },
+      "synthesisMs": 15327
+    },
+    {
+      "id": "multi-4",
+      "style": "multi-sentence",
+      "text": "Botol ini ringan dan mudah dibawa. Tutupnya rapat sehingga air tidak tumpah. Bahannya stainless tebal dan awet. Ukurannya pas di dalam tas. Cek detail produknya sekarang juga.",
+      "words": 27,
+      "wavFile": "evidence/dev/CR-002/C2-1/wav/multi-4.wav",
+      "sampleRate": 44100,
+      "channels": 1,
+      "fileDurationSec": 12.4691,
+      "speechFound": true,
+      "thresholdDb": -50,
+      "leadingSilenceSec": 0.42,
+      "trailingSilenceSec": 0.7491,
+      "effectiveSpeechSec": 11.3,
+      "speechRmsDb": -24.46,
+      "speechPeak": 0.3117,
+      "wordsPerSecondEffective": 2.389,
+      "wordsPerSecondFileDuration": 2.165,
+      "sensitivity": {
+        "-40dB": {
+          "speechFound": true,
+          "thresholdDb": -40,
+          "leadingSilenceSec": 0.42,
+          "trailingSilenceSec": 0.7691,
+          "effectiveSpeechSec": 11.28,
+          "speechRmsDb": -24.45,
+          "speechPeak": 0.3117
+        },
+        "-60dB": {
+          "speechFound": true,
+          "thresholdDb": -60,
+          "leadingSilenceSec": 0.42,
+          "trailingSilenceSec": 0.7491,
+          "effectiveSpeechSec": 11.3,
+          "speechRmsDb": -24.46,
+          "speechPeak": 0.3117
+        }
+      },
+      "synthesisMs": 11688
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "task": "T5-8 RB-1 受控再基线",
+  "approval": "A3（用户 2026-09-19 批准修改 video-renderer.ts）",
+  "findings": [
+    "FV-005",
+    "FV-006",
+    "FV-009",
+    "FV-010"
+  ],
+  "appliedAt": "2026-09-19T14:25:33.944Z",
+  "entries": [
+    {
+      "location": "tests/web-baseline-sha256.json",
+      "path": "apps/web/lib/client/video-renderer.ts",
+      "from": "aeb05b15279a0c94d7946d4ec34e2605d6faa89d9aa90e7ba979526d7922cbe9",
+      "to": "66383dc1c2a182ffbd6e53c50170bbc89cd0fcafd2e8ca649e796518144842fd",
+      "occurrencesReplaced": 1
+    },
+    {
+      "location": "scripts/ui-integrity.mjs",
+      "path": "apps/web/lib/client/video-renderer.ts",
+      "from": "aeb05b15279a0c94d7946d4ec34e2605d6faa89d9aa90e7ba979526d7922cbe9",
+      "to": "66383dc1c2a182ffbd6e53c50170bbc89cd0fcafd2e8ca649e796518144842fd",
+      "occurrencesReplaced": 1
+    },
+    {
+      "location": "scripts/web-integrity.mjs:manifestHash",
+      "path": "tests/web-baseline-sha256.json",
+      "from": "8d3dfc16b38c85e6287e2dac242dcbacdd55c2f23279deb08db3f72405f8bf22",
+      "to": "c1c3abbffe95aca07fa175bb032fb368886b38c4b6ffb9246c5286918a8fe114",
+      "occurrencesReplaced": 1
+    }
+  ],
+  "rule": "只更新 1 个冻结文件的哈希；未触碰 governance/scope-guard-check.mjs（见 CORRECTION-004）"
+}

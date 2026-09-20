@@ -1,0 +1,96 @@
+// No Next build is invoked by this suite. These are explicit build-shaped fixtures
+// and fault-injection tests for the verification policy, not real-build acceptance.
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import {validateNextEnv,validateTsconfig,verifyWebIntegrity,loadReference} from '../scripts/web-integrity.mjs';
+import {verifySequence,dependenciesMissing} from '../scripts/verify.mjs';
+import {root} from '../scripts/process.mjs';
+
+const {manifest,tsconfig:baseline}=loadReference();
+const seed='/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n';
+const generated=seed+'import "./.next/types/routes.d.ts";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n';
+const generatedConfig=()=>{const c=structuredClone(baseline);c.compilerOptions.jsx='react-jsx';c.include.push('.next/dev/types/**/*.ts');return c;};
+const results=[];
+async function test(name,fn){try{await fn();results.push({name,status:'PASS'});console.log(`PASS ${name}`);}catch(e){results.push({name,status:'FAIL',message:e.message});console.log(`FAIL ${name}: ${e.message}`);}}
+const put=(r,p,content)=>{const f=path.join(r,p);fs.mkdirSync(path.dirname(f),{recursive:true});fs.writeFileSync(f,content);};
+function withTree(fn){const r=fs.mkdtempSync(path.join(os.tmpdir(),'freevideo-verification-'));try{
+  for(const p of Object.keys(manifest))put(r,p,fs.readFileSync(path.join(root,p)));
+  put(r,'apps/web/next-env.d.ts',seed);put(r,'apps/web/tsconfig.json',JSON.stringify(baseline));
+  return fn(r);
+}finally{fs.rmSync(r,{recursive:true,force:true});}}
+function badConfig(change){const c=generatedConfig();change(c);assert.throws(()=>validateTsconfig(JSON.stringify(c),baseline),/tsconfig/);}
+
+await test('V01 clean 23-file baseline uses 21 frozen and 2 validated files',()=>withTree(r=>assert.deepEqual([verifyWebIntegrity(r).frozenFiles,verifyWebIntegrity(r).managedFiles],[21,2])));
+await test('V02 original next-env two-reference seed is accepted',()=>assert.equal(validateNextEnv(seed).requiredReferences,2));
+await test('V03 Next production route import and generated comments are accepted',()=>assert.equal(validateNextEnv(generated).generatedRouteImport,'./.next/types/routes.d.ts'));
+await test('V04 Next development route import is accepted',()=>assert.equal(validateNextEnv(generated.replace('.next/types/','.next/dev/types/')).generatedRouteImport,'./.next/dev/types/routes.d.ts'));
+await test('V05 Windows UTF8 BOM and CRLF in generated declaration are accepted',()=>assert.equal(validateNextEnv(Buffer.from('\ufeff'+generated.replace(/\n/g,'\r\n'))).requiredReferences,2));
+await test('V06 user manual standard declaration need not be restored',()=>assert.equal(validateNextEnv('\ufeff'+seed+'\n// NOTE: This file should not be edited\r\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\r\n').requiredReferences,2));
+await test('V07 missing required Next reference is rejected',()=>assert.throws(()=>validateNextEnv(seed.split('\n')[0]),/both required/));
+await test('V08 unknown triple-slash directive cannot pass as a comment',()=>assert.throws(()=>validateNextEnv(seed+'/// <reference types="anything" />'),/unexpected directive/));
+await test('V09 path traversal import is rejected',()=>assert.throws(()=>validateNextEnv(seed+'import "../../other.d.ts";'),/unexpected content/));
+await test('V10 arbitrary package import is rejected',()=>assert.throws(()=>validateNextEnv(seed+'import "untrusted-package";'),/unexpected content/));
+await test('V11 injected declaration is rejected',()=>assert.throws(()=>validateNextEnv(seed+'declare const anything: any;'),/unexpected content/));
+await test('V12 ts-nocheck cannot hide an invalid declaration',()=>assert.throws(()=>validateNextEnv(seed+'// @ts-nocheck'),/suppression/));
+await test('V13 duplicate references are rejected',()=>assert.throws(()=>validateNextEnv(seed+seed),/duplicate/));
+await test('V14 duplicate route imports are rejected',()=>assert.throws(()=>validateNextEnv(generated+'import "./.next/dev/types/routes.d.ts";'),/duplicate/));
+await test('V15 UTF16 is not mistaken for UTF8',()=>assert.throws(()=>validateNextEnv(Buffer.from(seed,'utf16le')),/encoding/));
+await test('V16 malformed UTF8 is rejected',()=>assert.throws(()=>validateNextEnv(Buffer.from([0xff,0xfe,0x80])),/UTF-8/));
+await test('V17 empty declaration is rejected',()=>assert.throws(()=>validateNextEnv(''),/empty/));
+await test('V18 oversized declaration is rejected',()=>assert.throws(()=>validateNextEnv(seed+' '.repeat(20000)),/oversized/));
+await test('V19 original tsconfig is accepted',()=>assert.equal(validateTsconfig(JSON.stringify(baseline),baseline).jsx,'preserve'));
+await test('V20 both observed Next tsconfig updates are accepted',()=>assert.deepEqual(validateTsconfig(JSON.stringify(generatedConfig()),baseline),{jsx:'react-jsx',includesDevTypes:true}));
+await test('V21 JSX-only Next update is accepted',()=>{const c=structuredClone(baseline);c.compilerOptions.jsx='react-jsx';validateTsconfig(JSON.stringify(c),baseline);});
+await test('V22 dev-types-only Next update is accepted',()=>{const c=structuredClone(baseline);c.include.push('.next/dev/types/**/*.ts');validateTsconfig(JSON.stringify(c),baseline);});
+await test('V23 BOM CRLF and formatting in tsconfig are accepted',()=>validateTsconfig('\ufeff'+JSON.stringify(generatedConfig(),null,2).replace(/\n/g,'\r\n'),baseline));
+await test('V24 strict=false is rejected',()=>badConfig(c=>c.compilerOptions.strict=false));
+await test('V25 noEmit=false is rejected',()=>badConfig(c=>c.compilerOptions.noEmit=false));
+await test('V26 new compiler flags are rejected',()=>badConfig(c=>c.compilerOptions.noCheck=true));
+await test('V27 changed compilation target is rejected',()=>badConfig(c=>c.compilerOptions.target='ES5'));
+await test('V28 removed source include is rejected',()=>badConfig(c=>c.include=c.include.filter(p=>p!=='**/*.tsx')));
+await test('V29 unrelated include is rejected',()=>badConfig(c=>c.include.push('../unrelated/**/*.ts')));
+await test('V30 duplicate include is rejected',()=>badConfig(c=>c.include.push('next-env.d.ts')));
+await test('V31 weakened exclude is rejected',()=>badConfig(c=>c.exclude=[]));
+await test('V32 unexpected JSX mode is rejected',()=>badConfig(c=>c.compilerOptions.jsx='react-jsxdev'));
+await test('V33 unrelated extends is rejected',()=>badConfig(c=>c.extends='./other.json'));
+await test('V34 malformed config is rejected',()=>assert.throws(()=>validateTsconfig('{',baseline),/tsconfig/));
+await test('V35 build-shaped declaration and tsconfig pass combined gate',()=>withTree(r=>{put(r,'apps/web/next-env.d.ts',generated);put(r,'apps/web/tsconfig.json',JSON.stringify(generatedConfig()));verifyWebIntegrity(r);}));
+await test('V36 CSS changes still fail even a single appended byte',()=>withTree(r=>{fs.appendFileSync(path.join(r,'apps/web/app/globals.css'),' ');assert.throws(()=>verifyWebIntegrity(r),/globals.css/);}));
+await test('V37 video page changes still fail',()=>withTree(r=>{fs.appendFileSync(path.join(r,'apps/web/app/video/page.tsx'),'\n');assert.throws(()=>verifyWebIntegrity(r),/page.tsx/);}));
+await test('V38 client renderer changes still fail',()=>withTree(r=>{fs.appendFileSync(path.join(r,'apps/web/lib/client/video-renderer.ts'),'\n');assert.throws(()=>verifyWebIntegrity(r),/video-renderer.ts/);}));
+await test('V39 changing next.config.ts cannot bypass build errors',()=>withTree(r=>{fs.appendFileSync(path.join(r,'apps/web/next.config.ts'),'\n');assert.throws(()=>verifyWebIntegrity(r),/next.config.ts/);}));
+await test('V40 changing web dependencies is rejected',()=>withTree(r=>{fs.appendFileSync(path.join(r,'apps/web/package.json'),' ');assert.throws(()=>verifyWebIntegrity(r),/package.json/);}));
+await test('V41 a missing frozen file is rejected',()=>withTree(r=>{fs.unlinkSync(path.join(r,'apps/web/components/Nav.tsx'));assert.throws(()=>verifyWebIntegrity(r),/Nav.tsx/);}));
+await test('V42 extra source routes are rejected',()=>withTree(r=>{put(r,'apps/web/app/api/test/route.ts','export {};');assert.throws(()=>verifyWebIntegrity(r),/Unexpected Web source/);}));
+await test('V43 generated output directories and build info are ignored',()=>withTree(r=>{for(const p of ['apps/web/.next/types/routes.d.ts','apps/web/out/index.html','apps/web/node_modules/pkg/index.js','apps/web/tsconfig.tsbuildinfo'])put(r,p,'generated fixture');verifyWebIntegrity(r);}));
+await test('V44 original hash manifest cannot be rewritten to bless edits',()=>withTree(r=>{put(r,'tests/web-baseline-sha256.json',fs.readFileSync(path.join(root,'tests/web-baseline-sha256.json')));put(r,'tests/web-tsconfig-reference.json',fs.readFileSync(path.join(root,'tests/web-tsconfig-reference.json')));fs.appendFileSync(path.join(r,'tests/web-baseline-sha256.json'),'\n');assert.throws(()=>verifyWebIntegrity(r,r),/manifest has changed/);}));
+await test('V45 tsconfig reference cannot be weakened',()=>withTree(r=>{put(r,'tests/web-baseline-sha256.json',fs.readFileSync(path.join(root,'tests/web-baseline-sha256.json')));put(r,'tests/web-tsconfig-reference.json',JSON.stringify({...baseline,exclude:[]}));assert.throws(()=>verifyWebIntegrity(r,r),/reference has changed/);}));
+await test('V46 validation never rewrites or restores managed files',()=>withTree(r=>{const p='apps/web/next-env.d.ts';put(r,p,'\ufeff'+generated.replace(/\n/g,'\r\n'));const before=fs.readFileSync(path.join(r,p));verifyWebIntegrity(r);assert.deepEqual(fs.readFileSync(path.join(r,p)),before);}));
+
+function sequence(failure=null,install=false,missing=false){const calls=[];const action=name=>{calls.push(name);if(name===failure)throw new Error('INJECTED '+name);};let checks=0;
+ const options={checkNode:()=>{},installIfMissing:install,needsInstall:()=>missing,
+ runCommand:(cmd,args)=>{assert.deepEqual(args,['scripts/check-offline.mjs']);action(++checks===1?'before':'after');},
+ npmCommand:args=>{if(args[0]==='install')action('install');else {assert.equal(args[0],'run');action(args[1]);}}};
+ return {calls,invoke:()=>verifySequence(options)};
+}
+await test('V47 exact same offline gate runs BEFORE and AFTER build and typecheck',()=>{const t=sequence();t.invoke();assert.deepEqual(t.calls,['before','build','typecheck','after']);});
+await test('V48 failed build stops before typecheck and post-gate',()=>{const t=sequence('build');assert.throws(t.invoke,/INJECTED/);assert.deepEqual(t.calls,['before','build']);});
+await test('V49 failed post-build gate fails verification',()=>{const t=sequence('after');assert.throws(t.invoke,/INJECTED/);assert.deepEqual(t.calls,['before','build','typecheck','after']);});
+await test('V50 failed pre-gate prevents installation and build',()=>{const t=sequence('before',true,true);assert.throws(t.invoke,/INJECTED/);assert.deepEqual(t.calls,['before']);});
+await test('V51 failed dependency installation stops before build',()=>{const t=sequence('install',true,true);assert.throws(t.invoke,/INJECTED/);assert.deepEqual(t.calls,['before','install']);});
+await test('V52 existing dependencies avoid reinstall',()=>{const t=sequence(null,true,false);t.invoke();assert.deepEqual(t.calls,['before','build','typecheck','after']);});
+await test('V53 missing dependencies install before build, never migrate or deploy',()=>{const t=sequence(null,true,true);t.invoke();assert.deepEqual(t.calls,['before','install','build','typecheck','after']);});
+await test('V54 two simulated build cycles do not require generated-file restoration',()=>withTree(r=>{for(let i=0;i<2;i++){verifyWebIntegrity(r);put(r,'apps/web/next-env.d.ts',(i?'\ufeff':'')+generated.replace(/\n/g,i?'\r\n':'\n'));put(r,'apps/web/tsconfig.json',JSON.stringify(generatedConfig(),null,2));verifyWebIntegrity(r);}}));
+await test('V55 dependency preflight detects missing or wrong installed versions',()=>{const r=fs.mkdtempSync(path.join(os.tmpdir(),'fv-deps-'));try{assert.equal(dependenciesMissing(r),true);}finally{fs.rmSync(r,{recursive:true,force:true});}});
+
+await test('V56 nested output-named directories cannot hide new source routes',()=>withTree(r=>{put(r,'apps/web/app/out/page.tsx','export default function Page() {return null;}');assert.throws(()=>verifyWebIntegrity(r),/Unexpected Web source/);}));
+
+const fail=results.filter(x=>x.status==='FAIL').length;
+fs.mkdirSync(path.join(root,'evidence'),{recursive:true});
+fs.writeFileSync(path.join(root,'evidence/verification-fix-results.json'),JSON.stringify({release:'0.3.3.2',pass:results.length-fail,fail,total:results.length,mode:'fixtures-and-verification-policy-tests; NOT real Next build',results},null,2)+'\n');
+console.log(`\nVERIFICATION FIX: ${results.length-fail}/${results.length} PASS; ${fail} FAIL`);
+console.log('Generated-file tests use build-shaped fixtures. A genuine next build remains a separate verification gate.');
+if(fail)process.exitCode=1;

@@ -1,0 +1,86 @@
+{
+  "task": "STEP 6 / S6-7 更正：PWA 两条设计路径",
+  "recordedAt": "2026-09-20T10:38:19.597Z",
+  "cases": [
+    {
+      "id": "S6-7a-local-unregisters",
+      "note": "127.0.0.1 上按设计注销 SW 并清除 auria-shell-* 缓存（PwaRegistrar.tsx 显式行为）",
+      "value": {
+        "host": "127.0.0.1",
+        "registrations": 0,
+        "shellCaches": [],
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-7b-nonlocal-registers",
+      "note": "非本地主机 127.0.0.2 上 Service Worker 真实注册并激活",
+      "value": {
+        "host": "127.0.0.2",
+        "ready": "ready",
+        "registrations": 1,
+        "scopes": [
+          "http://127.0.0.2:40419/"
+        ],
+        "states": [
+          {
+            "installing": false,
+            "waiting": false,
+            "active": "activated"
+          }
+        ],
+        "cacheKeys": [
+          "free-video-shell-v0.3.1-lite"
+        ],
+        "consoleErrors": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-7c-shell-cache",
+      "note": "SW 激活后建立 free-video-shell-* 缓存并写入条目",
+      "value": {
+        "keys": [
+          "free-video-shell-v0.3.1-lite"
+        ],
+        "shell": [
+          "free-video-shell-v0.3.1-lite"
+        ],
+        "entries": {
+          "free-video-shell-v0.3.1-lite": [
+            "/manifest.webmanifest",
+            "/icon.svg"
+          ]
+        }
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "S6-7d-cache-population",
+      "note": "多次导航后 SW 按 network-first 策略填充缓存（文档 + 静态资源）",
+      "value": {
+        "controlledBySW": true,
+        "cachedCount": 2,
+        "cachedPaths": [
+          "/manifest.webmanifest",
+          "/icon.svg"
+        ],
+        "rootCachedAbsolute": false,
+        "rootCachedRelative": false,
+        "hasDocument": false,
+        "hasScriptOrStyle": false,
+        "consoleErrors": []
+      },
+      "verdict": "FAIL"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "pass": 3,
+    "fail": 1,
+    "failedIds": [
+      "S6-7d-cache-population"
+    ]
+  }
+}

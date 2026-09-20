@@ -1,0 +1,27 @@
+{
+  "release": "0.3.3.2",
+  "mode": "fixtures only; not actual next build",
+  "results": [
+    {
+      "mode": "generated-lf",
+      "exitCode": 0,
+      "pass": 25,
+      "fail": 0,
+      "total": 25
+    },
+    {
+      "mode": "generated-bom-crlf",
+      "exitCode": 0,
+      "pass": 25,
+      "fail": 0,
+      "total": 25
+    },
+    {
+      "mode": "manual-bom-crlf",
+      "exitCode": 0,
+      "pass": 25,
+      "fail": 0,
+      "total": 25
+    }
+  ]
+}
